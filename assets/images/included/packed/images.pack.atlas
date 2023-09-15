@@ -1,0 +1,26 @@
+
+images.pack.png
+size: 16, 16
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+whitePixel
+  rotate: false
+  xy: 2, 2
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+
+images.pack2.png
+size: 256, 64
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+GUI/feature graphics
+  rotate: false
+  xy: 2, 2
+  size: 222, 35
+  orig: 222, 35
+  offset: 0, 0
+  index: -1
