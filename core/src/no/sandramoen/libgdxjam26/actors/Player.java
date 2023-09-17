@@ -12,6 +12,8 @@ public class Player extends BaseActor {
     private final float SPEED = .035f;
     private BaseActor collisionBox;
 
+    public static int MOVESPEED = 16;
+
     public Player(float x, float y, Stage stage) {
         super(x, y, stage);
         loadImage("characters/player/idle1");
