@@ -7,6 +7,8 @@
 	<inherits name='com.badlogic.gdx.controllers.controllers-gwt' />
 	<inherits name='com.badlogic.gdx.physics.box2d.box2d-gwt' />
 	<inherits name='com.badlogic.ashley_gwt' />
+	<inherits name="regexodus.regexodus" />
+	<inherits name="com.github.tommyettinger.textratypist" />
 
 	<inherits name='MyGdxGame' />
 	<entry-point class='no.sandramoen.libgdxjam26.client.HtmlLauncher' />
