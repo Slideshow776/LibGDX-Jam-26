@@ -12,6 +12,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.scenes.scene2d.Group;
 
@@ -21,6 +24,7 @@ public class BaseActor extends Group {
     protected static Rectangle worldBounds;
 
     public Animation<TextureRegion> animation;
+    private Image image;
     private float animationTime = 0f;
     private boolean animationPaused = false;
 
@@ -71,8 +75,10 @@ public class BaseActor extends Group {
         if (!pause)
             super.act(delta);
 
-        if (!animationPaused)
+        if (animation != null && !animationPaused) {
             animationTime += delta;
+            ((TextureRegionDrawable)image.getDrawable()).setRegion(animation.getKeyFrame(animationTime));
+        }
     }
 
     @Override
@@ -80,35 +86,6 @@ public class BaseActor extends Group {
         //  apply color tint effect
         Color c = getColor();
         batch.setColor(c.r, c.g, c.b, c.a);
-
-        if (animation != null && isVisible()) {
-            if (isFacingRight)
-                batch.draw(
-                        animation.getKeyFrame(animationTime),
-                        getX() + abs(getWidth() - animationWidth) / 2,
-                        getY() + abs(getHeight() - animationHeight) / 2,
-                        getOriginX(),
-                        getOriginY(),
-                        animationWidth,
-                        animationHeight,
-                        getScaleX(),
-                        getScaleY(),
-                        getRotation()
-                );
-            else
-                batch.draw(
-                        animation.getKeyFrame(animationTime),
-                        getX() + getWidth(),
-                        getY(),
-                        getOriginX() - getWidth(),
-                        getOriginY(),
-                        -getWidth(),
-                        getHeight(),
-                        getScaleX(),
-                        getScaleY(),
-                        getRotation()
-                );
-        }
         super.draw(batch, parentAlpha);
     }
 
@@ -163,7 +140,16 @@ public class BaseActor extends Group {
         float w = tr.getRegionWidth() * BaseGame.UNIT_SCALE;
         float h = tr.getRegionHeight() * BaseGame.UNIT_SCALE;
         setSize(w, h);
-        setOrigin(w / 2, h / 2);
+        setOrigin(Align.center);
+
+        if (image != null) image.remove();
+        TextureRegionDrawable textureRegionDrawable = new TextureRegionDrawable();
+        textureRegionDrawable.setRegion(tr);
+        image = new Image(textureRegionDrawable);
+        image.setSize(w, h);
+        image.setAlign(Align.center);
+        image.setOrigin(Align.center);
+        addActor(image);
 
         if (boundaryPolygon == null)
             setBoundaryRectangle();
