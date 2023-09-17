@@ -12,9 +12,11 @@ public enum EnemyData {
      * - Width: 0.5 units
      * - Height: 1 unit
      * - Attack Range: 10 units
+     * - Attack Speed: 1 unit
+     * - Base Health: 100 units
      * - Resource: whitePixel (a placeholder resource)
      */
-    ARCHER("Archer", 0.5f, 1, 10, "whitePixel"),
+    ARCHER("Archer", 5, 5, 10, 1, 100, "whitePixel"),
 
     /**
      * The Mage enemy type.
@@ -22,9 +24,11 @@ public enum EnemyData {
      * - Width: 1 unit
      * - Height: 1 unit
      * - Attack Range: 8 units
+     * - Attack Speed: 1 unit
+     * - Base Health: 120 units
      * - Resource: whitePixel (a placeholder resource)
      */
-    MAGE("Mage", 1, 1, 8, "whitePixel"),
+    MAGE("Mage", 5, 5, 8, 1, 120, "whitePixel"),
 
     /**
      * The Melee enemy type.
@@ -32,13 +36,17 @@ public enum EnemyData {
      * - Width: 1 unit
      * - Height: 1 unit
      * - Attack Range: 1 unit
+     * - Attack Speed: 1 unit
+     * - Base Health: 80 units
      * - Resource: whitePixel (a placeholder resource)
      */
-    MELEE("Melee", 1, 1, 1, "whitePixel");
+    MELEE("Melee", 5, 5, 1, 1, 80, "whitePixel");
+
+    public static final String[] CHAT_MESSAGES = {"You credit score sucks!", "I'm going to kill you!", "Ich will nicht sterben!"};
 
     // Private fields to store enemy characteristics.
     private final String name, resource;
-    private final float width, height, attackRange;
+    private final float width, height, attackRange, attackSpeed, baseHealth;
 
     /**
      * Constructor for an EnemyData enum value.
@@ -47,13 +55,17 @@ public enum EnemyData {
      * @param width       The width of the enemy's hitbox (in game units).
      * @param height      The height of the enemy's hitbox (in game units).
      * @param attackRange The attack range of the enemy (in game units).
+     * @param attackSpeed The attack speed of the enemy (in game units).
+     * @param baseHealth  The base health of the enemy (in game units).
      * @param resource    The resource name for rendering the enemy (e.g., texture).
      */
-    private EnemyData(String name, float width, float height, float attackRange, String resource) {
+    private EnemyData(String name, float width, float height, float attackRange, float attackSpeed, float baseHealth, String resource) {
         this.name = name;
         this.width = width;
         this.height = height;
         this.attackRange = attackRange;
+        this.attackSpeed = attackSpeed;
+        this.baseHealth = baseHealth;
         this.resource = resource;
     }
 
@@ -100,5 +112,23 @@ public enum EnemyData {
      */
     public float getAttackRange() {
         return attackRange;
+    }
+
+    /**
+     * Get the attack speed of the enemy.
+     *
+     * @return The attack speed of the enemy in game units.
+     */
+    public float getAttackSpeed() {
+        return attackSpeed;
+    }
+
+    /**
+     * Get the base health of the enemy.
+     *
+     * @return The base health of the enemy in game units.
+     */
+    public float getBaseHealth() {
+        return baseHealth;
     }
 }

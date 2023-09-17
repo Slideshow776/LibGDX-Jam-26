@@ -24,7 +24,7 @@ public class BaseActor extends Group {
     protected static Rectangle worldBounds;
 
     public Animation<TextureRegion> animation;
-    private Image image;
+    protected Image image;
     private float animationTime = 0f;
     private boolean animationPaused = false;
 
