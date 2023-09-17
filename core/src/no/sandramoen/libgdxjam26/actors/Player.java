@@ -1,31 +1,15 @@
 package no.sandramoen.libgdxjam26.actors;
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
-
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Align;
 import no.sandramoen.libgdxjam26.utils.BaseActor;
-import no.sandramoen.libgdxjam26.utils.BaseGame;
 
 public class Player extends BaseActor {
-    public static final float MOVE_SPEED = 5;
+    public static final float MOVE_SPEED = 25;
     public boolean isDead;
     public boolean isMoving;
-
-    private final float SPEED = .035f;
-    private BaseActor collisionBox;
-
-    public static int MOVESPEED = 16;
     public int attackPower = 2;
-
-    public enum State {
-        IDLE,
-        MOVING,
-        ATTACKING,
-        ;
-    }
     public State state = State.IDLE;
+    private BaseActor collisionBox;
     private float attackCooldown = 0f;
 
     public Player(float x, float y, Stage stage) {
@@ -63,6 +47,13 @@ public class Player extends BaseActor {
         if (state != State.ATTACKING) {
             if (this.attackCooldown > 0) this.attackCooldown -= delta;
         }
+    }
+
+    public enum State {
+        IDLE,
+        MOVING,
+        ATTACKING,
+        ;
     }
 
 }
