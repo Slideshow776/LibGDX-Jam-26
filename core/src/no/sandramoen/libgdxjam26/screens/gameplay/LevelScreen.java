@@ -70,7 +70,6 @@ public class LevelScreen extends BaseScreen {
             player.setSpeed(0);
         }
         player.applyPhysics(delta);
-
     }
 
     @Override
