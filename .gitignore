@@ -1,5 +1,10 @@
-## packr
-/packr build files
+## Steam
+/Steam/
+/steam_api/
+
+## LibGDX
+/packr build files/
+/assets/images/included/packed/
 
 ## Java
 
