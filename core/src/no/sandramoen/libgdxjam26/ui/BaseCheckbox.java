@@ -21,7 +21,7 @@ public class BaseCheckbox extends Table {
     private boolean isJustClicked;
 
     public BaseCheckbox(String text) {
-        label = new TypingLabel(text, new Label.LabelStyle(BaseGame.mySkin.get("Play-Bold20white", BitmapFont.class), null));
+        label = new TypingLabel(text, new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-20", BitmapFont.class), null));
         label.setColor(Color.WHITE);
         GameUtils.setWidgetHoverColor(label);
 

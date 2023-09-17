@@ -99,9 +99,9 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         float scale = Gdx.graphics.getWidth() * .000656f; // magic number ensures scale ~= 1, based on screen width
         scale *= 1.01f; // make x percent bigger, bigger = more fuzzy
 
-        mySkin.getFont("Play-Bold20white").getData().setScale(scale);
-        mySkin.getFont("Play-Bold40white").getData().setScale(scale);
-        mySkin.getFont("Play-Bold59white").getData().setScale(scale);
+        mySkin.getFont("MetalMania-20").getData().setScale(scale);
+        mySkin.getFont("MetalMania-40").getData().setScale(scale);
+        mySkin.getFont("MetalMania-59").getData().setScale(scale);
     }
 
     private void assetManager() {
