@@ -4,26 +4,31 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-
 import no.sandramoen.libgdxjam26.screens.BaseScreen;
 import no.sandramoen.libgdxjam26.screens.gameplay.LevelScreen;
+import no.sandramoen.libgdxjam26.ui.QuitWindow;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
 import no.sandramoen.libgdxjam26.utils.GameUtils;
 
 public class LevelSelectScreen extends BaseScreen {
+
+    private QuitWindow quitWindow;
+
     @Override
     public void initialize() {
         addTextButtons();
+        uiStage.addActor(quitWindow = new QuitWindow());
     }
 
     @Override
     public void update(float delta) {
+
     }
 
     @Override
     public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.Q)
-            Gdx.app.exit();
+        if ((keycode == Input.Keys.ESCAPE || keycode == Input.Keys.Q))
+            quitWindow.setVisible(!quitWindow.isVisible());
         return super.keyDown(keycode);
     }
 

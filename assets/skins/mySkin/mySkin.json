@@ -177,6 +177,18 @@ com.badlogic.gdx.scenes.scene2d.ui.Touchpad$TouchpadStyle: {
 		background: touchpad
 		knob: touchpad-knob
 	}
+},
+com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
+    default: {
+        background: window
+        titleFont: MetalMania-40,
+        titleFontColor: {
+            r: 0
+            g: 0
+            b: 0
+            a: 1
+        }
+    }
 }
 com.badlogic.gdx.scenes.scene2d.ui.Tree$TreeStyle: {
 	default: {

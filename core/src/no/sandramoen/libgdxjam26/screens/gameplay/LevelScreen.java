@@ -5,20 +5,18 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.github.tommyettinger.textra.TypingLabel;
-
 import no.sandramoen.libgdxjam26.actors.Player;
 import no.sandramoen.libgdxjam26.actors.map.Background;
 import no.sandramoen.libgdxjam26.actors.map.ImpassableTerrain;
 import no.sandramoen.libgdxjam26.actors.map.TiledMapActor;
 import no.sandramoen.libgdxjam26.screens.BaseScreen;
 import no.sandramoen.libgdxjam26.screens.shell.LevelSelectScreen;
+import no.sandramoen.libgdxjam26.ui.QuitWindow;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
 
 public class LevelScreen extends BaseScreen {
@@ -31,7 +29,9 @@ public class LevelScreen extends BaseScreen {
 
     private TiledMapActor tilemap;
 
-    private Vector2 source = new Vector2(), target  = new Vector2();
+    private Vector2 source = new Vector2(), target = new Vector2();
+
+    private QuitWindow quitWindow;
 
     public LevelScreen(TiledMap tiledMap) {
         currentMap = tiledMap;
@@ -50,8 +50,9 @@ public class LevelScreen extends BaseScreen {
 
     @Override
     public void update(float delta) {
+
         // Set mouse and player position for use in calculations.
-        source.set(player.getX(Align.center), player.getY(Align.center));
+        source.set(player.getX(), player.getY());
         float mouseX = Gdx.input.getX();
         float mouseY = Gdx.input.getY();
         target.set(mouseX, mouseY);
@@ -62,21 +63,19 @@ public class LevelScreen extends BaseScreen {
             player.isMoving = true;
             float angleDeg = target.sub(source).angleDeg();
             player.setMotionAngle(angleDeg);
-            player.setSpeed(Player.MOVESPEED);
-        }
-        else {
+            player.setSpeed(Player.MOVE_SPEED);
+        } else {
             player.isMoving = false;
             player.setMotionAngle(0f);
             player.setSpeed(0);
         }
-        player.act(delta);  // Update player cooldowns.
         player.applyPhysics(delta);
     }
 
     @Override
     public boolean keyDown(int keycode) {
         if (keycode == Keys.ESCAPE || keycode == Keys.Q)
-            Gdx.app.exit();
+            quitWindow.setVisible(!quitWindow.isVisible());
         else if (keycode == Keys.R)
             BaseGame.setActiveScreen(new LevelScreen(currentMap));
         else if (keycode == Keys.T)
@@ -87,10 +86,10 @@ public class LevelScreen extends BaseScreen {
     private void initializeActors() {
         impassables = new Array();
         new Background(0, 0, mainStage);
-        float x = ((ExtendViewport)mainStage.getViewport()).getMinWorldWidth() / 2f;
-        float y = ((ExtendViewport)mainStage.getViewport()).getMinWorldHeight() / 2f;
-        player = new Player(x, y, mainStage);
-        System.out.println(mainStage.getViewport().getWorldWidth());
+        player = new Player(0, 0, mainStage);
+        quitWindow = new QuitWindow();
+
+        uiStage.addActor(quitWindow);
         // loadActorsFromMap();
     }
 
