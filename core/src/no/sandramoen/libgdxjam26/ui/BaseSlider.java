@@ -21,7 +21,7 @@ public class BaseSlider extends Table {
     private Slider slider;
 
     public BaseSlider(String labelText, float min, float max, float stepSize) {
-        label = new TypingLabel(labelText, new Label.LabelStyle(BaseGame.mySkin.get("Play-Bold20white", BitmapFont.class), null));
+        label = new TypingLabel(labelText, new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-20", BitmapFont.class), null));
         GameUtils.setWidgetHoverColor(label);
         add(label).growX().left().padRight(Gdx.graphics.getWidth() * .05f);
 

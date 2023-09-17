@@ -19,7 +19,7 @@ public class OptionsScreen extends BaseScreen {
 
     @Override
     public void initialize() {
-        TypingLabel mainLabel = new TypingLabel("Options", new Label.LabelStyle(BaseGame.mySkin.get("Play-Bold59white", BitmapFont.class), null));
+        TypingLabel mainLabel = new TypingLabel("Options", new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-59", BitmapFont.class), null));
         mainLabel.getFont().scale(.8f, .8f);
         uiTable.add(mainLabel)
                 .growY()
