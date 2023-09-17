@@ -5,6 +5,8 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
@@ -28,6 +30,8 @@ public class LevelScreen extends BaseScreen {
 
     private TiledMapActor tilemap;
 
+    private Vector2 source = new Vector2(), target  = new Vector2();
+
     public LevelScreen(TiledMap tiledMap) {
         currentMap = tiledMap;
         this.tilemap = new TiledMapActor(currentMap, mainStage);
@@ -45,6 +49,28 @@ public class LevelScreen extends BaseScreen {
 
     @Override
     public void update(float delta) {
+
+        // Set mouse and player position for use in calculations.
+        source.set(player.getX(), player.getY());
+        float mouseX = Gdx.input.getX();
+        float mouseY = Gdx.input.getY();
+        target.set(mouseX, mouseY);
+        mainStage.screenToStageCoordinates(target);
+
+        if (target.dst2(source) > 1e-1) {
+            // Move player towards cursor.
+            player.isMoving = true;
+            float angleDeg = target.sub(source).angleDeg();
+            player.setMotionAngle(angleDeg);
+            player.setSpeed(Player.MOVESPEED);
+        }
+        else {
+            player.isMoving = false;
+            player.setMotionAngle(0f);
+            player.setSpeed(0);
+        }
+        player.applyPhysics(delta);
+
     }
 
     @Override
