@@ -1,7 +1,5 @@
 package no.sandramoen.libgdxjam26.actors.map;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -15,10 +13,9 @@ public class Background extends BaseActor {
 
     public Background(float x, float y, Stage stage) {
         super(x, y, stage);
-        setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        setColor(Color.BLACK);
-
-        animationImages.add(BaseGame.textureAtlas.findRegion("whitePixel"));
+        // setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        animationImages.add(BaseGame.textureAtlas.findRegion("background"));
         animation = new Animation(2f, animationImages, Animation.PlayMode.LOOP);
+        setAnimation(animation);
     }
 }
