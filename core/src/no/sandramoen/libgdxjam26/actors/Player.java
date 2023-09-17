@@ -3,7 +3,11 @@ package no.sandramoen.libgdxjam26.actors;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import no.sandramoen.libgdxjam26.utils.BaseActor;
+import no.sandramoen.libgdxjam26.utils.BaseGame;
 
 public class Player extends BaseActor {
     public boolean isDead;

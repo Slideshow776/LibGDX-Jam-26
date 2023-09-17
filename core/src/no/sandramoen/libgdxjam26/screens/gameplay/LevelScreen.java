@@ -51,7 +51,7 @@ public class LevelScreen extends BaseScreen {
     @Override
     public void update(float delta) {
         // Set mouse and player position for use in calculations.
-        source.set(player.getX(), player.getY());
+        source.set(player.getX(Align.center), player.getY(Align.center));
         float mouseX = Gdx.input.getX();
         float mouseY = Gdx.input.getY();
         target.set(mouseX, mouseY);
