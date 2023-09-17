@@ -116,15 +116,15 @@ public class TiledMapActor extends Actor {
     }
 
     private void setMapSize() {
-        mapWidth = tiledMap.getProperties().get("width", Integer.class);
-        mapHeight = tiledMap.getProperties().get("height", Integer.class);
+        mapWidth = (int)tiledMap.getProperties().get("width", Integer.class);
+        mapHeight = (int)tiledMap.getProperties().get("height", Integer.class);
     }
 
     private Vector2 calculateCenterOfMap() {
-        int tileWidth = tiledMap.getProperties().get("tilewidth", Integer.class);
-        int tileHeight = tiledMap.getProperties().get("tileheight", Integer.class);
-        int numTilesHorizontal = tiledMap.getProperties().get("width", Integer.class);
-        int numTilesVertical = tiledMap.getProperties().get("height", Integer.class);
+        int tileWidth = (int)tiledMap.getProperties().get("tilewidth", Integer.class);
+        int tileHeight = (int)tiledMap.getProperties().get("tileheight", Integer.class);
+        int numTilesHorizontal = (int)tiledMap.getProperties().get("width", Integer.class);
+        int numTilesVertical = (int)tiledMap.getProperties().get("height", Integer.class);
         mapWidth = tileWidth * numTilesHorizontal;
         mapHeight = tileHeight * numTilesVertical;
 

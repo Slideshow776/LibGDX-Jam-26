@@ -20,7 +20,7 @@ public class MenuScreen extends BaseScreen {
 
     @Override
     public void initialize() {
-        Image featureGraphics = new Image(BaseGame.textureAtlas.findRegion("GUI/feature graphics"));
+        Image featureGraphics = new Image(BaseGame.textureAtlas.findRegion("GUI/title"));
         featureGraphics.setOrigin(Align.center);
         featureGraphics.addAction(Actions.sequence(Actions.fadeOut(0), Actions.fadeIn(.5f)));
         uiTable.add(featureGraphics)
@@ -30,11 +30,11 @@ public class MenuScreen extends BaseScreen {
 
         addTextButtons();
 
-        uiTable.add(new MadeByLabel())
+        /*uiTable.add(new MadeByLabel())
                 .fillX()
-                .padTop(Gdx.graphics.getHeight() * .09f);
+                .padTop(Gdx.graphics.getHeight() * .09f);*/
 
-        /*uiTable.setDebug(true);*/
+        // uiTable.setDebug(true);
 
         if (Gdx.input.isCursorCatched())
             Gdx.input.setCursorCatched(false);
@@ -81,7 +81,7 @@ public class MenuScreen extends BaseScreen {
             uiTable.add(resumeButton()).row();
         uiTable.add(startButton()).row();
         uiTable.add(optionsButton()).row();
-        uiTable.add(exitButton()).row();
+        // uiTable.add(exitButton()).row();
         uiTable.defaults().reset();
     }
 
