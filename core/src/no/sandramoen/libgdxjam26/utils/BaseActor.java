@@ -1,40 +1,27 @@
 package no.sandramoen.libgdxjam26.utils;
 
-import static java.lang.Math.abs;
-
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.scenes.scene2d.Group;
 
 
 public class BaseActor extends Group {
 
     protected static Rectangle worldBounds;
-
+    public final int ID = MathUtils.random(1000, 9999);
     public Animation<TextureRegion> animation;
-    protected Image image;
-    private float animationTime = 0f;
-    private boolean animationPaused = false;
-
-    private Vector2 velocityVec = new Vector2(0f, 0f);
-    private Vector2 accelerationVec = new Vector2(0f, 0f);
-    private float acceleration = 0f;
-    private float maxSpeed = 1000f;
-    private float deceleration = 0f;
-    private Polygon boundaryPolygon = null;
-
     public boolean isFacingRight = true;
     public boolean pause = false;
     public float animationWidth = getWidth();
@@ -42,7 +29,15 @@ public class BaseActor extends Group {
     public boolean isCollisionEnabled = true;
     public float shakyCamIntensity = .025f;
     public boolean isShakyCam = false;
-    public final int ID = MathUtils.random(1000, 9999);
+    protected Image image;
+    private float animationTime = 0f;
+    private boolean animationPaused = false;
+    private Vector2 velocityVec = new Vector2(0f, 0f);
+    private Vector2 accelerationVec = new Vector2(0f, 0f);
+    private float acceleration = 0f;
+    private float maxSpeed = 1000f;
+    private float deceleration = 0f;
+    private Polygon boundaryPolygon = null;
 
     public BaseActor(float x, float y, Stage stage) {
         super();
@@ -64,6 +59,14 @@ public class BaseActor extends Group {
         /*setDebug(true);*/
     }
 
+    public static void setWorldBounds(float width, float height) {
+        worldBounds = new Rectangle(0, 0, width, height);
+    }
+
+    public static void setWorldBounds(BaseActor ba) {
+        setWorldBounds(ba.getWidth(), ba.getHeight());
+    }
+
     @Override
     public void setSize(float width, float height) {
         super.setSize(width, height);
@@ -77,7 +80,7 @@ public class BaseActor extends Group {
 
         if (animation != null && !animationPaused) {
             animationTime += delta;
-            ((TextureRegionDrawable)image.getDrawable()).setRegion(animation.getKeyFrame(animationTime));
+            ((TextureRegionDrawable) image.getDrawable()).setRegion(animation.getKeyFrame(animationTime));
         }
     }
 
@@ -162,6 +165,9 @@ public class BaseActor extends Group {
         setAnimation(new Animation(1f, region));
     }
 
+    public float getSpeed() {
+        return velocityVec.len();
+    }
 
     // Physics ---------------------------------------------------------------------------------------------------
     public void setSpeed(float speed) {
@@ -169,10 +175,6 @@ public class BaseActor extends Group {
             velocityVec.set(speed, 0);
         else
             velocityVec.setLength(speed);
-    }
-
-    public float getSpeed() {
-        return velocityVec.len();
     }
 
     public void setAcceleration(float acc) {
@@ -191,12 +193,12 @@ public class BaseActor extends Group {
         return (getSpeed() > 0);
     }
 
-    public void setMotionAngle(float angle) {
-        velocityVec.setAngleDeg(angle);
-    }
-
     public float getMotionAngle() {
         return velocityVec.angleDeg();
+    }
+
+    public void setMotionAngle(float angle) {
+        velocityVec.setAngleDeg(angle);
     }
 
     public void accelerateAtAngle(float angle) {
@@ -303,7 +305,7 @@ public class BaseActor extends Group {
         return false;
     }
 
-    protected void shakeCamera() {
+    public void shakeCamera() {
         this.getStage().getCamera().position.set(
                 new Vector3(
                         this.getStage().getCamera().position.x + MathUtils.random(
@@ -320,13 +322,20 @@ public class BaseActor extends Group {
         /*bindCameraToWorld((OrthographicCamera) this.getStage().getCamera());*/
     }
 
-
     // Collision detection --------------------------------------------------------------------------------------
     public void setBoundaryRectangle() {
         float w = getWidth();
         float h = getHeight();
         float[] vertices = {0, 0, w, 0, w, h, 0, h};
         boundaryPolygon = new Polygon(vertices);
+    }
+
+    public Polygon getBoundaryPolygon() {
+        boundaryPolygon.setPosition(getX(), getY());
+        boundaryPolygon.setOrigin(getOriginX(), getOriginY());
+        boundaryPolygon.setRotation(getRotation());
+        boundaryPolygon.setScale(getScaleX(), getScaleY());
+        return boundaryPolygon;
     }
 
     public void setBoundaryPolygon(int numSides) {
@@ -340,14 +349,6 @@ public class BaseActor extends Group {
             vertices[2 * i + 1] = h / 2 * MathUtils.sin(angle) + h / 2; // y-coordinate
         }
         boundaryPolygon = new Polygon(vertices);
-    }
-
-    public Polygon getBoundaryPolygon() {
-        boundaryPolygon.setPosition(getX(), getY());
-        boundaryPolygon.setOrigin(getOriginX(), getOriginY());
-        boundaryPolygon.setRotation(getRotation());
-        boundaryPolygon.setScale(getScaleX(), getScaleY());
-        return boundaryPolygon;
     }
 
     public boolean overlaps(BaseActor other) {
@@ -407,15 +408,7 @@ public class BaseActor extends Group {
             setY(worldBounds.height - getHeight());
     }
 
-    public static void setWorldBounds(float width, float height) {
-        worldBounds = new Rectangle(0, 0, width, height);
-    }
-
     public void setBounds(float width, float height) {
         worldBounds = new Rectangle(0, 0, width, height);
-    }
-
-    public static void setWorldBounds(BaseActor ba) {
-        setWorldBounds(ba.getWidth(), ba.getHeight());
     }
 }

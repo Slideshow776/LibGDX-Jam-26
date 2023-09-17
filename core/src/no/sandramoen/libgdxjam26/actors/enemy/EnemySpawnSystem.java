@@ -4,7 +4,6 @@ import no.sandramoen.libgdxjam26.actors.Player;
 import no.sandramoen.libgdxjam26.actors.map.TiledMapActor;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The EnemySpawnSystem class handles the spawning of enemies in the game world
@@ -75,7 +74,7 @@ public class EnemySpawnSystem {
         enemy.beginFollowingPlayer(player);
     }
 
-    public List<Enemy> getEnemies() {
+    public ArrayList<Enemy> getEnemies() {
         return enemies;
     }
 }
