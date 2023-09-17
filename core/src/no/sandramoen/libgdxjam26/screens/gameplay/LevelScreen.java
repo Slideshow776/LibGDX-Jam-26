@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.github.tommyettinger.textra.TypingLabel;
 import no.sandramoen.libgdxjam26.actors.Player;
+import no.sandramoen.libgdxjam26.actors.enemy.EnemySpawnSystem;
 import no.sandramoen.libgdxjam26.actors.map.Background;
 import no.sandramoen.libgdxjam26.actors.map.ImpassableTerrain;
 import no.sandramoen.libgdxjam26.actors.map.TiledMapActor;
@@ -32,6 +33,7 @@ public class LevelScreen extends BaseScreen {
     private Vector2 source = new Vector2(), target = new Vector2();
 
     private QuitWindow quitWindow;
+    private EnemySpawnSystem enemySpawnSystem;
 
     public LevelScreen(TiledMap tiledMap) {
         currentMap = tiledMap;
@@ -42,6 +44,7 @@ public class LevelScreen extends BaseScreen {
 
         OrthographicCamera test = (OrthographicCamera) mainStage.getCamera();
         System.out.println(test.zoom);
+        this.enemySpawnSystem = new EnemySpawnSystem(tilemap, player);
     }
 
     @Override
@@ -50,6 +53,7 @@ public class LevelScreen extends BaseScreen {
 
     @Override
     public void update(float delta) {
+        this.enemySpawnSystem.update(delta);
 
         // Set mouse and player position for use in calculations.
         source.set(player.getX(), player.getY());

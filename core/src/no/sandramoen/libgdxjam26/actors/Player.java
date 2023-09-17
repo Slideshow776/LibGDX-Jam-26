@@ -9,7 +9,7 @@ import no.sandramoen.libgdxjam26.utils.BaseActor;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
 
 public class Player extends BaseActor {
-    public static final float MOVE_SPEED = 1;
+    public static final float MOVE_SPEED = 5;
     public boolean isDead;
     public boolean isMoving;
 
