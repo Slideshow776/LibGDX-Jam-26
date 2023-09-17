@@ -30,7 +30,7 @@ size: 256, 64
 format: RGBA8888
 filter: Nearest, Nearest
 repeat: none
-GUI/feature graphics
+GUI/title
   rotate: false
   xy: 2, 2
   size: 222, 35
