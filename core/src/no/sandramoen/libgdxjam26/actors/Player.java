@@ -1,11 +1,11 @@
 package no.sandramoen.libgdxjam26.actors;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import no.sandramoen.libgdxjam26.utils.BaseActor;
 
 public class Player extends BaseActor {
+    public static final float MOVE_SPEED = 1;
     public boolean isDead;
     public boolean isMoving;
 
