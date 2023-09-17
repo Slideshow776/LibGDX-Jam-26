@@ -57,4 +57,5 @@ public class MapLoader {
             player = null;
         }
     }
+
 }

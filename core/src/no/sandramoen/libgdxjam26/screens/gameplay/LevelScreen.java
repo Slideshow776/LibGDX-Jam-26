@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.github.tommyettinger.textra.TypingLabel;
 
 import no.sandramoen.libgdxjam26.actors.Player;
@@ -86,7 +87,10 @@ public class LevelScreen extends BaseScreen {
     private void initializeActors() {
         impassables = new Array();
         new Background(0, 0, mainStage);
-        player = new Player(0, 0, mainStage);
+        float x = ((ExtendViewport)mainStage.getViewport()).getMinWorldWidth() / 2f;
+        float y = ((ExtendViewport)mainStage.getViewport()).getMinWorldHeight() / 2f;
+        player = new Player(x, y, mainStage);
+        System.out.println(mainStage.getViewport().getWorldWidth());
         // loadActorsFromMap();
     }
 
