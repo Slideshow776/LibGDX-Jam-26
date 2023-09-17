@@ -49,7 +49,6 @@ public class LevelScreen extends BaseScreen {
 
     @Override
     public void update(float delta) {
-
         // Set mouse and player position for use in calculations.
         source.set(player.getX(), player.getY());
         float mouseX = Gdx.input.getX();
@@ -69,6 +68,7 @@ public class LevelScreen extends BaseScreen {
             player.setMotionAngle(0f);
             player.setSpeed(0);
         }
+        player.act(delta);  // Update player cooldowns.
         player.applyPhysics(delta);
     }
 

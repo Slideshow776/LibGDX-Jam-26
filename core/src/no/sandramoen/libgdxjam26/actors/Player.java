@@ -13,6 +13,16 @@ public class Player extends BaseActor {
     private BaseActor collisionBox;
 
     public static int MOVESPEED = 16;
+    public int attackPower = 2;
+
+    public enum State {
+        IDLE,
+        MOVING,
+        ATTACKING,
+        ;
+    }
+    public State state = State.IDLE;
+    private float attackCooldown = 0f;
 
     public Player(float x, float y, Stage stage) {
         super(x, y, stage);
@@ -40,6 +50,15 @@ public class Player extends BaseActor {
 
     public void die() {
         isDead = true;
+    }
+
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+
+        if (state != State.ATTACKING) {
+            if (this.attackCooldown > 0) this.attackCooldown -= delta;
+        }
     }
 
 }
