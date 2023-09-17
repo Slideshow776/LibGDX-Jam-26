@@ -2,6 +2,7 @@ package no.sandramoen.libgdxjam26.screens.gameplay;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -28,12 +29,14 @@ public class LevelScreen extends BaseScreen {
     private TiledMapActor tilemap;
 
     public LevelScreen(TiledMap tiledMap) {
-
         currentMap = tiledMap;
         this.tilemap = new TiledMapActor(currentMap, mainStage);
 
         initializeActors();
         initializeGUI();
+
+        OrthographicCamera test = (OrthographicCamera) mainStage.getCamera();
+        System.out.println(test.zoom);
     }
 
     @Override
@@ -58,7 +61,8 @@ public class LevelScreen extends BaseScreen {
     private void initializeActors() {
         impassables = new Array();
         new Background(0, 0, mainStage);
-        loadActorsFromMap();
+        player = new Player(0, 0, mainStage);
+        // loadActorsFromMap();
     }
 
     private void loadActorsFromMap() {

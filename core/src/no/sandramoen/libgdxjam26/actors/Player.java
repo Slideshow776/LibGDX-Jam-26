@@ -14,9 +14,7 @@ public class Player extends BaseActor {
 
     public Player(float x, float y, Stage stage) {
         super(x, y, stage);
-        loadImage("whitePixel");
-        setColor(Color.MAGENTA);
-        setSize(2, 4);
+        loadImage("characters/player/idle1");
         setBoundaryRectangle();
 
         collisionBox = new BaseActor(0, 0, stage);
