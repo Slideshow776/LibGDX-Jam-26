@@ -3,6 +3,9 @@ package no.sandramoen.libgdxjam26.actors.enemy;
 import no.sandramoen.libgdxjam26.actors.Player;
 import no.sandramoen.libgdxjam26.actors.map.TiledMapActor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The EnemySpawnSystem class handles the spawning of enemies in the game world
  * based on a set time interval. Enemies are spawned randomly within the game map.
@@ -12,9 +15,10 @@ public class EnemySpawnSystem {
     // Fields to store references to the player and the game map.
     private final Player player;
     private final TiledMapActor tiledMapActor;
+    private final ArrayList<Enemy> enemies;
 
     // The time interval (in seconds) between enemy spawns.
-    private float spawnTime = 5;
+    private float spawnTime = 3;
 
     // A timer to keep track of the time elapsed since the last enemy spawn.
     private float surpassed;
@@ -28,6 +32,7 @@ public class EnemySpawnSystem {
     public EnemySpawnSystem(TiledMapActor tiledMapActor, Player player) {
         this.player = player;
         this.tiledMapActor = tiledMapActor;
+        this.enemies = new ArrayList<>();
     }
 
     /**
@@ -61,9 +66,16 @@ public class EnemySpawnSystem {
 
         // Create a new enemy instance and add it to the game stage.
         Enemy enemy = new Enemy(data, randomX, randomY, player.getStage());
+        enemies.add(enemy);
+        enemy.setIndex(enemies.indexOf(enemy));
+
         player.getStage().addActor(enemy);
 
         // Initiate the enemy to begin following the player character.
         enemy.beginFollowingPlayer(player);
+    }
+
+    public List<Enemy> getEnemies() {
+        return enemies;
     }
 }
