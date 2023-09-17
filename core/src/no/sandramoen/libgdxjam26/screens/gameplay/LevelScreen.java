@@ -1,24 +1,34 @@
 package no.sandramoen.libgdxjam26.screens.gameplay;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.github.tommyettinger.textra.TypingLabel;
 import no.sandramoen.libgdxjam26.actors.Player;
+import no.sandramoen.libgdxjam26.actors.enemy.Enemy;
 import no.sandramoen.libgdxjam26.actors.enemy.EnemySpawnSystem;
+import no.sandramoen.libgdxjam26.actors.enemy.EnemyState;
 import no.sandramoen.libgdxjam26.actors.map.Background;
 import no.sandramoen.libgdxjam26.actors.map.ImpassableTerrain;
 import no.sandramoen.libgdxjam26.actors.map.TiledMapActor;
 import no.sandramoen.libgdxjam26.screens.BaseScreen;
 import no.sandramoen.libgdxjam26.screens.shell.LevelSelectScreen;
+import no.sandramoen.libgdxjam26.ui.ExperienceBar;
 import no.sandramoen.libgdxjam26.ui.QuitWindow;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class LevelScreen extends BaseScreen {
     private TiledMap currentMap;
@@ -34,6 +44,9 @@ public class LevelScreen extends BaseScreen {
 
     private QuitWindow quitWindow;
     private EnemySpawnSystem enemySpawnSystem;
+    private ExperienceBar experienceBar;
+    private Label levelLabel;
+    private Label experienceLabel;
 
     public LevelScreen(TiledMap tiledMap) {
         currentMap = tiledMap;
@@ -54,6 +67,29 @@ public class LevelScreen extends BaseScreen {
     @Override
     public void update(float delta) {
         this.enemySpawnSystem.update(delta);
+
+        if (slowdown >= 1) {
+            Iterator<Enemy> it = this.enemySpawnSystem.getEnemies().iterator();
+            while (it.hasNext()) {
+                Enemy enemy = it.next();
+                if (enemy == null) continue;
+
+                if (enemy.getState().equals(EnemyState.DEAD)) {
+                    int previousLevel = player.getLevel();
+                    player.addExperience(enemy.getData().getBaseExperience());
+                    it.remove();
+                    enemy.remove();
+                    if (player.getLevel() > previousLevel) {
+                        experienceBar.setRange(0, player.getExperienceForCurrentLevel());
+                        experienceBar.setValue(player.getExperience());
+                        levelLabel.setText("" + player.getLevel());
+                    }
+                    experienceLabel.setText((int) player.getExperience() + " / " + (int) player.getExperienceForCurrentLevel());
+                    experienceBar.setAnimateDuration(0.25f);
+                    experienceBar.setValue(player.getExperience());
+                }
+            }
+        }
 
         // Set mouse and player position for use in calculations.
         source.set(player.getX(), player.getY());
@@ -87,13 +123,51 @@ public class LevelScreen extends BaseScreen {
         return super.keyDown(keycode);
     }
 
-    private void initializeActors() {
-        impassables = new Array();
-        new Background(0, 0, mainStage);
-        player = new Player(0, 0, mainStage);
-        quitWindow = new QuitWindow();
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        if (button == Input.Buttons.LEFT) {
+            player.getActions().clear();
 
-        uiStage.addActor(quitWindow);
+            Vector2 loc = mainStage.screenToStageCoordinates(new Vector2(screenX, screenY));
+
+            MoveToAction moveAction = new MoveToAction() {
+                final List<Enemy> enemies = new ArrayList<>(enemySpawnSystem.getEnemies());
+
+                @Override
+                protected void update(float percentage) {
+                    super.update(percentage);
+                    Iterator<Enemy> it = enemies.iterator();
+                    while (it.hasNext()) {
+                        Enemy enemy = it.next();
+                        if (enemy == null) continue;
+                        if (enemy.getState().equals(EnemyState.DEAD)) continue;
+                        Rectangle enemyBounds = new Rectangle(enemy.getX(), enemy.getY(), enemy.getWidth(), enemy.getHeight());
+                        Rectangle playerBounds = new Rectangle(player.getX(), player.getY(), player.getWidth(), player.getHeight());
+                        if (enemyBounds.overlaps(playerBounds) || playerBounds.overlaps(enemyBounds)) {
+                            enemy.hit(50);
+                            it.remove();
+
+                            if (enemy.getState().equals(EnemyState.DEAD)) {
+                                //Slow down the game
+                                slowdown = 0.01f;
+                                slowdownDuration = 0.5f;
+
+                            }
+                        }
+                    }
+                }
+            };
+            moveAction.setDuration(0.1f);
+            moveAction.setPosition(loc.x, loc.y);
+            player.addAction(moveAction);
+        }
+        return super.touchDown(screenX, screenY, pointer, button);
+    }
+
+    private void initializeActors() {
+        this.impassables = new Array();
+        new Background(0, 0, mainStage);
+        this.player = new Player(0, 0, mainStage);
         // loadActorsFromMap();
     }
 
@@ -105,6 +179,20 @@ public class LevelScreen extends BaseScreen {
     private void initializeGUI() {
         topLabel = new TypingLabel("{SLOWER}G A M E   O V E R !", new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-20", BitmapFont.class), null));
         topLabel.setAlignment(Align.top);
+
+        this.quitWindow = new QuitWindow();
+        this.experienceBar = new ExperienceBar(player.getExperienceForCurrentLevel());
+        this.levelLabel = new Label("" + player.getLevel(), BaseGame.mySkin);
+        this.experienceLabel = new Label((int) player.getExperience() + " / " + (int) player.getExperienceForCurrentLevel(), BaseGame.mySkin);
+        this.experienceBar.setSize(300, 15);
+        this.experienceBar.setPosition((Gdx.graphics.getWidth() - experienceBar.getWidth()) / 2, 35);
+        this.levelLabel.setPosition((Gdx.graphics.getWidth() - levelLabel.getWidth()) / 2, experienceBar.getY() + experienceBar.getHeight() + levelLabel.getHeight());
+        this.experienceLabel.setPosition(experienceBar.getX() + (experienceBar.getWidth() - experienceLabel.getWidth()) / 2, experienceBar.getY() + (experienceBar.getHeight() - experienceLabel.getHeight()) / 2);
+
+        uiStage.addActor(quitWindow);
+        uiStage.addActor(experienceBar);
+        uiStage.addActor(levelLabel);
+        uiStage.addActor(experienceLabel);
 
         uiTable.defaults().padTop(Gdx.graphics.getHeight() * .02f);
         uiTable.add(topLabel).height(topLabel.getPrefHeight() * 1.5f).expandY().top().row();

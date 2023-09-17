@@ -1,32 +1,30 @@
 package no.sandramoen.libgdxjam26.actors;
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
-
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Align;
 import no.sandramoen.libgdxjam26.utils.BaseActor;
-import no.sandramoen.libgdxjam26.utils.BaseGame;
+
+import java.util.HashMap;
 
 public class Player extends BaseActor {
-    public static final float MOVE_SPEED = 5;
+    public static final float MOVE_SPEED = 25;
+    private static final HashMap<Integer, Float> EXPERIENCE_MAP = new HashMap<>(); // Experience required depending on the level
+
+    static {
+        // Pre-load the experience map
+        float baseExperience = 200; // starting experience at level 1
+        for (int level = 1; level <= 100; level++) { // from level 1 to 100
+            EXPERIENCE_MAP.put(level, baseExperience + (100 * (level - 1)));
+        }
+    }
+
     public boolean isDead;
     public boolean isMoving;
-
-    private final float SPEED = .035f;
-    private BaseActor collisionBox;
-
-    public static int MOVESPEED = 16;
     public int attackPower = 2;
-
-    public enum State {
-        IDLE,
-        MOVING,
-        ATTACKING,
-        ;
-    }
     public State state = State.IDLE;
+    private BaseActor collisionBox;
     private float attackCooldown = 0f;
+    private int level = 1;
+    private float experience;
 
     public Player(float x, float y, Stage stage) {
         super(x, y, stage);
@@ -63,6 +61,34 @@ public class Player extends BaseActor {
         if (state != State.ATTACKING) {
             if (this.attackCooldown > 0) this.attackCooldown -= delta;
         }
+    }
+
+    public void addExperience(float experience) {
+        this.experience += experience;
+        if (this.experience >= getExperienceForCurrentLevel()) {
+            this.experience -= getExperienceForCurrentLevel();
+            this.level++;
+            if (level >= 100)
+                level = 100;
+        }
+    }
+
+    public float getExperience() {
+        return experience;
+    }
+
+    public float getExperienceForCurrentLevel() {
+        return EXPERIENCE_MAP.get(level);
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public enum State {
+        IDLE,
+        MOVING,
+        ATTACKING;
     }
 
 }

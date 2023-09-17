@@ -16,6 +16,8 @@ public abstract class BaseScreen implements Screen, InputProcessor, ControllerLi
     protected Stage mainStage;
     protected Stage uiStage;
     protected Table uiTable;
+    protected float slowdown = 1f;
+    protected float slowdownDuration = 1f;
     private boolean pause;
 
     public BaseScreen() {
@@ -37,6 +39,15 @@ public abstract class BaseScreen implements Screen, InputProcessor, ControllerLi
 
     @Override
     public void render(float delta) {
+        if (slowdown > 0 && slowdown < 1) {
+            delta = delta * slowdown;
+            slowdownDuration -= Gdx.graphics.getDeltaTime();
+            if (slowdownDuration <= 0) {
+                slowdown = 1f;
+                slowdownDuration = 1f;
+            }
+        }
+
         uiStage.act(delta);
         if (!pause) {
             mainStage.act(delta);
