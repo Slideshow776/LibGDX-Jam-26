@@ -16,7 +16,6 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 
-import no.sandramoen.libgdxjam26.screens.BaseScreen;
 import no.sandramoen.libgdxjam26.screens.gameplay.LevelScreen;
 
 public abstract class BaseGame extends Game implements AssetErrorListener {
