@@ -107,7 +107,6 @@ public class LevelScreen extends BaseScreen {
                     int previousLevel = player.getLevel();
                     player.addExperience(enemy.getData().getBaseExperience());
                     it.remove();
-                    enemy.remove();
                     if (player.getLevel() > previousLevel) {
                         experienceBar.setRange(0, player.getExperienceForCurrentLevel());
                         experienceBar.setValue(player.getExperience());
