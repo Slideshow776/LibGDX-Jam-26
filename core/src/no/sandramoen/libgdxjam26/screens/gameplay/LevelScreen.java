@@ -56,6 +56,7 @@ public class LevelScreen extends BaseScreen {
     private Vector2 source = new Vector2(), target = new Vector2();
 
     public LevelScreen() {
+        BaseGame.levelScreen = this;
 
         initializeActors();
         initializeGUI();
