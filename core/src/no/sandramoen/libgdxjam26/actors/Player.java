@@ -1,10 +1,15 @@
 package no.sandramoen.libgdxjam26.actors;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
+
 import no.sandramoen.libgdxjam26.utils.BaseActor;
+import no.sandramoen.libgdxjam26.utils.BaseGame;
 
 import java.util.HashMap;
 
@@ -34,7 +39,7 @@ public class Player extends BaseActor {
 
     public Player(float x, float y, Stage stage) {
         super(x, y, stage);
-        loadImage("characters/player/idle1");
+        loadAnimation();
         setBoundaryRectangle();
 
         collisionBox = new BaseActor(0, 0, stage);
@@ -44,7 +49,7 @@ public class Player extends BaseActor {
                 getHeight() / 3 - collisionBox.getHeight() / 2
         );
         collisionBox.setBoundaryRectangle();
-        // collisionBox.setDebug(true);
+        collisionBox.setDebug(true);
         addActor(collisionBox);
     }
 
@@ -58,6 +63,14 @@ public class Player extends BaseActor {
 
     public void die() {
         isDead = true;
+    }
+
+    private void loadAnimation() {
+        Array<TextureAtlas.AtlasRegion> animationImages = new Array<>();
+        animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/walking1"));
+        animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/walking2"));
+        animation = new Animation(.2f, animationImages, Animation.PlayMode.LOOP);
+        setAnimation(animation);
     }
 
     private void handleMovement(float delta) {
