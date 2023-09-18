@@ -37,7 +37,6 @@ public class Enemy extends BaseActor {
     private float chatDuration = 1; // Duration for displaying chat messages
     private float chatDelay = 0; // Delay between chat messages
     private float currentHealth; // Current health of the enemy
-
     private final BaseActor attackCollisionBox;
     private float attackCooldown = 0f;
 
@@ -61,7 +60,6 @@ public class Enemy extends BaseActor {
 
         // Initialize enemy-specific attributes
         this.data = data;
-        this.attackInterval = data.getAttackSpeed();
         this.currentHealth = data.getBaseHealth();
         this.playerPosition = new Vector2();
         this.enemyPosition = new Vector2();
@@ -143,18 +141,6 @@ public class Enemy extends BaseActor {
         if (following != null && state != EnemyState.DEAD) {
             playerPosition.set(following.getX(Align.center), following.getY(Align.center));
             enemyPosition.set(this.getX(), this.getY());
-
-            if (state.equals(EnemyState.ATTACK)) {
-                attackDuration += delta;
-
-                if (attackDuration >= attackInterval) {
-                    attackDuration = 0;
-
-                    if (playerPosition.dst(enemyPosition) <= data.getAttackRange()) {
-                        attackPlayer(following);
-                    }
-                }
-            }
 
             // Check if the player is out of attack range, and if so, move towards the player
             if (playerPosition.dst(enemyPosition) > data.getAttackRange()) {
