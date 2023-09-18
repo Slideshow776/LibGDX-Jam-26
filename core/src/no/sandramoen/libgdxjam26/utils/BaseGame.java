@@ -10,11 +10,10 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 
@@ -35,12 +34,6 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
 
     public static String defaultShader;
     public static String shockwaveShader;
-
-    public static Array<TiledMap> maps;
-    public static TiledMap testMap;
-    public static TiledMap level1;
-    public static TiledMap level2;
-    public static TiledMap currentLevel;
 
     public static Sound click1Sound;
     public static Sound hoverOverEnterSound;
@@ -67,10 +60,15 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         Gdx.input.setInputProcessor(new InputMultiplexer());
         loadGameState();
         initializeUI();
+        setCursor();
         assetManager();
+    }
 
-        maps = new Array<>();
-        maps.add(testMap, level1, level2);
+    public void setCursor() {
+        Pixmap pixmap = new Pixmap(Gdx.files.internal("images/included/cursor.png"));
+        Cursor cursor = Gdx.graphics.newCursor(pixmap, 0, 0);
+        Gdx.graphics.setCursor(cursor);
+        pixmap.dispose();
     }
 
     public static void setActiveScreen(BaseScreen screen) {
@@ -128,12 +126,6 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         assetManager.load("audio/sound/click1.wav", Sound.class);
         assetManager.load("audio/sound/hoverOverEnter.wav", Sound.class);
 
-        // tiled maps
-        assetManager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
-        assetManager.load("maps/test.tmx", TiledMap.class);
-        assetManager.load("maps/level1.tmx", TiledMap.class);
-        assetManager.load("maps/level2.tmx", TiledMap.class);
-
         assetManager.finishLoading();
 
         // shaders
@@ -146,11 +138,6 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         // sound
         click1Sound = assetManager.get("audio/sound/click1.wav", Sound.class);
         hoverOverEnterSound = assetManager.get("audio/sound/hoverOverEnter.wav", Sound.class);
-
-        // tiled maps
-        testMap = assetManager.get("maps/test.tmx", TiledMap.class);
-        level1 = assetManager.get("maps/level1.tmx", TiledMap.class);
-        level2 = assetManager.get("maps/level2.tmx", TiledMap.class);
 
         textureAtlas = assetManager.get("images/included/packed/images.pack.atlas");
         GameUtils.printLoadingTime(getClass().getSimpleName(), "Assetmanager", startTime);

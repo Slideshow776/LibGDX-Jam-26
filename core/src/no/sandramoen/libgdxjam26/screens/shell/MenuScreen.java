@@ -135,7 +135,7 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void start() {
-        BaseGame.setActiveScreen(new LevelScreen(BaseGame.testMap));
+        BaseGame.setActiveScreen(new LevelScreen());
     }
 
     private SequenceAction exitGameWithSoundAndDelay() {
