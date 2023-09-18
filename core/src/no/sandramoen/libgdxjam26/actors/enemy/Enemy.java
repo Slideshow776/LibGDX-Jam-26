@@ -76,7 +76,6 @@ public class Enemy extends BaseActor {
     public void act(float delta) {
         super.act(delta);
 
-
         // Update chat delay and duration
         chatDelay += delta;
         chatDuration -= delta;

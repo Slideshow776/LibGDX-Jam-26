@@ -6,9 +6,13 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
@@ -27,6 +31,7 @@ import no.sandramoen.libgdxjam26.ui.QuitWindow;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -56,7 +61,6 @@ public class LevelScreen extends BaseScreen {
         initializeGUI();
 
         OrthographicCamera test = (OrthographicCamera) mainStage.getCamera();
-        System.out.println(test.zoom);
         this.enemySpawnSystem = new EnemySpawnSystem(tilemap, player);
     }
 
@@ -64,8 +68,32 @@ public class LevelScreen extends BaseScreen {
     public void initialize() {
     }
 
+    private final Comparator<Actor> ySortComparator = Comparator.comparing((Actor actor) -> -actor.getY() );
+
+    // (sheerst) NOTE: could move this to a WidgetGroup.
+    private void sortActors() {
+        Array<Actor> actors = mainStage.getActors();
+        Array<Actor> players = new Array<Actor>();
+        Array<Actor> enemies = new Array<Actor>();
+        for (Actor actor : actors) {
+            if (actor instanceof Player) players.add(actor);
+            else if (actor instanceof Enemy) enemies.add(actor);
+        }
+        players.sort(ySortComparator);
+        enemies.sort(ySortComparator);
+        actors.clear();
+
+        // (sheerst) NOTE: could make a more formal layer system here.
+        actors.addAll(enemies);
+        actors.addAll(players);
+    }
+
     @Override
     public void update(float delta) {
+
+        // Sort actors by layer.
+        sortActors();
+
         this.enemySpawnSystem.update(delta);
 
         if (slowdown >= 1) {
@@ -91,25 +119,28 @@ public class LevelScreen extends BaseScreen {
             }
         }
 
-        // Set mouse and player position for use in calculations.
-        source.set(player.getX(), player.getY());
-        float mouseX = Gdx.input.getX();
-        float mouseY = Gdx.input.getY();
-        target.set(mouseX, mouseY);
-        mainStage.screenToStageCoordinates(target);
+        if (player.state != Player.State.LUNGING) {
+            // (sheerst) TODO: move this to player.update() or player.act()
+            // Set mouse and player position for use in calculations.
+            source.set(player.getX(Align.center), player.getY(Align.center));
+            float mouseX = Gdx.input.getX();
+            float mouseY = Gdx.input.getY();
+            target.set(mouseX, mouseY);
+            mainStage.screenToStageCoordinates(target);
 
-        if (target.dst2(source) > 1e-1) {
-            // Move player towards cursor.
-            player.isMoving = true;
-            float angleDeg = target.sub(source).angleDeg();
-            player.setMotionAngle(angleDeg);
-            player.setSpeed(Player.MOVE_SPEED);
-        } else {
-            player.isMoving = false;
-            player.setMotionAngle(0f);
-            player.setSpeed(0);
+            if (target.dst2(source) > 1e-1) {
+                // Move player towards cursor.
+                player.isMoving = true;
+                float angleDeg = target.sub(source).angleDeg();
+                player.setMotionAngle(angleDeg);
+                player.setSpeed(Player.MOVE_SPEED);
+            } else {
+                player.isMoving = false;
+                player.setMotionAngle(0f);
+                player.setSpeed(0);
+            }
+            player.applyPhysics(delta);
         }
-        player.applyPhysics(delta);
     }
 
     @Override
@@ -125,10 +156,13 @@ public class LevelScreen extends BaseScreen {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (button == Input.Buttons.LEFT) {
+        if (player.state == Player.State.IDLE && button == Input.Buttons.LEFT) {
             player.getActions().clear();
 
-            Vector2 loc = mainStage.screenToStageCoordinates(new Vector2(screenX, screenY));
+            // Get normalized Vector between player and mouse.
+            target.set(mainStage.screenToStageCoordinates(new Vector2(screenX, screenY)));
+            source.set(player.getX(), player.getY());  // No idea why but Align.center breaks this.
+            Vector2 lungeVector = target.sub(source).nor().scl(player.LUNGE_DISTANCE);
 
             MoveToAction moveAction = new MoveToAction() {
                 final List<Enemy> enemies = new ArrayList<>(enemySpawnSystem.getEnemies());
@@ -136,6 +170,7 @@ public class LevelScreen extends BaseScreen {
                 @Override
                 protected void update(float percentage) {
                     super.update(percentage);
+
                     Iterator<Enemy> it = enemies.iterator();
                     while (it.hasNext()) {
                         Enemy enemy = it.next();
@@ -145,21 +180,28 @@ public class LevelScreen extends BaseScreen {
                         Rectangle playerBounds = new Rectangle(player.getX(), player.getY(), player.getWidth(), player.getHeight());
                         if (enemyBounds.overlaps(playerBounds) || playerBounds.overlaps(enemyBounds)) {
                             enemy.hit(50);
-                            it.remove();
 
                             if (enemy.getState().equals(EnemyState.DEAD)) {
                                 //Slow down the game
-                                slowdown = 0.01f;
-                                slowdownDuration = 0.5f;
+                                slowdown = 0.1f;
+                                slowdownDuration = 0.9f;
 
                             }
                         }
                     }
                 }
             };
-            moveAction.setDuration(0.1f);
-            moveAction.setPosition(loc.x, loc.y);
-            player.addAction(moveAction);
+            moveAction.setDuration(0.6f);
+            moveAction.setInterpolation(Interpolation.exp10);
+            Vector2 finalPosition = source.add(lungeVector);
+            moveAction.setPosition(finalPosition.x, finalPosition.y);
+            SequenceAction sequence = Actions.sequence(
+                moveAction,
+                Actions.delay(0.1f),
+                Actions.run( () -> player.state = Player.State.IDLE)
+            );
+            player.addAction(sequence);
+            player.state = Player.State.LUNGING;
         }
         return super.touchDown(screenX, screenY, pointer, button);
     }

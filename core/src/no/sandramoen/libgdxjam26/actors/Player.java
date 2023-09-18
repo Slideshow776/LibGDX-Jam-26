@@ -6,7 +6,8 @@ import no.sandramoen.libgdxjam26.utils.BaseActor;
 import java.util.HashMap;
 
 public class Player extends BaseActor {
-    public static final float MOVE_SPEED = 25;
+    public static final float MOVE_SPEED = 18;
+    public static final float LUNGE_DISTANCE = 18;
     private static final HashMap<Integer, Float> EXPERIENCE_MAP = new HashMap<>(); // Experience required depending on the level
 
     static {
@@ -58,7 +59,7 @@ public class Player extends BaseActor {
     public void act(float delta) {
         super.act(delta);
 
-        if (state != State.ATTACKING) {
+        if (state != State.LUNGING) {
             if (this.attackCooldown > 0) this.attackCooldown -= delta;
         }
     }
@@ -88,7 +89,7 @@ public class Player extends BaseActor {
     public enum State {
         IDLE,
         MOVING,
-        ATTACKING;
+        LUNGING;
     }
 
 }
