@@ -3,15 +3,11 @@ package no.sandramoen.libgdxjam26.screens.gameplay;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
@@ -29,32 +25,28 @@ import no.sandramoen.libgdxjam26.actors.enemy.EnemySpawnSystem;
 import no.sandramoen.libgdxjam26.actors.enemy.EnemyState;
 import no.sandramoen.libgdxjam26.actors.map.Background;
 import no.sandramoen.libgdxjam26.actors.map.ImpassableTerrain;
-import no.sandramoen.libgdxjam26.actors.particles.ParticleActor;
-import no.sandramoen.libgdxjam26.utils.BaseScreen;
 import no.sandramoen.libgdxjam26.ui.ExperienceBar;
+import no.sandramoen.libgdxjam26.ui.PlayerHearts;
 import no.sandramoen.libgdxjam26.ui.QuitWindow;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
+import no.sandramoen.libgdxjam26.utils.BaseScreen;
 import no.sandramoen.libgdxjam26.utils.GameUtils;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 
 public class LevelScreen extends BaseScreen {
+    private final Comparator<Actor> ySortComparator = Comparator.comparing((Actor actor) -> -actor.getY());
     private TiledMap currentMap;
-
     private Array<ImpassableTerrain> impassables;
     private Player player;
-
     private TypingLabel topLabel;
-
     private QuitWindow quitWindow;
     private EnemySpawnSystem enemySpawnSystem;
     private ExperienceBar experienceBar;
     private Label levelLabel;
     private Label experienceLabel;
-
+    private PlayerHearts hearts;
     private Vector2 source = new Vector2(), target = new Vector2();
 
     public LevelScreen() {
@@ -74,8 +66,6 @@ public class LevelScreen extends BaseScreen {
     @Override
     public void initialize() {
     }
-
-    private final Comparator<Actor> ySortComparator = Comparator.comparing((Actor actor) -> -actor.getY() );
 
     // (sheerst) NOTE: could move this to a WidgetGroup.
     private void sortActors() {
@@ -142,7 +132,7 @@ public class LevelScreen extends BaseScreen {
             SequenceAction sequence = Actions.sequence(
                     moveAction,
                     Actions.delay(0.1f),
-                    Actions.run( () -> player.state = Player.State.IDLE)
+                    Actions.run(() -> player.state = Player.State.IDLE)
             );
             player.addAction(sequence);
             player.state = Player.State.LUNGING;
@@ -200,11 +190,14 @@ public class LevelScreen extends BaseScreen {
         this.experienceBar.setPosition((Gdx.graphics.getWidth() - experienceBar.getWidth()) / 2, 35);
         this.levelLabel.setPosition((Gdx.graphics.getWidth() - levelLabel.getWidth()) / 2, experienceBar.getY() + experienceBar.getHeight() + levelLabel.getHeight());
         this.experienceLabel.setPosition(experienceBar.getX() + (experienceBar.getWidth() - experienceLabel.getWidth()) / 2, experienceBar.getY() + (experienceBar.getHeight() - experienceLabel.getHeight()) / 2);
+        this.hearts = new PlayerHearts();
+        this.hearts.setPosition(Gdx.graphics.getWidth() - hearts.getWidth() - 25, Gdx.graphics.getHeight() - hearts.getHeight() - 25);
 
         uiStage.addActor(quitWindow);
         uiStage.addActor(experienceBar);
         uiStage.addActor(levelLabel);
         uiStage.addActor(experienceLabel);
+        uiStage.addActor(hearts);
 
         uiTable.defaults().padTop(Gdx.graphics.getHeight() * .02f);
         uiTable.add(topLabel).height(topLabel.getPrefHeight() * 1.5f).expandY().top().row();
