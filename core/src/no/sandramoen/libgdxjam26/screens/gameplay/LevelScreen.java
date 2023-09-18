@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -27,6 +28,7 @@ import no.sandramoen.libgdxjam26.utils.BaseScreen;
 import no.sandramoen.libgdxjam26.ui.ExperienceBar;
 import no.sandramoen.libgdxjam26.ui.QuitWindow;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
+import no.sandramoen.libgdxjam26.utils.GameUtils;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -177,6 +179,7 @@ public class LevelScreen extends BaseScreen {
                             enemy.hit(50);
 
                             if (enemy.getState().equals(EnemyState.DEAD)) {
+                                GameUtils.playWithRandomPitch(BaseGame.kill0Sound, .9f, 1.1f);
                                 //Slow down the game
                                 slowdown = 0.05f;
                                 slowdownDuration = 0.1f;
@@ -197,6 +200,7 @@ public class LevelScreen extends BaseScreen {
             );
             player.addAction(sequence);
             player.state = Player.State.LUNGING;
+            GameUtils.playWithRandomPitch(BaseGame.miss0Sound, .9f, 1.1f);
         }
         return super.touchDown(screenX, screenY, pointer, button);
     }

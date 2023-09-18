@@ -2,6 +2,7 @@ package no.sandramoen.libgdxjam26.utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
@@ -46,6 +47,13 @@ public class GameUtils {
                 widget.setColor(Color.WHITE);
             }
         });
+    }
+
+    public static void playWithRandomPitch(Sound sound, float min, float max) {
+        if ((min < 0.5f || min >2.0f) || (max < 0.5f || max >2.0f)) {
+            Gdx.app.error(GameUtils.class.getSimpleName(), "Error: min and max has to be between 0.5 and 2.0");
+        }
+        sound.play(BaseGame.soundVolume, MathUtils.random(min, max), 0f);
     }
 
     public static void playLoopingMusic(Music music) {
