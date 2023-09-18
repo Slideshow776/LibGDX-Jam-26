@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.github.tommyettinger.textra.TypingLabel;
 
-import no.sandramoen.libgdxjam26.screens.BaseScreen;
+import no.sandramoen.libgdxjam26.utils.BaseScreen;
 import no.sandramoen.libgdxjam26.ui.BaseSlider;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
 import no.sandramoen.libgdxjam26.utils.GameUtils;

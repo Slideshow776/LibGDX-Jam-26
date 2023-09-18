@@ -1,7 +1,6 @@
 package no.sandramoen.libgdxjam26.actors.enemy;
 
 import no.sandramoen.libgdxjam26.actors.Player;
-import no.sandramoen.libgdxjam26.actors.map.TiledMapActor;
 
 import java.util.ArrayList;
 
@@ -13,7 +12,6 @@ public class EnemySpawnSystem {
 
     // Fields to store references to the player and the game map.
     private final Player player;
-    private final TiledMapActor tiledMapActor;
     private final ArrayList<Enemy> enemies;
 
     // The time interval (in seconds) between enemy spawns.
@@ -25,12 +23,10 @@ public class EnemySpawnSystem {
     /**
      * Constructor for the EnemySpawnSystem class.
      *
-     * @param tiledMapActor The TiledMapActor representing the game map.
      * @param player        The player character in the game.
      */
-    public EnemySpawnSystem(TiledMapActor tiledMapActor, Player player) {
+    public EnemySpawnSystem(Player player) {
         this.player = player;
-        this.tiledMapActor = tiledMapActor;
         this.enemies = new ArrayList<>();
     }
 
@@ -60,8 +56,8 @@ public class EnemySpawnSystem {
         EnemyData data = EnemyData.values()[randomIndex];
 
         // Generate random X and Y coordinates within the game map bounds.
-        int randomX = (int) (Math.random() * TiledMapActor.mapWidth);
-        int randomY = (int) (Math.random() * TiledMapActor.mapHeight);
+        int randomX = (int) (Math.random() * player.getStage().getViewport().getWorldWidth());
+        int randomY = (int) (Math.random() * player.getStage().getViewport().getWorldHeight());
 
         // Create a new enemy instance and add it to the game stage.
         Enemy enemy = new Enemy(data, randomX, randomY, player.getStage());

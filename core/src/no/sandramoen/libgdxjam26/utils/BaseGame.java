@@ -10,14 +10,17 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Cursor;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 
-import no.sandramoen.libgdxjam26.screens.BaseScreen;
 import no.sandramoen.libgdxjam26.screens.gameplay.LevelScreen;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class BaseGame extends Game implements AssetErrorListener {
 
@@ -32,16 +35,13 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
     public static String defaultShader;
     public static String shockwaveShader;
 
-    public static Array<TiledMap> maps;
-    public static TiledMap testMap;
-    public static TiledMap level1;
-    public static TiledMap level2;
-    public static TiledMap currentLevel;
-
     public static Sound click1Sound;
     public static Sound hoverOverEnterSound;
+    public static Sound kill0Sound;
+    public static Sound miss0Sound;
 
     public static Music menuMusic;
+    public static Music levelMusic;
 
     // game state
     public static Preferences preferences;
@@ -53,6 +53,8 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
     public static float musicVolume = .1f;
     public static final float UNIT_SCALE = .125f;
 
+    private final Map<String, Pixmap> pixmapCache = new HashMap<String, Pixmap>();
+
     public BaseGame() {
         game = this;
     }
@@ -61,10 +63,15 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         Gdx.input.setInputProcessor(new InputMultiplexer());
         loadGameState();
         initializeUI();
+        setCursor();
         assetManager();
+    }
 
-        maps = new Array<>();
-        maps.add(testMap, level1, level2);
+    public void setCursor() {
+        Pixmap pixmap = new Pixmap(Gdx.files.internal("images/included/cursor.png"));
+        Cursor cursor = Gdx.graphics.newCursor(pixmap, 0, 0);
+        Gdx.graphics.setCursor(cursor);
+        pixmap.dispose();
     }
 
     public static void setActiveScreen(BaseScreen screen) {
@@ -116,17 +123,14 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         assetManager.load(new AssetDescriptor("shaders/shockwave.fs", Text.class, new TextLoader.TextParameter()));
 
         // music
-        // assetManager.load("audio/music/398937__mypantsfelldown__metal-footsteps.wav", Music.class);
+        assetManager.load("audio/music/575803__peepee321__doom-loop-90-bpm.ogg", Music.class);
+        assetManager.load("audio/music/672783__bertsz__cyberpunk_metal.ogg", Music.class);
 
         // sound
         assetManager.load("audio/sound/click1.wav", Sound.class);
         assetManager.load("audio/sound/hoverOverEnter.wav", Sound.class);
-
-        // tiled maps
-        assetManager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
-        assetManager.load("maps/test.tmx", TiledMap.class);
-        assetManager.load("maps/level1.tmx", TiledMap.class);
-        assetManager.load("maps/level2.tmx", TiledMap.class);
+        assetManager.load("audio/sound/player/kill0.ogg", Sound.class);
+        assetManager.load("audio/sound/player/miss0.ogg", Sound.class);
 
         assetManager.finishLoading();
 
@@ -135,18 +139,35 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         shockwaveShader = assetManager.get("shaders/shockwave.fs", Text.class).getString();
 
         // music
-        // menuMusic = assetManager.get("audio/music/587251__lagmusics__epic-and-aggressive-percussion.mp3", Music.class);
+        menuMusic = assetManager.get("audio/music/575803__peepee321__doom-loop-90-bpm.ogg", Music.class);
+        levelMusic = assetManager.get("audio/music/672783__bertsz__cyberpunk_metal.ogg", Music.class);
 
         // sound
         click1Sound = assetManager.get("audio/sound/click1.wav", Sound.class);
         hoverOverEnterSound = assetManager.get("audio/sound/hoverOverEnter.wav", Sound.class);
-
-        // tiled maps
-        testMap = assetManager.get("maps/test.tmx", TiledMap.class);
-        level1 = assetManager.get("maps/level1.tmx", TiledMap.class);
-        level2 = assetManager.get("maps/level2.tmx", TiledMap.class);
+        kill0Sound = assetManager.get("audio/sound/player/kill0.ogg", Sound.class);
+        miss0Sound = assetManager.get("audio/sound/player/miss0.ogg", Sound.class);
 
         textureAtlas = assetManager.get("images/included/packed/images.pack.atlas");
         GameUtils.printLoadingTime(getClass().getSimpleName(), "Assetmanager", startTime);
+
+        // TODO: particle effects.
+    }
+
+    /**
+     * Cache pixmaps and retrieve from the cache if already created.
+     */
+    protected Pixmap getPixmap(String name) {
+        if (!pixmapCache.containsKey(name)) {
+            TextureAtlas.AtlasRegion atlasRegion = BaseGame.textureAtlas.findRegion(name);
+            TextureData textureData = atlasRegion.getTexture().getTextureData();
+            if (!textureData.isPrepared()) {
+                textureData.prepare();
+            }
+            Pixmap newPixmap = new Pixmap(atlasRegion.getRegionWidth(), atlasRegion.getRegionHeight(), Pixmap.Format.RGBA8888);
+            newPixmap.drawPixmap(textureData.consumePixmap(), 0, 0);
+            pixmapCache.put(name, newPixmap);
+        }
+        return pixmapCache.get(name);
     }
 }

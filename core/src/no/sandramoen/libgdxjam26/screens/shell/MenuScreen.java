@@ -10,9 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.Align;
 
-import no.sandramoen.libgdxjam26.screens.BaseScreen;
+import no.sandramoen.libgdxjam26.utils.BaseScreen;
 import no.sandramoen.libgdxjam26.screens.gameplay.LevelScreen;
-import no.sandramoen.libgdxjam26.ui.MadeByLabel;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
 import no.sandramoen.libgdxjam26.utils.GameUtils;
 
@@ -40,9 +39,8 @@ public class MenuScreen extends BaseScreen {
         if (Gdx.input.isCursorCatched())
             Gdx.input.setCursorCatched(false);
 
-        /*BaseGame.levelFinishMusic.stop();
-        BaseGame.menuMusic.setVolume(BaseGame.musicVolume);
-        BaseGame.menuMusic.play();*/
+        BaseGame.levelMusic.stop();
+        GameUtils.playLoopingMusic(BaseGame.menuMusic);
     }
 
     @Override
@@ -136,7 +134,7 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void start() {
-        BaseGame.setActiveScreen(new LevelScreen(BaseGame.testMap));
+        BaseGame.setActiveScreen(new LevelScreen());
     }
 
     private SequenceAction exitGameWithSoundAndDelay() {

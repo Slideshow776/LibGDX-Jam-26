@@ -3,30 +3,39 @@ package no.sandramoen.libgdxjam26.screens.gameplay;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.github.tommyettinger.textra.TypingLabel;
+import no.sandramoen.libgdxjam26.actions.CenterCamera;
+import no.sandramoen.libgdxjam26.actions.LungeMoveTo;
 import no.sandramoen.libgdxjam26.actors.Player;
 import no.sandramoen.libgdxjam26.actors.enemy.Enemy;
 import no.sandramoen.libgdxjam26.actors.enemy.EnemySpawnSystem;
 import no.sandramoen.libgdxjam26.actors.enemy.EnemyState;
 import no.sandramoen.libgdxjam26.actors.map.Background;
 import no.sandramoen.libgdxjam26.actors.map.ImpassableTerrain;
-import no.sandramoen.libgdxjam26.actors.map.TiledMapActor;
-import no.sandramoen.libgdxjam26.screens.BaseScreen;
-import no.sandramoen.libgdxjam26.screens.shell.LevelSelectScreen;
+import no.sandramoen.libgdxjam26.utils.BaseScreen;
 import no.sandramoen.libgdxjam26.ui.ExperienceBar;
 import no.sandramoen.libgdxjam26.ui.QuitWindow;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
+import no.sandramoen.libgdxjam26.utils.GameUtils;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -38,36 +47,56 @@ public class LevelScreen extends BaseScreen {
 
     private TypingLabel topLabel;
 
-    private TiledMapActor tilemap;
-
-    private Vector2 source = new Vector2(), target = new Vector2();
-
     private QuitWindow quitWindow;
     private EnemySpawnSystem enemySpawnSystem;
     private ExperienceBar experienceBar;
     private Label levelLabel;
     private Label experienceLabel;
 
-    public LevelScreen(TiledMap tiledMap) {
-        currentMap = tiledMap;
-        this.tilemap = new TiledMapActor(currentMap, mainStage);
+    private Vector2 source = new Vector2(), target = new Vector2();
+
+    public LevelScreen() {
+        BaseGame.levelScreen = this;
 
         initializeActors();
         initializeGUI();
+        BaseGame.menuMusic.stop();
+        GameUtils.playLoopingMusic(BaseGame.levelMusic);
 
         OrthographicCamera test = (OrthographicCamera) mainStage.getCamera();
-        System.out.println(test.zoom);
-        this.enemySpawnSystem = new EnemySpawnSystem(tilemap, player);
+        this.enemySpawnSystem = new EnemySpawnSystem(player);
+        mainStage.addActor(new CenterCamera(mainStage.getCamera()));
+
     }
 
     @Override
     public void initialize() {
     }
 
-    @Override
-    public void update(float delta) {
-        this.enemySpawnSystem.update(delta);
+    private final Comparator<Actor> ySortComparator = Comparator.comparing((Actor actor) -> -actor.getY() );
 
+    // (sheerst) NOTE: could move this to a WidgetGroup.
+    private void sortActors() {
+        Array<Actor> actors = mainStage.getActors();
+        Array<Actor> players = new Array<Actor>();
+        Array<Actor> enemies = new Array<Actor>();
+        Array<Actor> other = new Array<Actor>();
+        for (Actor actor : actors) {
+            if (actor instanceof Player) players.add(actor);
+            else if (actor instanceof Enemy) enemies.add(actor);
+            else other.add(actor);
+        }
+        players.sort(ySortComparator);
+        enemies.sort(ySortComparator);
+        actors.clear();
+
+        // (sheerst) NOTE: could make a more formal layer system here.
+        actors.addAll(other);
+        actors.addAll(enemies);
+        actors.addAll(players);
+    }
+
+    private void checkIfEnemiesHit() {
         if (slowdown >= 1) {
             Iterator<Enemy> it = this.enemySpawnSystem.getEnemies().iterator();
             while (it.hasNext()) {
@@ -90,26 +119,44 @@ public class LevelScreen extends BaseScreen {
                 }
             }
         }
+    }
 
-        // Set mouse and player position for use in calculations.
-        source.set(player.getX(), player.getY());
-        float mouseX = Gdx.input.getX();
-        float mouseY = Gdx.input.getY();
-        target.set(mouseX, mouseY);
-        mainStage.screenToStageCoordinates(target);
+    public void checkPlayerLunge(int screenX, int screenY, int pointer, int button) {
+        if (player.state == Player.State.IDLE && button == Input.Buttons.LEFT) {
+            player.getActions().clear();
 
-        if (target.dst2(source) > 1e-1) {
-            // Move player towards cursor.
-            player.isMoving = true;
-            float angleDeg = target.sub(source).angleDeg();
-            player.setMotionAngle(angleDeg);
-            player.setSpeed(Player.MOVE_SPEED);
-        } else {
-            player.isMoving = false;
-            player.setMotionAngle(0f);
-            player.setSpeed(0);
+            // Get normalized Vector between player and mouse.
+            target.set(mainStage.screenToStageCoordinates(new Vector2(screenX, screenY)));
+            source.set(player.getX(), player.getY());  // No idea why but Align.center breaks this.
+            Vector2 lungeVector = target.sub(source).nor().scl(player.LUNGE_DISTANCE);
+
+            MoveToAction moveAction = new LungeMoveTo(player, enemySpawnSystem.getEnemies());
+            moveAction.setDuration(0.6f);
+            moveAction.setInterpolation(Interpolation.exp10);
+            Vector2 finalPosition = source.add(lungeVector);
+            moveAction.setPosition(finalPosition.x, finalPosition.y);
+            SequenceAction sequence = Actions.sequence(
+                    moveAction,
+                    Actions.delay(0.1f),
+                    Actions.run( () -> player.state = Player.State.IDLE)
+            );
+            player.addAction(sequence);
+            player.state = Player.State.LUNGING;
+            GameUtils.playWithRandomPitch(BaseGame.miss0Sound, .9f, 1.1f);
         }
-        player.applyPhysics(delta);
+    }
+
+    @Override
+    public void update(float delta) {
+
+        // Sort actors by layer.
+        sortActors();
+
+        this.enemySpawnSystem.update(delta);
+
+        // Check if the player is currently hitting any enemies.
+        // Apply slow down effect and damage to enemies if so.
+        checkIfEnemiesHit();
     }
 
     @Override
@@ -117,50 +164,17 @@ public class LevelScreen extends BaseScreen {
         if (keycode == Keys.ESCAPE || keycode == Keys.Q)
             quitWindow.setVisible(!quitWindow.isVisible());
         else if (keycode == Keys.R)
-            BaseGame.setActiveScreen(new LevelScreen(currentMap));
-        else if (keycode == Keys.T)
-            BaseGame.setActiveScreen(new LevelSelectScreen());
+            BaseGame.setActiveScreen(new LevelScreen());
         return super.keyDown(keycode);
     }
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (button == Input.Buttons.LEFT) {
-            player.getActions().clear();
 
-            Vector2 loc = mainStage.screenToStageCoordinates(new Vector2(screenX, screenY));
+        // Check if player is able to perform a lunge attack,
+        // and perform the attack if so.
+        checkPlayerLunge(screenX, screenY, pointer, button);
 
-            MoveToAction moveAction = new MoveToAction() {
-                final List<Enemy> enemies = new ArrayList<>(enemySpawnSystem.getEnemies());
-
-                @Override
-                protected void update(float percentage) {
-                    super.update(percentage);
-                    Iterator<Enemy> it = enemies.iterator();
-                    while (it.hasNext()) {
-                        Enemy enemy = it.next();
-                        if (enemy == null) continue;
-                        if (enemy.getState().equals(EnemyState.DEAD)) continue;
-                        Rectangle enemyBounds = new Rectangle(enemy.getX(), enemy.getY(), enemy.getWidth(), enemy.getHeight());
-                        Rectangle playerBounds = new Rectangle(player.getX(), player.getY(), player.getWidth(), player.getHeight());
-                        if (enemyBounds.overlaps(playerBounds) || playerBounds.overlaps(enemyBounds)) {
-                            enemy.hit(50);
-                            it.remove();
-
-                            if (enemy.getState().equals(EnemyState.DEAD)) {
-                                //Slow down the game
-                                slowdown = 0.01f;
-                                slowdownDuration = 0.5f;
-
-                            }
-                        }
-                    }
-                }
-            };
-            moveAction.setDuration(0.1f);
-            moveAction.setPosition(loc.x, loc.y);
-            player.addAction(moveAction);
-        }
         return super.touchDown(screenX, screenY, pointer, button);
     }
 
@@ -168,12 +182,6 @@ public class LevelScreen extends BaseScreen {
         this.impassables = new Array();
         new Background(0, 0, mainStage);
         this.player = new Player(0, 0, mainStage);
-        // loadActorsFromMap();
-    }
-
-    private void loadActorsFromMap() {
-        MapLoader mapLoader = new MapLoader(mainStage, tilemap, player, impassables);
-        player = mapLoader.player;
     }
 
     private void initializeGUI() {
@@ -196,6 +204,6 @@ public class LevelScreen extends BaseScreen {
 
         uiTable.defaults().padTop(Gdx.graphics.getHeight() * .02f);
         uiTable.add(topLabel).height(topLabel.getPrefHeight() * 1.5f).expandY().top().row();
-        uiTable.setDebug(true);
+        // uiTable.setDebug(true);
     }
 }

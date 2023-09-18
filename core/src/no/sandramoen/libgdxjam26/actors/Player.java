@@ -1,13 +1,19 @@
 package no.sandramoen.libgdxjam26.actors;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.Align;
 import no.sandramoen.libgdxjam26.utils.BaseActor;
 
 import java.util.HashMap;
 
 public class Player extends BaseActor {
-    public static final float MOVE_SPEED = 25;
+    public static final float MOVE_SPEED = 18;
+    public static final float LUNGE_DISTANCE = 18;
     private static final HashMap<Integer, Float> EXPERIENCE_MAP = new HashMap<>(); // Experience required depending on the level
+
+    private Vector2 source = new Vector2(), target = new Vector2();
 
     static {
         // Pre-load the experience map
@@ -54,13 +60,38 @@ public class Player extends BaseActor {
         isDead = true;
     }
 
+    private void handleMovement(float delta) {
+        if (state != Player.State.LUNGING) {
+
+            // Update attackCooldown.
+            if (this.attackCooldown > 0) this.attackCooldown -= delta;
+
+            // Set mouse and player position for use in calculations.
+            source.set(getX(Align.center), getY(Align.center));
+            float mouseX = Gdx.input.getX();
+            float mouseY = Gdx.input.getY();
+            target.set(mouseX, mouseY);
+            getStage().screenToStageCoordinates(target);
+
+            if (target.dst2(source) > 1e-1) {
+                // Move player towards cursor.
+                isMoving = true;
+                float angleDeg = target.sub(source).angleDeg();
+                setMotionAngle(angleDeg);
+                setSpeed(Player.MOVE_SPEED);
+            } else {
+                isMoving = false;
+                setMotionAngle(0f);
+                setSpeed(0);
+            }
+            applyPhysics(delta);
+        }
+    }
+
     @Override
     public void act(float delta) {
         super.act(delta);
-
-        if (state != State.ATTACKING) {
-            if (this.attackCooldown > 0) this.attackCooldown -= delta;
-        }
+        handleMovement(delta);
     }
 
     public void addExperience(float experience) {
@@ -88,7 +119,7 @@ public class Player extends BaseActor {
     public enum State {
         IDLE,
         MOVING,
-        ATTACKING;
+        LUNGING;
     }
 
 }
