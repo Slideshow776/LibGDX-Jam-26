@@ -92,6 +92,11 @@ public class Player extends BaseActor {
                 float angleDeg = target.sub(source).angleDeg();
                 setMotionAngle(angleDeg);
                 setSpeed(Player.MOVE_SPEED);
+
+                System.out.println(angleDeg + ", " + isFacingRight);
+
+                checkIfFlip(angleDeg);
+
             } else {
                 isMoving = false;
                 setMotionAngle(0f);
@@ -99,6 +104,19 @@ public class Player extends BaseActor {
             }
             applyPhysics(delta);
         }
+    }
+
+    private void checkIfFlip(float angleDeg) {
+        if (
+                !isFacingRight &&
+                        (angleDeg >= 270 && angleDeg <= 360) || (angleDeg >= 0 && angleDeg <= 90)
+        )
+            flip();
+        else if (
+                isFacingRight &&
+                        (angleDeg > 90 && angleDeg < 270)
+        )
+            flip();
     }
 
     @Override
