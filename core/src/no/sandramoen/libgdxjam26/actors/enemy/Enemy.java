@@ -37,6 +37,7 @@ public class Enemy extends BaseActor {
     private float chatDuration = 1; // Duration for displaying chat messages
     private float chatDelay = 0; // Delay between chat messages
     private float currentHealth; // Current health of the enemy
+
     private final BaseActor attackCollisionBox;
     private float attackCooldown = 0f;
 
@@ -60,6 +61,7 @@ public class Enemy extends BaseActor {
 
         // Initialize enemy-specific attributes
         this.data = data;
+        this.attackInterval = data.getAttackSpeed();
         this.currentHealth = data.getBaseHealth();
         this.playerPosition = new Vector2();
         this.enemyPosition = new Vector2();
@@ -142,6 +144,18 @@ public class Enemy extends BaseActor {
             playerPosition.set(following.getX(Align.center), following.getY(Align.center));
             enemyPosition.set(this.getX(), this.getY());
 
+            if (state.equals(EnemyState.ATTACK)) {
+                attackDuration += delta;
+
+                if (attackDuration >= attackInterval) {
+                    attackDuration = 0;
+
+                    if (playerPosition.dst(enemyPosition) <= data.getAttackRange()) {
+                        attackPlayer(following);
+                    }
+                }
+            }
+
             // Check if the player is out of attack range, and if so, move towards the player
             if (playerPosition.dst(enemyPosition) > data.getAttackRange()) {
                 setMotionAngle(playerPosition.sub(enemyPosition).angleDeg());
@@ -195,7 +209,7 @@ public class Enemy extends BaseActor {
         // Chat messages above enemy heads.
         if (state != EnemyState.DEAD) {
             // Update chat messages
-            if (chatDelay >= 5) {
+            if (chatDelay >= 3) {
                 chatDelay = 0;
                 chatDuration = 2f;
 
@@ -217,6 +231,10 @@ public class Enemy extends BaseActor {
 
         // Apply physics and continue actor processing
         this.applyPhysics(delta);
+    }
+
+    private void attackPlayer(Player following) {
+
     }
 
     /**
@@ -279,7 +297,7 @@ public class Enemy extends BaseActor {
         shakeCamera();
 
         EnemyHitEffect enemyHitEffect = new EnemyHitEffect();
-        enemyHitEffect.setPosition(+ getWidth()  / 2 - BaseGame.UNIT_SCALE * 16, getHeight() / 2 );
+        enemyHitEffect.setPosition(+getWidth() / 2 - BaseGame.UNIT_SCALE * 16, getHeight() / 2);
         enemyHitEffect.setScale(BaseGame.UNIT_SCALE / 4f);
 //        enemyHitEffect.deltaScale = 4f;
         enemyHitEffect.start();
