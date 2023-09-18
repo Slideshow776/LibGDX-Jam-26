@@ -53,6 +53,8 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
     public static float musicVolume = .1f;
     public static final float UNIT_SCALE = .125f;
 
+    public static final boolean debugEnabled = true;
+
     private final Map<String, Pixmap> pixmapCache = new HashMap<String, Pixmap>();
 
     public BaseGame() {

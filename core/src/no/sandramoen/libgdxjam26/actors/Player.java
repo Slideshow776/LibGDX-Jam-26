@@ -33,10 +33,12 @@ public class Player extends BaseActor {
     public boolean isMoving;
     public int attackPower = 2;
     public State state = State.IDLE;
-    private BaseActor collisionBox;
+    private final BaseActor collisionBox;
     private float attackCooldown = 0f;
     private int level = 1;
     private float experience;
+    private int health = 20;
+    public int getHealth() { return health; }
 
     public Animation<TextureRegion> walkingAnimation;
     public Animation<TextureRegion> attackingAnimation;
@@ -58,11 +60,17 @@ public class Player extends BaseActor {
     }
 
     public BaseActor getCollisionBox() {
-        collisionBox.setPosition(
-                getX() + getWidth() / 2 - collisionBox.getWidth() / 2,
-                getY() + getHeight() / 2 - collisionBox.getHeight() / 2
-        );
+//        collisionBox.setPosition(
+//                getX(Align.center) + getWidth() / 2 - collisionBox.getWidth() / 2,
+//                getY(Align.center) + getHeight() / 2 - collisionBox.getHeight() / 2
+//        );
         return collisionBox;
+    }
+
+    public void applyDamage(int amount) {
+        health -= amount;
+        if (health <= 0)
+            die();
     }
 
     public void die() {
@@ -105,11 +113,7 @@ public class Player extends BaseActor {
                 angleDeg = Math.floorMod((int)angleDeg, 360);
                 setMotionAngle(angleDeg);
                 setSpeed(Player.MOVE_SPEED);
-
-                System.out.println(angleDeg + ", " + isFacingRight);
-
                 checkIfFlip(angleDeg);
-
             } else {
                 isMoving = false;
                 setMotionAngle(0f);
@@ -134,7 +138,7 @@ public class Player extends BaseActor {
         this.experience += experience;
         if (this.experience >= getExperienceForCurrentLevel()) {
             this.experience -= getExperienceForCurrentLevel();
-            this.level++;
+            this.level += 1;
             if (level >= 100)
                 level = 100;
         }

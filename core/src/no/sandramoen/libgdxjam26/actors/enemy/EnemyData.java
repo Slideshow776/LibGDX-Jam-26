@@ -1,5 +1,10 @@
 package no.sandramoen.libgdxjam26.actors.enemy;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Rectangle;
+
 /**
  * This enum represents different types of enemies in the LibGDX game.
  */
@@ -17,7 +22,7 @@ public enum EnemyData {
      * - Base Experience: 50 units
      * - Resource: whitePixel (a placeholder resource)
      */
-    ARCHER("Archer", 5, 5, 10, 1, 100, 50, "whitePixel"),
+    ARCHER("Archer", 5, 5, 10, 1, 100, 50, "whitePixel", 1, 2),
 
     /**
      * The Mage enemy type.
@@ -30,7 +35,7 @@ public enum EnemyData {
      * - Base Experience: 60 units
      * - Resource: whitePixel (a placeholder resource)
      */
-    MAGE("Mage", 5, 5, 8, 1, 120, 60, "whitePixel"),
+    MAGE("Mage", 5, 5, 8, 1, 120, 60, "whitePixel", 1, 2),
 
     /**
      * The Melee enemy type.
@@ -43,13 +48,15 @@ public enum EnemyData {
      * - Base Experience: 40 units
      * - Resource: whitePixel (a placeholder resource)
      */
-    MELEE("Melee", 5, 5, 1, 1, 80, 40, "whitePixel");
+    MELEE("Melee", 5, 5, 2, 1, 80, 40, "whitePixel", 5, 2);
 
     public static final String[] CHAT_MESSAGES = {"You credit score sucks!", "I'm going to kill you!", "Ich will nicht sterben!"};
 
     // Private fields to store enemy characteristics.
     private final String name, resource;
     private final float width, height, attackRange, attackSpeed, baseHealth, baseExperience;
+    public final float lungeDistance;
+    public final int attackDamage;
 
     /**
      * Constructor for an EnemyData enum value.
@@ -63,7 +70,7 @@ public enum EnemyData {
      * @param baseExperience The base experience gained for defeating the enemy (in game units).
      * @param resource       The resource name for rendering the enemy (e.g., texture).
      */
-    private EnemyData(String name, float width, float height, float attackRange, float attackSpeed, float baseHealth, float baseExperience, String resource) {
+    private EnemyData(String name, float width, float height, float attackRange, float attackSpeed, float baseHealth, float baseExperience, String resource, float lungeDistance, int attackDamage) {
         this.name = name;
         this.width = width;
         this.height = height;
@@ -72,6 +79,9 @@ public enum EnemyData {
         this.baseHealth = baseHealth;
         this.baseExperience = baseExperience;
         this.resource = resource;
+        this.lungeDistance = lungeDistance;
+        this.attackDamage = attackDamage;
+
     }
 
     /**
