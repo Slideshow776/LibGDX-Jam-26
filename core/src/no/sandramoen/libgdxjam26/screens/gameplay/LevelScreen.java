@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ParticleEffectActor;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.github.tommyettinger.textra.TypingLabel;
@@ -28,6 +29,7 @@ import no.sandramoen.libgdxjam26.actors.enemy.EnemySpawnSystem;
 import no.sandramoen.libgdxjam26.actors.enemy.EnemyState;
 import no.sandramoen.libgdxjam26.actors.map.Background;
 import no.sandramoen.libgdxjam26.actors.map.ImpassableTerrain;
+import no.sandramoen.libgdxjam26.actors.particles.ParticleActor;
 import no.sandramoen.libgdxjam26.utils.BaseScreen;
 import no.sandramoen.libgdxjam26.ui.ExperienceBar;
 import no.sandramoen.libgdxjam26.ui.QuitWindow;
@@ -78,12 +80,14 @@ public class LevelScreen extends BaseScreen {
     // (sheerst) NOTE: could move this to a WidgetGroup.
     private void sortActors() {
         Array<Actor> actors = mainStage.getActors();
+        Array<Actor> particles = new Array<Actor>();
         Array<Actor> players = new Array<Actor>();
         Array<Actor> enemies = new Array<Actor>();
         Array<Actor> other = new Array<Actor>();
         for (Actor actor : actors) {
             if (actor instanceof Player) players.add(actor);
             else if (actor instanceof Enemy) enemies.add(actor);
+            else if (actor instanceof ParticleEffectActor) enemies.add(actor);
             else other.add(actor);
         }
         players.sort(ySortComparator);
@@ -94,6 +98,7 @@ public class LevelScreen extends BaseScreen {
         actors.addAll(other);
         actors.addAll(enemies);
         actors.addAll(players);
+        actors.addAll(particles);
     }
 
     private void checkIfEnemiesHit() {

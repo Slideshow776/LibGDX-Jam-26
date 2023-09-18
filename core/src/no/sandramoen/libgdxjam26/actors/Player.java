@@ -1,10 +1,16 @@
 package no.sandramoen.libgdxjam26.actors;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
+
 import no.sandramoen.libgdxjam26.utils.BaseActor;
+import no.sandramoen.libgdxjam26.utils.BaseGame;
 
 import java.util.HashMap;
 
@@ -32,9 +38,12 @@ public class Player extends BaseActor {
     private int level = 1;
     private float experience;
 
+    public Animation<TextureRegion> walkingAnimation;
+    public Animation<TextureRegion> attackingAnimation;
+
     public Player(float x, float y, Stage stage) {
         super(x, y, stage);
-        loadImage("characters/player/idle1");
+        loadAnimation();
         setBoundaryRectangle();
 
         collisionBox = new BaseActor(0, 0, stage);
@@ -44,7 +53,7 @@ public class Player extends BaseActor {
                 getHeight() / 3 - collisionBox.getHeight() / 2
         );
         collisionBox.setBoundaryRectangle();
-        // collisionBox.setDebug(true);
+        collisionBox.setDebug(true);
         addActor(collisionBox);
     }
 
@@ -58,6 +67,22 @@ public class Player extends BaseActor {
 
     public void die() {
         isDead = true;
+    }
+
+    private void loadAnimation() {
+        Array<TextureAtlas.AtlasRegion> animationImages = new Array<>();
+
+        animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/walking1"));
+        animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/walking2"));
+        walkingAnimation = new Animation(.2f, animationImages, Animation.PlayMode.LOOP);
+
+        animationImages.clear();
+
+        animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/attacking1"));
+        animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/attacking2"));
+        attackingAnimation = new Animation(.2f, animationImages, Animation.PlayMode.NORMAL);
+
+        setAnimation(walkingAnimation);
     }
 
     private void handleMovement(float delta) {
@@ -77,8 +102,14 @@ public class Player extends BaseActor {
                 // Move player towards cursor.
                 isMoving = true;
                 float angleDeg = target.sub(source).angleDeg();
+                angleDeg = Math.floorMod((int)angleDeg, 360);
                 setMotionAngle(angleDeg);
                 setSpeed(Player.MOVE_SPEED);
+
+                System.out.println(angleDeg + ", " + isFacingRight);
+
+                checkIfFlip(angleDeg);
+
             } else {
                 isMoving = false;
                 setMotionAngle(0f);
@@ -86,6 +117,11 @@ public class Player extends BaseActor {
             }
             applyPhysics(delta);
         }
+    }
+
+    private void checkIfFlip(float angleDeg) {
+        if (!isFacingRight && (angleDeg >= 270 || angleDeg <= 90)) flip();
+        else if (isFacingRight && (angleDeg > 90 && angleDeg < 270)) flip();
     }
 
     @Override

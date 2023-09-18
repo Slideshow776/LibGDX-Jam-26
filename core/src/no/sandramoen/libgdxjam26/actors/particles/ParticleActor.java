@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
 
 public class ParticleActor extends Group {
+
+    public float deltaScale = 1f;
     private ParticleEffect effect;
     private ParticleRenderer renderingActor;
 
@@ -54,7 +56,7 @@ public class ParticleActor extends Group {
 
     public void act(float dt) {
         super.act(dt);
-        effect.update(dt);
+        effect.update(dt * deltaScale);
 
         if (effect.isComplete() && !effect.getEmitters().first().isContinuous()) {
             effect.dispose();
