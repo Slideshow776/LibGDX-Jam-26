@@ -82,13 +82,13 @@ public class Player extends BaseActor {
 
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/walking1"));
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/walking2"));
-        walkingAnimation = new Animation(.2f, animationImages, Animation.PlayMode.LOOP);
+        walkingAnimation = new Animation<>(.2f, animationImages, Animation.PlayMode.LOOP);
 
         animationImages.clear();
 
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/attacking1"));
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/attacking2"));
-        attackingAnimation = new Animation(.2f, animationImages, Animation.PlayMode.NORMAL);
+        attackingAnimation = new Animation<>(.2f, animationImages, Animation.PlayMode.NORMAL);
 
         setAnimation(walkingAnimation);
     }
