@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
 import no.sandramoen.libgdxjam26.actors.Player;
+import no.sandramoen.libgdxjam26.actors.particles.EnemyHitEffect;
 import no.sandramoen.libgdxjam26.utils.BaseActor;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
 
@@ -178,6 +179,13 @@ public class Enemy extends BaseActor {
 
         // Apply camera shake.
         shakeCamera();
+
+        EnemyHitEffect enemyHitEffect = new EnemyHitEffect();
+        enemyHitEffect.setPosition(+ getWidth()  / 2, getHeight() / 3);
+        enemyHitEffect.setScale(BaseGame.UNIT_SCALE / 4f);
+        enemyHitEffect.deltaScale = 4f;
+        enemyHitEffect.start();
+        addActor(enemyHitEffect);
     }
 
     // Getter and setter methods for various attributes

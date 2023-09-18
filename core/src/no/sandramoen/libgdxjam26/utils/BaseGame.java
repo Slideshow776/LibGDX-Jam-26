@@ -75,6 +75,9 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
 
     public static void setActiveScreen(BaseScreen screen) {
         game.setScreen(screen);
+        if (screen instanceof  LevelScreen) {
+            BaseGame.levelScreen = (LevelScreen)screen;
+        }
     }
 
     @Override
