@@ -3,12 +3,14 @@ package no.sandramoen.libgdxjam26.screens.gameplay;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
@@ -60,8 +62,30 @@ public class LevelScreen extends BaseScreen {
         initializeActors();
         initializeGUI();
 
-        OrthographicCamera test = (OrthographicCamera) mainStage.getCamera();
         this.enemySpawnSystem = new EnemySpawnSystem(tilemap, player);
+
+        class CenterCamera extends Actor {
+
+            Camera camera;
+            Vector3 currentPosition = new Vector3();
+
+            public final float moveDuration = .25f;
+
+            public CenterCamera(Camera camera) {
+                this.camera = camera;
+                currentPosition.set(camera.position);
+            }
+
+            @Override
+            public void act (float delta) {
+                super.act(delta);
+                currentPosition.set(getX(), getY(), 0f);
+                camera.position.lerp(currentPosition, Interpolation.linear.apply(delta / moveDuration));
+            }
+        }
+
+        mainStage.addActor(new CenterCamera(mainStage.getCamera()));
+
     }
 
     @Override

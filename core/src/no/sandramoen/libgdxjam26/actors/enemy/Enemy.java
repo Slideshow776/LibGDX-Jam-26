@@ -175,6 +175,9 @@ public class Enemy extends BaseActor {
         this.hitLabel.addAction(Actions.alpha(1));
         this.hitLabel.addAction(Actions.fadeOut(0.4f));
         this.hitLabel.addAction(moveAction);
+
+        // Apply camera shake.
+        shakeCamera();
     }
 
     // Getter and setter methods for various attributes

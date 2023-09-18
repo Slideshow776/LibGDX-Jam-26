@@ -154,6 +154,8 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
 
         textureAtlas = assetManager.get("images/included/packed/images.pack.atlas");
         GameUtils.printLoadingTime(getClass().getSimpleName(), "Assetmanager", startTime);
+
+        // TODO: particle effects.
     }
 
     /**
