@@ -90,6 +90,7 @@ public class Player extends BaseActor {
                 // Move player towards cursor.
                 isMoving = true;
                 float angleDeg = target.sub(source).angleDeg();
+                angleDeg = Math.floorMod((int)angleDeg, 360);
                 setMotionAngle(angleDeg);
                 setSpeed(Player.MOVE_SPEED);
 
@@ -107,16 +108,8 @@ public class Player extends BaseActor {
     }
 
     private void checkIfFlip(float angleDeg) {
-        if (
-                !isFacingRight &&
-                        (angleDeg >= 270 && angleDeg <= 360) || (angleDeg >= 0 && angleDeg <= 90)
-        )
-            flip();
-        else if (
-                isFacingRight &&
-                        (angleDeg > 90 && angleDeg < 270)
-        )
-            flip();
+        if (!isFacingRight && (angleDeg >= 270 || angleDeg <= 90)) flip();
+        else if (isFacingRight && (angleDeg > 90 && angleDeg < 270)) flip();
     }
 
     @Override

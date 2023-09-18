@@ -101,6 +101,8 @@ public class BaseActor extends Group {
 
     public void flip() {
         isFacingRight = !isFacingRight;
+//        ((TextureRegionDrawable)image.getDrawable()).getRegion().flip(true, false);
+        image.setScaleX(-image.getScaleX());
     }
 
     public void setAnimationPaused(Boolean pause) {
