@@ -1,6 +1,7 @@
 package no.sandramoen.libgdxjam26.actors.enemy;
 
 import no.sandramoen.libgdxjam26.actors.Player;
+import no.sandramoen.libgdxjam26.utils.BaseGame;
 
 import java.util.ArrayList;
 

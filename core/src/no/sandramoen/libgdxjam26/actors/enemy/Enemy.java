@@ -3,12 +3,14 @@ package no.sandramoen.libgdxjam26.actors.enemy;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.actions.ParallelAction;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
 import no.sandramoen.libgdxjam26.actors.Player;
@@ -35,6 +37,8 @@ public class Enemy extends BaseActor {
     private float chatDuration = 1; // Duration for displaying chat messages
     private float chatDelay = 0; // Delay between chat messages
     private float currentHealth; // Current health of the enemy
+    private final BaseActor attackCollisionBox;
+    private float attackCooldown = 0f;
 
     /**
      * Constructs an `Enemy` instance with the provided data and initial position.
@@ -67,6 +71,19 @@ public class Enemy extends BaseActor {
 
         // Add the chat group to the stage for rendering
         this.addActor(chatGroup);
+
+        // Set attack collision box.
+        // TODO: should depend on enemy.data rather than being universal for all enemy types.
+        attackCollisionBox = new BaseActor(0, 0, stage);
+        attackCollisionBox.setSize(12f, 12f);
+        attackCollisionBox.setPosition(
+                getWidth() / 2 - attackCollisionBox.getWidth() / 2,
+                getHeight() / 2 - attackCollisionBox.getHeight() / 2
+        );
+        attackCollisionBox.setBoundaryRectangle();
+        attackCollisionBox.setDebug(true);
+        attackCollisionBox.isCollisionEnabled = false;
+        addActor(attackCollisionBox);
     }
 
     /**
@@ -80,11 +97,31 @@ public class Enemy extends BaseActor {
 
         // Update chat delay and duration
         chatDelay += delta;
-        chatDuration -= delta;
+        if (chatDuration > 0) chatDuration -= delta;
+
+        if (state == EnemyState.DETECT_DAMAGE) {
+
+            // Apply damage to the player as soon as the player is hit,
+            // then disable hit detection.
+            if (attackCollisionBox.overlaps(following.getCollisionBox())) {
+                state = EnemyState.ATTACK;
+                following.applyDamage(data.attackDamage);
+                attackCollisionBox.isCollisionEnabled = false;
+
+                // TODO: remove in the future when not needed.
+                System.out.println("damaged");
+                System.out.println(following.getHealth());
+            }
+            return;
+        }
+
+        if (state == EnemyState.ATTACK) return;
+
+        if (attackCooldown > 0) attackCooldown -= delta;
 
         // Handle enemy movement and attack behaviors when following a player
         if (following != null && state != EnemyState.DEAD) {
-            playerPosition.set(following.getX(), following.getY());
+            playerPosition.set(following.getX(Align.center), following.getY(Align.center));
             enemyPosition.set(this.getX(), this.getY());
 
             // Check if the player is out of attack range, and if so, move towards the player
@@ -97,6 +134,40 @@ public class Enemy extends BaseActor {
                 state = EnemyState.ATTACK;
                 setMotionAngle(0);
                 setSpeed(0);
+                if (data == EnemyData.ARCHER) {
+                    // Projectile.
+                }
+                else {
+                    // Create damage shape in front.
+                    // Set debug = true.
+                    getActions().clear();
+
+                    Vector2 lungeVector = playerPosition.sub(enemyPosition).nor().scl(data.lungeDistance);
+                    Vector2 finalPosition = enemyPosition.add(lungeVector);
+
+                    MoveToAction moveAction = Actions.moveTo(finalPosition.x, finalPosition.y, 0.5f, Interpolation.exp10);
+                    SequenceAction sequence = Actions.sequence(
+                            moveAction,
+                            Actions.delay(0.1f),
+                            Actions.run( () -> {
+                                attackCollisionBox.isCollisionEnabled = false;
+                                state = EnemyState.MOVE;
+                                attackCooldown = 1.5f;
+                            })
+                    );
+                    // Spawn the hitbox in front the enemy after a short delay
+                    ParallelAction parallelAction = Actions.parallel(
+                            sequence,
+                            Actions.sequence(
+                                    Actions.delay(0.05f),
+                                    Actions.run( () -> {
+                                        attackCollisionBox.isCollisionEnabled = true;
+                                        state = EnemyState.DETECT_DAMAGE;
+                                    })
+                            )
+                    );
+                    addAction(parallelAction);
+                }
             }
         } else {
             setMotionAngle(0);
@@ -122,8 +193,10 @@ public class Enemy extends BaseActor {
             }
         }
 
-        // Position the chat group above the enemy
-        chatGroup.setPosition(((getWidth() - chatGroup.getWidth()) / 2f), getHeight() + 2f);
+        // TODO: remove if unneeded
+//        // Position the chat group above the enemy
+//        chatGroup.setPosition(((getWidth() - chatGroup.getWidth()) / 2f), getHeight() + 2f);
+
         // Apply physics and continue actor processing
         this.applyPhysics(delta);
     }
@@ -135,9 +208,7 @@ public class Enemy extends BaseActor {
      * @param parentAlpha The alpha value of the parent actor, if applicable.
      */
     @Override
-    public void draw(Batch batch, float parentAlpha) {
-        super.draw(batch, parentAlpha);
-    }
+    public void draw(Batch batch, float parentAlpha) { super.draw(batch, parentAlpha); }
 
     /**
      * Initiates following of a player character by the enemy.

@@ -23,5 +23,6 @@ public enum EnemyState {
      * In this state, the enemy is usually removed from the game or simulation, and any associated resources may be cleaned up.
      * Dead enemies typically do not participate in further game interactions.
      */
-    DEAD
+    DEAD,
+    DETECT_DAMAGE,
 }
