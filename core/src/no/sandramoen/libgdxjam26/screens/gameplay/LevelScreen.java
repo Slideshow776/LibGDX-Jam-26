@@ -24,7 +24,7 @@ import no.sandramoen.libgdxjam26.actors.enemy.EnemyState;
 import no.sandramoen.libgdxjam26.actors.map.Background;
 import no.sandramoen.libgdxjam26.actors.map.ImpassableTerrain;
 import no.sandramoen.libgdxjam26.actors.map.TiledMapActor;
-import no.sandramoen.libgdxjam26.screens.BaseScreen;
+import no.sandramoen.libgdxjam26.utils.BaseScreen;
 import no.sandramoen.libgdxjam26.screens.shell.LevelSelectScreen;
 import no.sandramoen.libgdxjam26.ui.ExperienceBar;
 import no.sandramoen.libgdxjam26.ui.QuitWindow;

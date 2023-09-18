@@ -1,4 +1,4 @@
-package no.sandramoen.libgdxjam26.screens;
+package no.sandramoen.libgdxjam26.utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
