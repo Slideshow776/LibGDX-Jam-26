@@ -20,6 +20,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.github.tommyettinger.textra.TypingLabel;
+import no.sandramoen.libgdxjam26.actions.CenterCamera;
+import no.sandramoen.libgdxjam26.actions.LungeMoveTo;
 import no.sandramoen.libgdxjam26.actors.Player;
 import no.sandramoen.libgdxjam26.actors.enemy.Enemy;
 import no.sandramoen.libgdxjam26.actors.enemy.EnemySpawnSystem;
@@ -45,13 +47,13 @@ public class LevelScreen extends BaseScreen {
 
     private TypingLabel topLabel;
 
-    private Vector2 source = new Vector2(), target = new Vector2();
-
     private QuitWindow quitWindow;
     private EnemySpawnSystem enemySpawnSystem;
     private ExperienceBar experienceBar;
     private Label levelLabel;
     private Label experienceLabel;
+
+    private Vector2 source = new Vector2(), target = new Vector2();
 
     public LevelScreen() {
 
@@ -60,34 +62,6 @@ public class LevelScreen extends BaseScreen {
 
         OrthographicCamera test = (OrthographicCamera) mainStage.getCamera();
         this.enemySpawnSystem = new EnemySpawnSystem(player);
-
-        class CenterCamera extends Actor {
-
-            final Camera camera;
-            final Vector3 currentPosition = new Vector3();
-
-            public final float moveDuration = .25f;
-
-            public CenterCamera(Camera camera) {
-                this.camera = camera;
-                currentPosition.set(camera.position);
-                setPosition(camera.position.x, camera.position.y);
-            }
-
-            @Override
-            public void act (float delta) {
-                super.act(delta);
-                currentPosition.set(getX(), getY(), 0f);
-                if (currentPosition.dst(camera.position) > 1e-1) {
-                    camera.position.lerp(currentPosition, Interpolation.linear.apply(delta / moveDuration));
-                }
-                else {
-                    camera.position.set(currentPosition);
-                }
-            }
-        }
-        mainStage.getCamera().position.set(80f / 2, 45f / 2, 0f);
-        System.out.println(mainStage.getCamera().position);
         mainStage.addActor(new CenterCamera(mainStage.getCamera()));
 
     }
@@ -119,14 +93,7 @@ public class LevelScreen extends BaseScreen {
         actors.addAll(players);
     }
 
-    @Override
-    public void update(float delta) {
-
-        // Sort actors by layer.
-        sortActors();
-
-        this.enemySpawnSystem.update(delta);
-
+    private void checkIfEnemiesHit() {
         if (slowdown >= 1) {
             Iterator<Enemy> it = this.enemySpawnSystem.getEnemies().iterator();
             while (it.hasNext()) {
@@ -149,29 +116,44 @@ public class LevelScreen extends BaseScreen {
                 }
             }
         }
+    }
 
-        if (player.state != Player.State.LUNGING) {
-            // (sheerst) TODO: move this to player.update() or player.act()
-            // Set mouse and player position for use in calculations.
-            source.set(player.getX(Align.center), player.getY(Align.center));
-            float mouseX = Gdx.input.getX();
-            float mouseY = Gdx.input.getY();
-            target.set(mouseX, mouseY);
-            mainStage.screenToStageCoordinates(target);
+    public void checkPlayerLunge(int screenX, int screenY, int pointer, int button) {
+        if (player.state == Player.State.IDLE && button == Input.Buttons.LEFT) {
+            player.getActions().clear();
 
-            if (target.dst2(source) > 1e-1) {
-                // Move player towards cursor.
-                player.isMoving = true;
-                float angleDeg = target.sub(source).angleDeg();
-                player.setMotionAngle(angleDeg);
-                player.setSpeed(Player.MOVE_SPEED);
-            } else {
-                player.isMoving = false;
-                player.setMotionAngle(0f);
-                player.setSpeed(0);
-            }
-            player.applyPhysics(delta);
+            // Get normalized Vector between player and mouse.
+            target.set(mainStage.screenToStageCoordinates(new Vector2(screenX, screenY)));
+            source.set(player.getX(), player.getY());  // No idea why but Align.center breaks this.
+            Vector2 lungeVector = target.sub(source).nor().scl(player.LUNGE_DISTANCE);
+
+            MoveToAction moveAction = new LungeMoveTo(player, enemySpawnSystem.getEnemies());
+            moveAction.setDuration(0.6f);
+            moveAction.setInterpolation(Interpolation.exp10);
+            Vector2 finalPosition = source.add(lungeVector);
+            moveAction.setPosition(finalPosition.x, finalPosition.y);
+            SequenceAction sequence = Actions.sequence(
+                    moveAction,
+                    Actions.delay(0.1f),
+                    Actions.run( () -> player.state = Player.State.IDLE)
+            );
+            player.addAction(sequence);
+            player.state = Player.State.LUNGING;
+            GameUtils.playWithRandomPitch(BaseGame.miss0Sound, .9f, 1.1f);
         }
+    }
+
+    @Override
+    public void update(float delta) {
+
+        // Sort actors by layer.
+        sortActors();
+
+        this.enemySpawnSystem.update(delta);
+
+        // Check if the player is currently hitting any enemies.
+        // Apply slow down effect and damage to enemies if so.
+        checkIfEnemiesHit();
     }
 
     @Override
@@ -185,55 +167,11 @@ public class LevelScreen extends BaseScreen {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (player.state == Player.State.IDLE && button == Input.Buttons.LEFT) {
-            player.getActions().clear();
 
-            // Get normalized Vector between player and mouse.
-            target.set(mainStage.screenToStageCoordinates(new Vector2(screenX, screenY)));
-            source.set(player.getX(), player.getY());  // No idea why but Align.center breaks this.
-            Vector2 lungeVector = target.sub(source).nor().scl(player.LUNGE_DISTANCE);
+        // Check if player is able to perform a lunge attack,
+        // and perform the attack if so.
+        checkPlayerLunge(screenX, screenY, pointer, button);
 
-            MoveToAction moveAction = new MoveToAction() {
-                final List<Enemy> enemies = new ArrayList<>(enemySpawnSystem.getEnemies());
-
-                @Override
-                protected void update(float percentage) {
-                    super.update(percentage);
-
-                    Iterator<Enemy> it = enemies.iterator();
-                    while (it.hasNext()) {
-                        Enemy enemy = it.next();
-                        if (enemy == null) continue;
-                        if (enemy.getState().equals(EnemyState.DEAD)) continue;
-                        Rectangle enemyBounds = new Rectangle(enemy.getX(), enemy.getY(), enemy.getWidth(), enemy.getHeight());
-                        Rectangle playerBounds = new Rectangle(player.getX(), player.getY(), player.getWidth(), player.getHeight());
-                        if (enemyBounds.overlaps(playerBounds) || playerBounds.overlaps(enemyBounds)) {
-                            enemy.hit(50);
-
-                            if (enemy.getState().equals(EnemyState.DEAD)) {
-                                GameUtils.playWithRandomPitch(BaseGame.kill0Sound, .9f, 1.1f);
-                                //Slow down the game
-                                slowdown = 0.05f;
-                                slowdownDuration = 0.1f;
-
-                            }
-                        }
-                    }
-                }
-            };
-            moveAction.setDuration(0.6f);
-            moveAction.setInterpolation(Interpolation.exp10);
-            Vector2 finalPosition = source.add(lungeVector);
-            moveAction.setPosition(finalPosition.x, finalPosition.y);
-            SequenceAction sequence = Actions.sequence(
-                moveAction,
-                Actions.delay(0.1f),
-                Actions.run( () -> player.state = Player.State.IDLE)
-            );
-            player.addAction(sequence);
-            player.state = Player.State.LUNGING;
-            GameUtils.playWithRandomPitch(BaseGame.miss0Sound, .9f, 1.1f);
-        }
         return super.touchDown(screenX, screenY, pointer, button);
     }
 

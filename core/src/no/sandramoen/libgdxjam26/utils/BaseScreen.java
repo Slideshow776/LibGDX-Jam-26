@@ -13,16 +13,15 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public abstract class BaseScreen implements Screen, InputProcessor, ControllerListener {
+    public float slowdown = 1f;
+    public float slowdownDuration = 1f;
     protected Stage mainStage;
     protected Stage uiStage;
     protected Table uiTable;
-    protected float slowdown = 1f;
-    protected float slowdownDuration = 1f;
     private boolean pause;
 
     public BaseScreen() {
-        mainStage = new Stage();
-        mainStage.setViewport(new ExtendViewport(80, 45));
+        mainStage = new Stage(new ExtendViewport(80, 45));
 
         uiTable = new Table();
         uiTable.setFillParent(true);
