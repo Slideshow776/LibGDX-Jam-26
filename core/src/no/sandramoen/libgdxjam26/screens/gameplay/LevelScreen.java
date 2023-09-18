@@ -57,6 +57,8 @@ public class LevelScreen extends BaseScreen {
 
         initializeActors();
         initializeGUI();
+        BaseGame.menuMusic.stop();
+        GameUtils.playLoopingMusic(BaseGame.levelMusic);
 
         OrthographicCamera test = (OrthographicCamera) mainStage.getCamera();
         this.enemySpawnSystem = new EnemySpawnSystem(player);
