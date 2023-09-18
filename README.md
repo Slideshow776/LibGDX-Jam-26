@@ -6,6 +6,8 @@ This is the repository of our submission to [libGDX's Game Jam #26](https://itch
 We are creating our own creative iteration of [this game](https://overboy.itch.io/mobs-inc).
 The theme for this game jam is `A Terrifying (K)Night!`.
 
+* project's [kanban board](https://github.com/users/Slideshow776/projects/5/views/1)
+
 ## The team:
 * [Sandra Moen](https://sandramoen.no)
 * [SheerSt](https://github.com/SheerSt)
