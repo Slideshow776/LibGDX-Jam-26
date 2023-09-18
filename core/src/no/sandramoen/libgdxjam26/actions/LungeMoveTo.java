@@ -39,8 +39,10 @@ public class LungeMoveTo extends MoveToAction {
                 if (enemy.getState().equals(EnemyState.DEAD)) {
                     GameUtils.playWithRandomPitch(BaseGame.kill0Sound, .9f, 1.1f);
                     //Slow down the game
-                    BaseGame.levelScreen.slowdown = 0.05f;
-                    BaseGame.levelScreen.slowdownDuration = 0.1f;
+                    if (BaseGame.levelScreen != null) {
+                        BaseGame.levelScreen.slowdown = 0.05f;
+                        BaseGame.levelScreen.slowdownDuration = 0.1f;
+                    }
                 }
             }
         }

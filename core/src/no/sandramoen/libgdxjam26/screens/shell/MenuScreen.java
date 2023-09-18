@@ -39,9 +39,8 @@ public class MenuScreen extends BaseScreen {
         if (Gdx.input.isCursorCatched())
             Gdx.input.setCursorCatched(false);
 
-        /*BaseGame.levelFinishMusic.stop();
-        BaseGame.menuMusic.setVolume(BaseGame.musicVolume);
-        BaseGame.menuMusic.play();*/
+        BaseGame.levelMusic.stop();
+        GameUtils.playLoopingMusic(BaseGame.menuMusic);
     }
 
     @Override

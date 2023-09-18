@@ -58,9 +58,12 @@ public class LevelScreen extends BaseScreen {
     private Vector2 source = new Vector2(), target = new Vector2();
 
     public LevelScreen() {
+        BaseGame.levelScreen = this;
 
         initializeActors();
         initializeGUI();
+        BaseGame.menuMusic.stop();
+        GameUtils.playLoopingMusic(BaseGame.levelMusic);
 
         OrthographicCamera test = (OrthographicCamera) mainStage.getCamera();
         this.enemySpawnSystem = new EnemySpawnSystem(player);
@@ -109,7 +112,6 @@ public class LevelScreen extends BaseScreen {
                     int previousLevel = player.getLevel();
                     player.addExperience(enemy.getData().getBaseExperience());
                     it.remove();
-                    enemy.remove();
                     if (player.getLevel() > previousLevel) {
                         experienceBar.setRange(0, player.getExperienceForCurrentLevel());
                         experienceBar.setValue(player.getExperience());

@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
+import com.badlogic.gdx.scenes.scene2d.actions.ParallelAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
 import no.sandramoen.libgdxjam26.actors.Player;
@@ -65,7 +66,7 @@ public class Enemy extends BaseActor {
         this.chatGroup.addActor(hitLabel);
 
         // Add the chat group to the stage for rendering
-        stage.addActor(chatGroup);
+        this.addActor(chatGroup);
     }
 
     /**
@@ -97,6 +98,9 @@ public class Enemy extends BaseActor {
                 setMotionAngle(0);
                 setSpeed(0);
             }
+        } else {
+            setMotionAngle(0);
+            setSpeed(0);
         }
 
         // Chat messages above enemy heads.
@@ -119,7 +123,7 @@ public class Enemy extends BaseActor {
         }
 
         // Position the chat group above the enemy
-        chatGroup.setPosition(getX() + ((getWidth() - chatGroup.getWidth()) / 2f), getY() + getHeight() + 2f);
+        chatGroup.setPosition(((getWidth() - chatGroup.getWidth()) / 2f), getHeight() + 2f);
         // Apply physics and continue actor processing
         this.applyPhysics(delta);
     }
@@ -157,25 +161,30 @@ public class Enemy extends BaseActor {
         // Decrease current health and ensure it doesn't go below zero
         this.currentHealth = Math.max(0, this.currentHealth - damage);
 
+        // Create an action to display the damage received
+        MoveToAction moveAction = new MoveToAction();
+        moveAction.setDuration(0.25f);
+        moveAction.setPosition(((chatGroup.getWidth() - hitLabel.getWidth()) / 2f), 15);
+
+        ParallelAction parallelAction = new ParallelAction();
+        parallelAction.setActor(hitLabel);
+        parallelAction.addAction(Actions.alpha(1));
+        parallelAction.addAction(Actions.fadeOut(0.25f));
+        parallelAction.addAction(moveAction);
+
+
         // Check if the enemy has been defeated
         if (this.currentHealth <= 0) {
             state = EnemyState.DEAD;
+            parallelAction.addAction(Actions.delay(0.25f, Actions.run(this::remove)));
         }
 
-        // Create an action to display the damage received
-        MoveToAction moveAction = new MoveToAction();
-        moveAction.setDuration(0.4f);
-        moveAction.setPosition(((chatGroup.getWidth() - hitLabel.getWidth()) / 2f), 15f);
 
         // Clear existing actions on the hit label and update its position and text
         this.hitLabel.getActions().clear();
         this.hitLabel.setPosition(((chatGroup.getWidth() - hitLabel.getWidth()) / 2f), 0);
         this.hitLabel.setText("" + (int) damage);
-
-        // Apply fade-in and fade-out animations to the hit label
-        this.hitLabel.addAction(Actions.alpha(1));
-        this.hitLabel.addAction(Actions.fadeOut(0.4f));
-        this.hitLabel.addAction(moveAction);
+        this.hitLabel.addAction(parallelAction);
 
         // Apply camera shake.
         shakeCamera();

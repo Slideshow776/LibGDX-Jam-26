@@ -41,6 +41,7 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
     public static Sound miss0Sound;
 
     public static Music menuMusic;
+    public static Music levelMusic;
 
     // game state
     public static Preferences preferences;
@@ -125,7 +126,8 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         assetManager.load(new AssetDescriptor("shaders/shockwave.fs", Text.class, new TextLoader.TextParameter()));
 
         // music
-        // assetManager.load("audio/music/398937__mypantsfelldown__metal-footsteps.wav", Music.class);
+        assetManager.load("audio/music/575803__peepee321__doom-loop-90-bpm.ogg", Music.class);
+        assetManager.load("audio/music/672783__bertsz__cyberpunk_metal.ogg", Music.class);
 
         // sound
         assetManager.load("audio/sound/click1.wav", Sound.class);
@@ -140,7 +142,8 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         shockwaveShader = assetManager.get("shaders/shockwave.fs", Text.class).getString();
 
         // music
-        // menuMusic = assetManager.get("audio/music/587251__lagmusics__epic-and-aggressive-percussion.mp3", Music.class);
+        menuMusic = assetManager.get("audio/music/575803__peepee321__doom-loop-90-bpm.ogg", Music.class);
+        levelMusic = assetManager.get("audio/music/672783__bertsz__cyberpunk_metal.ogg", Music.class);
 
         // sound
         click1Sound = assetManager.get("audio/sound/click1.wav", Sound.class);
