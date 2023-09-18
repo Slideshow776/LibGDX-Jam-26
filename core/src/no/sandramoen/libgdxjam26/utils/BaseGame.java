@@ -60,12 +60,15 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         Gdx.input.setInputProcessor(new InputMultiplexer());
         loadGameState();
         initializeUI();
-
-        // Set custom cursor.
-        Cursor customCursor = Gdx.graphics.newCursor(getPixmap("cursor"), 0, 0);
-        Gdx.graphics.setCursor(customCursor);
-
+        setCursor();
         assetManager();
+    }
+
+    public void setCursor() {
+        Pixmap pixmap = new Pixmap(Gdx.files.internal("images/included/cursor.png"));
+        Cursor cursor = Gdx.graphics.newCursor(pixmap, 0, 0);
+        Gdx.graphics.setCursor(cursor);
+        pixmap.dispose();
     }
 
     public static void setActiveScreen(BaseScreen screen) {
