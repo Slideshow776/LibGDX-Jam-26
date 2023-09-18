@@ -23,9 +23,7 @@ import no.sandramoen.libgdxjam26.actors.enemy.EnemySpawnSystem;
 import no.sandramoen.libgdxjam26.actors.enemy.EnemyState;
 import no.sandramoen.libgdxjam26.actors.map.Background;
 import no.sandramoen.libgdxjam26.actors.map.ImpassableTerrain;
-import no.sandramoen.libgdxjam26.actors.map.TiledMapActor;
 import no.sandramoen.libgdxjam26.utils.BaseScreen;
-import no.sandramoen.libgdxjam26.screens.shell.LevelSelectScreen;
 import no.sandramoen.libgdxjam26.ui.ExperienceBar;
 import no.sandramoen.libgdxjam26.ui.QuitWindow;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
@@ -43,8 +41,6 @@ public class LevelScreen extends BaseScreen {
 
     private TypingLabel topLabel;
 
-    private TiledMapActor tilemap;
-
     private Vector2 source = new Vector2(), target = new Vector2();
 
     private QuitWindow quitWindow;
@@ -53,15 +49,13 @@ public class LevelScreen extends BaseScreen {
     private Label levelLabel;
     private Label experienceLabel;
 
-    public LevelScreen(TiledMap tiledMap) {
-        currentMap = tiledMap;
-        this.tilemap = new TiledMapActor(currentMap, mainStage);
+    public LevelScreen() {
 
         initializeActors();
         initializeGUI();
 
         OrthographicCamera test = (OrthographicCamera) mainStage.getCamera();
-        this.enemySpawnSystem = new EnemySpawnSystem(tilemap, player);
+        this.enemySpawnSystem = new EnemySpawnSystem(player);
     }
 
     @Override
@@ -148,9 +142,7 @@ public class LevelScreen extends BaseScreen {
         if (keycode == Keys.ESCAPE || keycode == Keys.Q)
             quitWindow.setVisible(!quitWindow.isVisible());
         else if (keycode == Keys.R)
-            BaseGame.setActiveScreen(new LevelScreen(currentMap));
-        else if (keycode == Keys.T)
-            BaseGame.setActiveScreen(new LevelSelectScreen());
+            BaseGame.setActiveScreen(new LevelScreen());
         return super.keyDown(keycode);
     }
 
@@ -210,12 +202,6 @@ public class LevelScreen extends BaseScreen {
         this.impassables = new Array();
         new Background(0, 0, mainStage);
         this.player = new Player(0, 0, mainStage);
-        // loadActorsFromMap();
-    }
-
-    private void loadActorsFromMap() {
-        MapLoader mapLoader = new MapLoader(mainStage, tilemap, player, impassables);
-        player = mapLoader.player;
     }
 
     private void initializeGUI() {
@@ -238,6 +224,6 @@ public class LevelScreen extends BaseScreen {
 
         uiTable.defaults().padTop(Gdx.graphics.getHeight() * .02f);
         uiTable.add(topLabel).height(topLabel.getPrefHeight() * 1.5f).expandY().top().row();
-        uiTable.setDebug(true);
+        // uiTable.setDebug(true);
     }
 }
