@@ -3,6 +3,7 @@ package no.sandramoen.libgdxjam26.actors;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Align;
@@ -37,6 +38,9 @@ public class Player extends BaseActor {
     private int level = 1;
     private float experience;
 
+    public Animation<TextureRegion> walkingAnimation;
+    public Animation<TextureRegion> attackingAnimation;
+
     public Player(float x, float y, Stage stage) {
         super(x, y, stage);
         loadAnimation();
@@ -67,10 +71,18 @@ public class Player extends BaseActor {
 
     private void loadAnimation() {
         Array<TextureAtlas.AtlasRegion> animationImages = new Array<>();
+
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/walking1"));
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/walking2"));
-        animation = new Animation(.2f, animationImages, Animation.PlayMode.LOOP);
-        setAnimation(animation);
+        walkingAnimation = new Animation(.2f, animationImages, Animation.PlayMode.LOOP);
+
+        animationImages.clear();
+
+        animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/attacking1"));
+        animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/attacking2"));
+        attackingAnimation = new Animation(.2f, animationImages, Animation.PlayMode.NORMAL);
+
+        setAnimation(walkingAnimation);
     }
 
     private void handleMovement(float delta) {
