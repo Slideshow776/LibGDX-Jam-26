@@ -81,7 +81,7 @@ public class Enemy extends BaseActor {
         chatDuration -= delta;
 
         // Handle enemy movement and attack behaviors when following a player
-        if (following != null && !state.equals(EnemyState.DEAD)) {
+        if (following != null && state != EnemyState.DEAD) {
             playerPosition.set(following.getX(), following.getY());
             enemyPosition.set(this.getX(), this.getY());
 
@@ -97,7 +97,9 @@ public class Enemy extends BaseActor {
                 setSpeed(0);
             }
         }
-        if (!state.equals(EnemyState.DEAD)) {
+
+        // Chat messages above enemy heads.
+        if (state != EnemyState.DEAD) {
             // Update chat messages
             if (chatDelay >= 5) {
                 chatDelay = 0;

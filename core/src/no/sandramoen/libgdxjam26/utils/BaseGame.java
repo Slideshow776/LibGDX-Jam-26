@@ -10,6 +10,8 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -18,6 +20,9 @@ import com.badlogic.gdx.utils.Array;
 
 import no.sandramoen.libgdxjam26.screens.BaseScreen;
 import no.sandramoen.libgdxjam26.screens.gameplay.LevelScreen;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class BaseGame extends Game implements AssetErrorListener {
 
@@ -52,6 +57,8 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
     public static float soundVolume = .5f;
     public static float musicVolume = .1f;
     public static final float UNIT_SCALE = .125f;
+
+    private final Map<String, Pixmap> pixmapCache = new HashMap<String, Pixmap>();
 
     public BaseGame() {
         game = this;
@@ -148,5 +155,22 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
 
         textureAtlas = assetManager.get("images/included/packed/images.pack.atlas");
         GameUtils.printLoadingTime(getClass().getSimpleName(), "Assetmanager", startTime);
+    }
+
+    /**
+     * Cache pixmaps and retrieve from the cache if already created.
+     */
+    protected Pixmap getPixmap(String name) {
+        if (!pixmapCache.containsKey(name)) {
+            TextureAtlas.AtlasRegion atlasRegion = BaseGame.textureAtlas.findRegion(name);
+            TextureData textureData = atlasRegion.getTexture().getTextureData();
+            if (!textureData.isPrepared()) {
+                textureData.prepare();
+            }
+            Pixmap newPixmap = new Pixmap(atlasRegion.getRegionWidth(), atlasRegion.getRegionHeight(), Pixmap.Format.RGBA8888);
+            newPixmap.drawPixmap(textureData.consumePixmap(), 0, 0);
+            pixmapCache.put(name, newPixmap);
+        }
+        return pixmapCache.get(name);
     }
 }
