@@ -29,7 +29,7 @@ public class BaseActor extends Group {
     public float animationWidth = getWidth();
     public float animationHeight = getWidth();
     public boolean isCollisionEnabled = true;
-    public float shakyCamIntensity = 22.025f;
+    public float shakyCamIntensity = 1f;
     public boolean isShakyCam = false;
     protected Image image;
     private float animationTime = 0f;

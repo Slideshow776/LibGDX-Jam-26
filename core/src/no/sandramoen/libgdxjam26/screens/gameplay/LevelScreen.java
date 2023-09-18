@@ -61,24 +61,31 @@ public class LevelScreen extends BaseScreen {
 
         class CenterCamera extends Actor {
 
-            Camera camera;
-            Vector3 currentPosition = new Vector3();
+            final Camera camera;
+            final Vector3 currentPosition = new Vector3();
 
             public final float moveDuration = .25f;
 
             public CenterCamera(Camera camera) {
                 this.camera = camera;
                 currentPosition.set(camera.position);
+                setPosition(camera.position.x, camera.position.y);
             }
 
             @Override
             public void act (float delta) {
                 super.act(delta);
                 currentPosition.set(getX(), getY(), 0f);
-                camera.position.lerp(currentPosition, Interpolation.linear.apply(delta / moveDuration));
+                if (currentPosition.dst(camera.position) > 1e-1) {
+                    camera.position.lerp(currentPosition, Interpolation.linear.apply(delta / moveDuration));
+                }
+                else {
+                    camera.position.set(currentPosition);
+                }
             }
         }
-
+        mainStage.getCamera().position.set(80f / 2, 45f / 2, 0f);
+        System.out.println(mainStage.getCamera().position);
         mainStage.addActor(new CenterCamera(mainStage.getCamera()));
 
     }
