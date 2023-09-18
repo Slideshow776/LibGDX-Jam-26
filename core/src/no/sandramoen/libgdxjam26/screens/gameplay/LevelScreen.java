@@ -178,8 +178,8 @@ public class LevelScreen extends BaseScreen {
 
                             if (enemy.getState().equals(EnemyState.DEAD)) {
                                 //Slow down the game
-                                slowdown = 0.1f;
-                                slowdownDuration = 0.9f;
+                                slowdown = 0.05f;
+                                slowdownDuration = 0.1f;
 
                             }
                         }
