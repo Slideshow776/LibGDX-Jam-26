@@ -190,9 +190,9 @@ public class Enemy extends BaseActor {
         shakeCamera();
 
         EnemyHitEffect enemyHitEffect = new EnemyHitEffect();
-        enemyHitEffect.setPosition(+ getWidth()  / 2, getHeight() / 3);
+        enemyHitEffect.setPosition(+ getWidth()  / 2 - BaseGame.UNIT_SCALE * 16, getHeight() / 2 );
         enemyHitEffect.setScale(BaseGame.UNIT_SCALE / 4f);
-        enemyHitEffect.deltaScale = 4f;
+//        enemyHitEffect.deltaScale = 4f;
         enemyHitEffect.start();
         addActor(enemyHitEffect);
     }
