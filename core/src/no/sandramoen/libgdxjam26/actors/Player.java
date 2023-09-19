@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
+import no.sandramoen.libgdxjam26.screens.gameplay.LevelScreen;
 import no.sandramoen.libgdxjam26.utils.BaseActor;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
 
@@ -69,6 +70,11 @@ public class Player extends BaseActor {
 
     public void applyDamage(int amount) {
         health -= amount;
+
+        if (BaseGame.levelScreen instanceof LevelScreen) {
+            ((LevelScreen)BaseGame.levelScreen).hearts.decreaseHealth(amount);
+        }
+
         if (health <= 0)
             die();
     }
@@ -82,13 +88,13 @@ public class Player extends BaseActor {
 
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/walking1"));
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/walking2"));
-        walkingAnimation = new Animation(.2f, animationImages, Animation.PlayMode.LOOP);
+        walkingAnimation = new Animation<>(.2f, animationImages, Animation.PlayMode.LOOP);
 
         animationImages.clear();
 
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/attacking1"));
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/attacking2"));
-        attackingAnimation = new Animation(.2f, animationImages, Animation.PlayMode.NORMAL);
+        attackingAnimation = new Animation<>(.2f, animationImages, Animation.PlayMode.NORMAL);
 
         setAnimation(walkingAnimation);
     }

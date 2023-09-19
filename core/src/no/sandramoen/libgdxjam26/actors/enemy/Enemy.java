@@ -1,8 +1,7 @@
 package no.sandramoen.libgdxjam26.actors.enemy;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Group;
@@ -13,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.ParallelAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 import no.sandramoen.libgdxjam26.actors.Player;
 import no.sandramoen.libgdxjam26.actors.particles.EnemyHitEffect;
 import no.sandramoen.libgdxjam26.utils.BaseActor;
@@ -40,6 +40,8 @@ public class Enemy extends BaseActor {
     private final BaseActor attackCollisionBox;
     private float attackCooldown = 0f;
 
+    private Animation<TextureRegion> walkingAnimation, attackingAnimation, idleAnimation;
+
     /**
      * Constructs an `Enemy` instance with the provided data and initial position.
      *
@@ -52,12 +54,12 @@ public class Enemy extends BaseActor {
         // Call the superclass constructor to initialize basic actor properties
         super(x, y, stage);
 
+        loadAnimation(data.getResource());
+        setBoundaryRectangle();
+
         // Initialize enemy-specific attributes
         this.data = data;
         this.currentHealth = data.getBaseHealth();
-        this.loadImage(data.getResource());
-        this.setSize(data.getWidth(), data.getHeight());
-        this.image.setSize(data.getWidth(), data.getHeight());
         this.playerPosition = new Vector2();
         this.enemyPosition = new Vector2();
         this.chatGroup = new Group();
@@ -84,6 +86,30 @@ public class Enemy extends BaseActor {
         attackCollisionBox.setDebug(true);
         attackCollisionBox.isCollisionEnabled = false;
         addActor(attackCollisionBox);
+    }
+
+    private void loadAnimation(String enemyName) {
+        Array<TextureAtlas.AtlasRegion> animationImages = new Array<>();
+
+        animationImages.add(BaseGame.textureAtlas.findRegion("characters/" + enemyName + "/walking1"));
+        animationImages.add(BaseGame.textureAtlas.findRegion("characters/" + enemyName + "/walking2"));
+        walkingAnimation = new Animation<>(.2f, animationImages, Animation.PlayMode.LOOP);
+
+        animationImages.clear();
+        animationImages.add(BaseGame.textureAtlas.findRegion("characters/" + enemyName + "/attacking1"));
+        animationImages.add(BaseGame.textureAtlas.findRegion("characters/" + enemyName + "/attacking2"));
+        attackingAnimation = new Animation<>(.2f, animationImages, Animation.PlayMode.NORMAL);
+
+        animationImages.clear();
+        animationImages.add(BaseGame.textureAtlas.findRegion("characters/" + enemyName + "/idle1"));
+        animationImages.add(BaseGame.textureAtlas.findRegion("characters/" + enemyName + "/idle2"));
+        idleAnimation = new Animation<>(.6f, animationImages, Animation.PlayMode.LOOP);
+
+        setAnimation(walkingAnimation);
+        if (BaseGame.debugEnabled) {
+            setAnimation(idleAnimation);
+            state = EnemyState.DEBUG;
+        }
     }
 
     /**
@@ -117,7 +143,14 @@ public class Enemy extends BaseActor {
 
         if (state == EnemyState.ATTACK) return;
 
-        if (attackCooldown > 0) attackCooldown -= delta;
+        if (state == EnemyState.IDLE) {
+            attackCooldown -= delta;
+            if (attackCooldown <= 0) {
+                state = EnemyState.MOVE;
+                setAnimation(walkingAnimation);
+            }
+            return;
+        }
 
         // Handle enemy movement and attack behaviors when following a player
         if (following != null && state != EnemyState.DEAD) {
@@ -150,9 +183,10 @@ public class Enemy extends BaseActor {
                             moveAction,
                             Actions.delay(0.1f),
                             Actions.run( () -> {
+                                state = EnemyState.IDLE;
                                 attackCollisionBox.isCollisionEnabled = false;
-                                state = EnemyState.MOVE;
                                 attackCooldown = 1.5f;
+                                setAnimation(idleAnimation);
                             })
                     );
                     // Spawn the hitbox in front the enemy after a short delay
@@ -161,8 +195,8 @@ public class Enemy extends BaseActor {
                             Actions.sequence(
                                     Actions.delay(0.05f),
                                     Actions.run( () -> {
-                                        attackCollisionBox.isCollisionEnabled = true;
                                         state = EnemyState.DETECT_DAMAGE;
+                                        attackCollisionBox.isCollisionEnabled = true;
                                     })
                             )
                     );

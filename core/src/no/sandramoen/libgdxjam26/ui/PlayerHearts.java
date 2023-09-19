@@ -22,6 +22,12 @@ public class PlayerHearts extends Actor {
         setHeight(fullHeart.getHeight());
     }
 
+    public void decreaseHealth(int amount) {
+        for (int i = 0; i < amount; ++i) {
+            decreaseHealth();
+        }
+    }
+
     public void decreaseHealth() {
         if (health > 0) {
             health--;

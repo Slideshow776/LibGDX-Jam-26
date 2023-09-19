@@ -44,7 +44,7 @@ public class LevelScreen extends BaseScreen {
     private QuitWindow quitWindow;
     private EnemySpawnSystem enemySpawnSystem;
     private Label levelLabel;
-    private PlayerHearts hearts;
+    public PlayerHearts hearts;
     private AbilityBar abilityBar;
     private Vector2 source = new Vector2(), target = new Vector2();
 
