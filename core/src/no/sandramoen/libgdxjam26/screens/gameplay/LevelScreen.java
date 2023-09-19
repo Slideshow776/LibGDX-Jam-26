@@ -167,7 +167,7 @@ public class LevelScreen extends BaseScreen {
 
     private void initializeActors() {
         this.impassables = new Array();
-        new Background(0, 0, mainStage);
+        new Background(-2, -2, mainStage);
         this.player = new Player(0, 0, mainStage);
     }
 

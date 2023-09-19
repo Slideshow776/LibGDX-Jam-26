@@ -13,7 +13,6 @@ public class Background extends BaseActor {
 
     public Background(float x, float y, Stage stage) {
         super(x, y, stage);
-        // setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         animationImages.add(BaseGame.textureAtlas.findRegion("background"));
         animation = new Animation(2f, animationImages, Animation.PlayMode.LOOP);
         setAnimation(animation);
