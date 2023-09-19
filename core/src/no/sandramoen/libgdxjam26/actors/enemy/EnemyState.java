@@ -26,5 +26,4 @@ public enum EnemyState {
     DEAD,
     DETECT_DAMAGE,
     IDLE,
-    DEBUG,  // TODO: remove once unneeded.
 }

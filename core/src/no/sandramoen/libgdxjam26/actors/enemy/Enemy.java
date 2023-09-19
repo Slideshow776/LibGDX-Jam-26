@@ -106,10 +106,6 @@ public class Enemy extends BaseActor {
         idleAnimation = new Animation<>(.6f, animationImages, Animation.PlayMode.LOOP);
 
         setAnimation(walkingAnimation);
-        if (BaseGame.debugEnabled) {
-            setAnimation(idleAnimation);
-            state = EnemyState.DEBUG;
-        }
     }
 
     /**

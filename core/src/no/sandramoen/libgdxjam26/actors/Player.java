@@ -41,8 +41,7 @@ public class Player extends BaseActor {
     private int health = 20;
     public int getHealth() { return health; }
 
-    public Animation<TextureRegion> walkingAnimation;
-    public Animation<TextureRegion> attackingAnimation;
+    public Animation<TextureRegion> walkingAnimation, attackingAnimation, idleAnimation;
 
     public Player(float x, float y, Stage stage) {
         super(x, y, stage);
@@ -96,7 +95,11 @@ public class Player extends BaseActor {
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/attacking2"));
         attackingAnimation = new Animation<>(.2f, animationImages, Animation.PlayMode.NORMAL);
 
-        setAnimation(walkingAnimation);
+        animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/idle1"));
+        animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/idle2"));
+        idleAnimation = new Animation<>(.6f, animationImages, Animation.PlayMode.LOOP);
+
+        setAnimation(idleAnimation);
     }
 
     private void handleMovement(float delta) {
@@ -114,14 +117,20 @@ public class Player extends BaseActor {
 
             if (target.dst2(source) > 1e-1) {
                 // Move player towards cursor.
-                isMoving = true;
+                if (!isMoving) {
+                    setAnimation(walkingAnimation);
+                    isMoving = true;
+                }
                 float angleDeg = target.sub(source).angleDeg();
                 angleDeg = Math.floorMod((int)angleDeg, 360);
                 setMotionAngle(angleDeg);
                 setSpeed(Player.MOVE_SPEED);
                 checkIfFlip(angleDeg);
             } else {
-                isMoving = false;
+                if (isMoving) {
+                    setAnimation(idleAnimation);
+                    isMoving = false;
+                }
                 setMotionAngle(0f);
                 setSpeed(0);
             }
