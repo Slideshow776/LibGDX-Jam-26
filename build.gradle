@@ -1,7 +1,7 @@
 import com.badlogic.gdx.tools.texturepacker.TexturePacker
 
 buildscript {
-    
+
 
     repositories {
         mavenLocal()
@@ -9,13 +9,14 @@ buildscript {
         gradlePluginPortal()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         google()
+        maven { url 'https://jitpack.io' }
     }
     dependencies {
         classpath 'org.wisepersist:gwt-gradle-plugin:1.1.16'
         classpath 'org.gretty:gretty:3.0.7'
         classpath 'com.android.tools.build:gradle:7.2.2'
         classpath "com.badlogicgames.gdx:gdx-tools:1.11.0"
-        
+
 
     }
 }
@@ -55,7 +56,7 @@ project(":desktop") {
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
         api "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
-        
+
     }
 }
 
@@ -79,7 +80,7 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86_64"
         api "com.badlogicgames.ashley:ashley:$ashleyVersion"
-        
+
     }
 }
 
@@ -104,7 +105,7 @@ project(":html") {
         api "com.badlogicgames.ashley:ashley:$ashleyVersion:sources"
         implementation "com.github.tommyettinger:textratypist:0.10.0:sources"
         implementation "com.github.tommyettinger:regexodus:0.1.15:sources"
-        
+
     }
 
 }
@@ -120,7 +121,8 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         api "com.badlogicgames.ashley:ashley:$ashleyVersion"
         implementation "com.github.tommyettinger:textratypist:0.10.0"
-        
+        implementation("io.github.fourlastor.gdx:harlequin:1.1.2")
+        implementation "com.github.MrStahlfelge.gdx-websockets:core:1.9.10.3"
     }
 
     task packTextures {
