@@ -3,6 +3,7 @@ package no.sandramoen.libgdxjam26.screens.gameplay;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -40,7 +41,6 @@ public class LevelScreen extends BaseScreen {
     private TiledMap currentMap;
     private Array<ImpassableTerrain> impassables;
     private Player player;
-    private TypingLabel topLabel;
     private QuitWindow quitWindow;
     private EnemySpawnSystem enemySpawnSystem;
     private Label levelLabel;
@@ -172,24 +172,41 @@ public class LevelScreen extends BaseScreen {
     }
 
     private void initializeGUI() {
-        topLabel = new TypingLabel("{SLOWER}G A M E   O V E R !", new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-20", BitmapFont.class), null));
-        topLabel.setAlignment(Align.top);
+        Label abilityLabel = new Label("Ability unlocked at level 20",  new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-20", BitmapFont.class), null));
+        Label continueLabel = new Label("Continues left: 4",  new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-20", BitmapFont.class), null));
 
         this.quitWindow = new QuitWindow();
-        this.levelLabel = new Label("Level: " + player.getLevel(), BaseGame.mySkin);
+        this.levelLabel = new Label("Level: " + player.getLevel(),  new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-20", BitmapFont.class), null));
+        this.levelLabel.setColor(Color.WHITE);
         this.levelLabel.setPosition(levelLabel.getWidth() + 25, Gdx.graphics.getHeight() - levelLabel.getHeight() - 25);
         this.hearts = new PlayerHearts();
         this.hearts.setPosition(Gdx.graphics.getWidth() - hearts.getWidth() - 25, Gdx.graphics.getHeight() - hearts.getHeight() - 25);
         this.abilityBar = new AbilityBar(3);
         this.abilityBar.setPosition((Gdx.graphics.getWidth() - abilityBar.getWidth()) / 2f, abilityBar.getHeight());
 
-        uiStage.addActor(quitWindow);
-        uiStage.addActor(levelLabel);
-        uiStage.addActor(hearts);
-        uiStage.addActor(abilityBar);
+        uiTable.addActor(quitWindow);
+        uiTable.addActor(levelLabel);
+        uiTable.addActor(hearts);
+        uiTable.addActor(abilityBar);
 
-        uiTable.defaults().padTop(Gdx.graphics.getHeight() * .02f);
-        uiTable.add(topLabel).height(topLabel.getPrefHeight() * 1.5f).expandY().top().row();
+        uiTable.defaults()
+                .padTop(Gdx.graphics.getHeight() * .02f)
+                .padRight(Gdx.graphics.getWidth() * .02f)
+                .padBottom(Gdx.graphics.getHeight() * .02f)
+                .padLeft(Gdx.graphics.getWidth() * .02f);
+
+        uiTable.add(continueLabel)
+                .height(abilityLabel.getPrefHeight() * 1.5f)
+                .bottom()
+                .left();
+
+        uiTable.add(abilityLabel)
+                .height(abilityLabel.getPrefHeight() * 1.5f)
+                .expand()
+                .bottom()
+                .right()
+                .row();
+
         // uiTable.setDebug(true);
     }
 }
