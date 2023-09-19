@@ -1,5 +1,7 @@
 package no.sandramoen.libgdxjam26.utils;
 
+import static java.lang.Math.abs;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
@@ -88,9 +90,37 @@ public class BaseActor extends Group {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        //  apply color tint effect
         Color c = getColor();
         batch.setColor(c.r, c.g, c.b, c.a);
+
+        if (animation != null && isVisible()) {
+            if (isFacingRight)
+                batch.draw(
+                        animation.getKeyFrame(animationTime),
+                        getX() + abs(getWidth() - animationWidth) / 2,
+                        getY() + abs(getHeight() - animationHeight) / 2,
+                        getOriginX(),
+                        getOriginY(),
+                        animationWidth,
+                        animationHeight,
+                        getScaleX(),
+                        getScaleY(),
+                        getRotation()
+                );
+            else
+                batch.draw(
+                        animation.getKeyFrame(animationTime),
+                        getX() + getWidth(),
+                        getY(),
+                        getOriginX() - getWidth(),
+                        getOriginY(),
+                        -getWidth(),
+                        getHeight(),
+                        getScaleX(),
+                        getScaleY(),
+                        getRotation()
+                );
+        }
         super.draw(batch, parentAlpha);
     }
 
