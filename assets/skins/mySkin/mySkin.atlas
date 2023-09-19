@@ -4,6 +4,27 @@ size: 2048, 2048
 format: RGBA8888
 filter: Linear, Linear
 repeat: none
+MetalMania-20
+  rotate: false
+  xy: 1, 1220
+  size: 512, 512
+  orig: 512, 512
+  offset: 0, 0
+  index: -1
+MetalMania-40
+  rotate: false
+  xy: 1, 706
+  size: 512, 512
+  orig: 512, 512
+  offset: 0, 0
+  index: -1
+MetalMania-59
+  rotate: false
+  xy: 515, 1220
+  size: 512, 512
+  orig: 512, 512
+  offset: 0, 0
+  index: -1
 Play-Bold20white
   rotate: false
   xy: 1, 626
@@ -245,26 +266,5 @@ window
   split: 15, 15, 35, 15
   pad: 9, 10, 37, 5
   orig: 71, 91
-  offset: 0, 0
-  index: -1
-MetalMania-20
-  rotate: false
-  xy: 1, 1220
-  size: 512, 512
-  orig: 512, 512
-  offset: 0, 0
-  index: -1
-MetalMania-40
-  rotate: false
-  xy: 1, 706
-  size: 512, 512
-  orig: 512, 512
-  offset: 0, 0
-  index: -1
-MetalMania-59
-  rotate: false
-  xy: 515, 1220
-  size: 512, 512
-  orig: 512, 512
   offset: 0, 0
   index: -1
