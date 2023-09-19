@@ -6,25 +6,22 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import no.sandramoen.libgdxjam26.utils.BaseActor;
 
-import java.util.function.Consumer;
-
 public class Projectile extends BaseActor {
 
     private final Sprite sprite;
     private final Vector2 currentPosition;
     private final Vector2 target;
-    private final Consumer<Player> onHit;
     private final Player player;
 
-    public Projectile(Player player, Sprite sprite, float startX, float startY, float targetX, float targetY, Stage stage, Consumer<Player> onHit) {
+    public Projectile(Player player, Sprite sprite, float startX, float startY, float targetX, float targetY, Stage stage) {
         super(startX, startY, stage);
         this.player = player;
         this.currentPosition = new Vector2(startX, startY);
         this.target = new Vector2(targetX, targetY);
-        this.onHit = onHit;
         this.sprite = sprite;
         sprite.setPosition(getX(), getY());
         sprite.setRotation(getAngle(currentPosition, target));
+        setBoundaryRectangle();
     }
 
 
@@ -49,5 +46,15 @@ public class Projectile extends BaseActor {
         setMotionAngle(angle);
         setSpeed(200f);
         this.applyPhysics(delta);
+
+        if (this.overlaps(player.getCollisionBox())) {
+            remove();
+            player.applyDamage(1);
+        }
+
+        if (currentPosition.dst(getX(), getY()) > 100) { // it has traveled off-screen or something
+            remove();
+            return;
+        }
     }
 }

@@ -170,10 +170,7 @@ public class Enemy extends BaseActor {
                     float y1 = this.getY(Align.center);
                     float x2 = following.getX(Align.center);
                     float y2 = following.getY(Align.center);
-                    Projectile p = new Projectile(following, projectile, x1, y1, x2, y2, getStage(), f -> {
-                        System.out.println("WTF");
-                    });
-                    chatGroup.addActor(p);
+                    chatGroup.addActor(new Projectile(following, projectile, x1, y1, x2, y2, getStage()));
                 } else {
                     // Create damage shape in front.
                     // Set debug = true.
