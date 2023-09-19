@@ -25,7 +25,7 @@ import no.sandramoen.libgdxjam26.actors.enemy.EnemySpawnSystem;
 import no.sandramoen.libgdxjam26.actors.enemy.EnemyState;
 import no.sandramoen.libgdxjam26.actors.map.Background;
 import no.sandramoen.libgdxjam26.actors.map.ImpassableTerrain;
-import no.sandramoen.libgdxjam26.ui.ExperienceBar;
+import no.sandramoen.libgdxjam26.ui.AbilityBar;
 import no.sandramoen.libgdxjam26.ui.PlayerHearts;
 import no.sandramoen.libgdxjam26.ui.QuitWindow;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
@@ -43,10 +43,9 @@ public class LevelScreen extends BaseScreen {
     private TypingLabel topLabel;
     private QuitWindow quitWindow;
     private EnemySpawnSystem enemySpawnSystem;
-    private ExperienceBar experienceBar;
     private Label levelLabel;
-    private Label experienceLabel;
     private PlayerHearts hearts;
+    private AbilityBar abilityBar;
     private Vector2 source = new Vector2(), target = new Vector2();
 
     public LevelScreen() {
@@ -102,14 +101,8 @@ public class LevelScreen extends BaseScreen {
                     int previousLevel = player.getLevel();
                     player.addExperience(enemy.getData().getBaseExperience());
                     it.remove();
-                    if (player.getLevel() > previousLevel) {
-                        experienceBar.setRange(0, player.getExperienceForCurrentLevel());
-                        experienceBar.setValue(player.getExperience());
-                        levelLabel.setText("" + player.getLevel());
-                    }
-                    experienceLabel.setText((int) player.getExperience() + " / " + (int) player.getExperienceForCurrentLevel());
-                    experienceBar.setAnimateDuration(0.25f);
-                    experienceBar.setValue(player.getExperience());
+                    if (player.getLevel() > previousLevel)
+                        levelLabel.setText("Level: " + player.getLevel());
                 }
             }
         }
@@ -183,21 +176,17 @@ public class LevelScreen extends BaseScreen {
         topLabel.setAlignment(Align.top);
 
         this.quitWindow = new QuitWindow();
-        this.experienceBar = new ExperienceBar(player.getExperienceForCurrentLevel());
-        this.levelLabel = new Label("" + player.getLevel(), BaseGame.mySkin);
-        this.experienceLabel = new Label((int) player.getExperience() + " / " + (int) player.getExperienceForCurrentLevel(), BaseGame.mySkin);
-        this.experienceBar.setSize(300, 15);
-        this.experienceBar.setPosition((Gdx.graphics.getWidth() - experienceBar.getWidth()) / 2, 35);
-        this.levelLabel.setPosition((Gdx.graphics.getWidth() - levelLabel.getWidth()) / 2, experienceBar.getY() + experienceBar.getHeight() + levelLabel.getHeight());
-        this.experienceLabel.setPosition(experienceBar.getX() + (experienceBar.getWidth() - experienceLabel.getWidth()) / 2, experienceBar.getY() + (experienceBar.getHeight() - experienceLabel.getHeight()) / 2);
+        this.levelLabel = new Label("Level: " + player.getLevel(), BaseGame.mySkin);
+        this.levelLabel.setPosition(levelLabel.getWidth() + 25, Gdx.graphics.getHeight() - levelLabel.getHeight() - 25);
         this.hearts = new PlayerHearts();
         this.hearts.setPosition(Gdx.graphics.getWidth() - hearts.getWidth() - 25, Gdx.graphics.getHeight() - hearts.getHeight() - 25);
+        this.abilityBar = new AbilityBar(3);
+        this.abilityBar.setPosition((Gdx.graphics.getWidth() - abilityBar.getWidth()) / 2f, abilityBar.getHeight());
 
         uiStage.addActor(quitWindow);
-        uiStage.addActor(experienceBar);
         uiStage.addActor(levelLabel);
-        uiStage.addActor(experienceLabel);
         uiStage.addActor(hearts);
+        uiStage.addActor(abilityBar);
 
         uiTable.defaults().padTop(Gdx.graphics.getHeight() * .02f);
         uiTable.add(topLabel).height(topLabel.getPrefHeight() * 1.5f).expandY().top().row();
