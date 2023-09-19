@@ -46,7 +46,7 @@ public class LevelScreen extends BaseScreen {
     private ExperienceBar experienceBar;
     private Label levelLabel;
     private Label experienceLabel;
-    private PlayerHearts hearts;
+    public PlayerHearts hearts;
     private Vector2 source = new Vector2(), target = new Vector2();
 
     public LevelScreen() {

@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
+import no.sandramoen.libgdxjam26.screens.gameplay.LevelScreen;
 import no.sandramoen.libgdxjam26.utils.BaseActor;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
 
@@ -69,6 +70,11 @@ public class Player extends BaseActor {
 
     public void applyDamage(int amount) {
         health -= amount;
+
+        if (BaseGame.levelScreen instanceof LevelScreen) {
+            ((LevelScreen)BaseGame.levelScreen).hearts.decreaseHealth(amount);
+        }
+
         if (health <= 0)
             die();
     }
