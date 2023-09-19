@@ -1,6 +1,8 @@
 package no.sandramoen.libgdxjam26.actors.enemy;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
@@ -14,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import no.sandramoen.libgdxjam26.actors.Player;
+import no.sandramoen.libgdxjam26.actors.Projectile;
 import no.sandramoen.libgdxjam26.actors.particles.EnemyHitEffect;
 import no.sandramoen.libgdxjam26.utils.BaseActor;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
@@ -31,16 +34,17 @@ public class Enemy extends BaseActor {
     private final Group chatGroup; // Group for managing chat labels
     private final Label chatLabel; // Label for displaying chat messages
     private final Label hitLabel; // Label for displaying damage received
+    private final BaseActor attackCollisionBox;
     private int index; // Index for identifying the enemy instance
     private EnemyState state = EnemyState.MOVE; // Current state of the enemy
     private Player following; // Reference to the player character being followed
     private float chatDuration = 1; // Duration for displaying chat messages
     private float chatDelay = 0; // Delay between chat messages
     private float currentHealth; // Current health of the enemy
-    private final BaseActor attackCollisionBox;
     private float attackCooldown = 0f;
 
     private Animation<TextureRegion> walkingAnimation, attackingAnimation, idleAnimation;
+    private Texture projectile;
 
     /**
      * Constructs an `Enemy` instance with the provided data and initial position.
@@ -70,6 +74,7 @@ public class Enemy extends BaseActor {
         this.chatGroup.setScale(BaseGame.UNIT_SCALE);
         this.chatGroup.addActor(chatLabel);
         this.chatGroup.addActor(hitLabel);
+        this.projectile = new Texture(Gdx.files.internal("images/included/GUI/arrow.png"));
 
         // Add the chat group to the stage for rendering
         this.addActor(chatGroup);
@@ -129,10 +134,6 @@ public class Enemy extends BaseActor {
                 state = EnemyState.ATTACK;
                 following.applyDamage(data.attackDamage);
                 attackCollisionBox.isCollisionEnabled = false;
-
-                // TODO: remove in the future when not needed.
-                System.out.println("damaged");
-                System.out.println(following.getHealth());
             }
             return;
         }
@@ -151,7 +152,7 @@ public class Enemy extends BaseActor {
         // Handle enemy movement and attack behaviors when following a player
         if (following != null && state != EnemyState.DEAD) {
             playerPosition.set(following.getX(Align.center), following.getY(Align.center));
-            enemyPosition.set(this.getX(), this.getY());
+            enemyPosition.set(this.getX(Align.center), this.getY(Align.center));
 
             // Check if the player is out of attack range, and if so, move towards the player
             if (playerPosition.dst(enemyPosition) > data.getAttackRange()) {
@@ -163,10 +164,16 @@ public class Enemy extends BaseActor {
                 state = EnemyState.ATTACK;
                 setMotionAngle(0);
                 setSpeed(0);
-                if (data == EnemyData.ARCHER) {
-                    // Projectile.
-                }
-                else {
+                if (data == EnemyData.ARCHER || data == EnemyData.MAGE) {
+                    float x1 = this.getX(Align.center);
+                    float y1 = this.getY(Align.center);
+                    float x2 = following.getX(Align.center);
+                    float y2 = following.getY(Align.center);
+                    Projectile p = new Projectile(following, projectile, x1, y1, x2, y2, getStage(), f -> {
+                        System.out.println("WTF");
+                    });
+                    chatGroup.addActor(p);
+                } else {
                     // Create damage shape in front.
                     // Set debug = true.
                     getActions().clear();
@@ -178,7 +185,7 @@ public class Enemy extends BaseActor {
                     SequenceAction sequence = Actions.sequence(
                             moveAction,
                             Actions.delay(0.1f),
-                            Actions.run( () -> {
+                            Actions.run(() -> {
                                 state = EnemyState.IDLE;
                                 attackCollisionBox.isCollisionEnabled = false;
                                 attackCooldown = 1.5f;
@@ -190,7 +197,7 @@ public class Enemy extends BaseActor {
                             sequence,
                             Actions.sequence(
                                     Actions.delay(0.05f),
-                                    Actions.run( () -> {
+                                    Actions.run(() -> {
                                         state = EnemyState.DETECT_DAMAGE;
                                         attackCollisionBox.isCollisionEnabled = true;
                                     })
@@ -242,7 +249,9 @@ public class Enemy extends BaseActor {
      * @param parentAlpha The alpha value of the parent actor, if applicable.
      */
     @Override
-    public void draw(Batch batch, float parentAlpha) { super.draw(batch, parentAlpha); }
+    public void draw(Batch batch, float parentAlpha) {
+        super.draw(batch, parentAlpha);
+    }
 
     /**
      * Initiates following of a player character by the enemy.
