@@ -44,7 +44,7 @@ public class Enemy extends BaseActor {
     private float attackCooldown = 0f;
 
     private Animation<TextureRegion> walkingAnimation, attackingAnimation, idleAnimation;
-    private Texture projectile;
+    private Sprite projectile;
 
     /**
      * Constructs an `Enemy` instance with the provided data and initial position.
@@ -74,7 +74,8 @@ public class Enemy extends BaseActor {
         this.chatGroup.setScale(BaseGame.UNIT_SCALE);
         this.chatGroup.addActor(chatLabel);
         this.chatGroup.addActor(hitLabel);
-        this.projectile = new Texture(Gdx.files.internal("images/included/GUI/arrow.png"));
+        this.projectile = new Sprite(new Texture(Gdx.files.internal("images/included/GUI/arrow.png")));
+        this.projectile.flip(true, true);
 
         // Add the chat group to the stage for rendering
         this.addActor(chatGroup);
