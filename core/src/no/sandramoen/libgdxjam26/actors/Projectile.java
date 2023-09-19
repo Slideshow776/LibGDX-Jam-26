@@ -1,28 +1,27 @@
 package no.sandramoen.libgdxjam26.actors;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import no.sandramoen.libgdxjam26.utils.BaseActor;
 
-import java.util.function.Consumer;
-
 public class Projectile extends BaseActor {
 
-    private final Texture texture;
+    private final Sprite sprite;
     private final Vector2 currentPosition;
     private final Vector2 target;
-    private final Consumer<Player> onHit;
     private final Player player;
 
-    public Projectile(Player player, Texture texture, float startX, float startY, float targetX, float targetY, Stage stage, Consumer<Player> onHit) {
+    public Projectile(Player player, Sprite sprite, float startX, float startY, float targetX, float targetY, Stage stage) {
         super(startX, startY, stage);
         this.player = player;
         this.currentPosition = new Vector2(startX, startY);
         this.target = new Vector2(targetX, targetY);
-        this.onHit = onHit;
-        this.texture = texture;
+        this.sprite = sprite;
+        sprite.setPosition(getX(), getY());
+        sprite.setRotation(getAngle(currentPosition, target));
+        setBoundaryRectangle();
     }
 
 
@@ -30,19 +29,32 @@ public class Projectile extends BaseActor {
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
 
-        batch.draw(texture, getX(), getY());
+        sprite.draw(batch);
+    }
+
+    private float getAngle(Vector2 start, Vector2 end) {
+        return (float) (Math.atan2(end.y - start.y, end.x - start.x) * (180f / Math.PI));
     }
 
     @Override
     public void act(float delta) {
         super.act(delta);
+        sprite.setPosition(getX(), getY());
+        sprite.setRotation(getAngle(currentPosition, target));
 
-        currentPosition.set(getX(), getY());
-
-        float angle = target.sub(currentPosition).angleDeg();
+        float angle = target.cpy().sub(currentPosition).angleDeg();
         setMotionAngle(angle);
-        setSpeed(100f);
-
+        setSpeed(200f);
         this.applyPhysics(delta);
+
+        if (this.overlaps(player.getCollisionBox())) {
+            remove();
+            player.applyDamage(1);
+        }
+
+        if (currentPosition.dst(getX(), getY()) > 100) { // it has traveled off-screen or something
+            remove();
+            return;
+        }
     }
 }

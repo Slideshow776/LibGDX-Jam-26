@@ -44,7 +44,7 @@ public class Enemy extends BaseActor {
     private float attackCooldown = 0f;
 
     private Animation<TextureRegion> walkingAnimation, attackingAnimation, idleAnimation;
-    private Texture projectile;
+    private Sprite projectile;
 
     /**
      * Constructs an `Enemy` instance with the provided data and initial position.
@@ -74,7 +74,8 @@ public class Enemy extends BaseActor {
         this.chatGroup.setScale(BaseGame.UNIT_SCALE);
         this.chatGroup.addActor(chatLabel);
         this.chatGroup.addActor(hitLabel);
-        this.projectile = new Texture(Gdx.files.internal("images/included/GUI/arrow.png"));
+        this.projectile = new Sprite(new Texture(Gdx.files.internal("images/included/GUI/arrow.png")));
+        this.projectile.flip(true, true);
 
         // Add the chat group to the stage for rendering
         this.addActor(chatGroup);
@@ -169,10 +170,7 @@ public class Enemy extends BaseActor {
                     float y1 = this.getY(Align.center);
                     float x2 = following.getX(Align.center);
                     float y2 = following.getY(Align.center);
-                    Projectile p = new Projectile(following, projectile, x1, y1, x2, y2, getStage(), f -> {
-                        System.out.println("WTF");
-                    });
-                    chatGroup.addActor(p);
+                    chatGroup.addActor(new Projectile(following, projectile, x1, y1, x2, y2, getStage()));
                 } else {
                     // Create damage shape in front.
                     // Set debug = true.
