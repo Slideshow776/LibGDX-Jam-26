@@ -17,6 +17,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 
+import com.github.czyzby.websocket.serialization.impl.JsonSerializer;
 import no.sandramoen.libgdxjam26.screens.gameplay.LevelScreen;
 
 import java.util.HashMap;
@@ -56,6 +57,7 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
     public static final boolean debugEnabled = true;
 
     private final Map<String, Pixmap> pixmapCache = new HashMap<String, Pixmap>();
+    public static JsonSerializer jsonSerializer = new JsonSerializer();
 
     public BaseGame() {
         game = this;
