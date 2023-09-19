@@ -22,7 +22,7 @@ public enum EnemyData {
      * - Base Experience: 50 units
      * - Resource: whitePixel (a placeholder resource)
      */
-    ARCHER("Archer", 5, 5, 10, 1, 100, 50, "enemyKnight", 1, 1),
+    ARCHER("Archer", 5, 5, 15, 1, 100, 50, "enemyKnight", 1, 1),
 
     /**
      * The Mage enemy type.
@@ -35,7 +35,7 @@ public enum EnemyData {
      * - Base Experience: 60 units
      * - Resource: whitePixel (a placeholder resource)
      */
-    MAGE("Mage", 5, 5, 8, 1, 120, 60, "enemyKnight", 1, 1),
+    MAGE("Mage", 5, 5, 12, 1, 120, 60, "enemyKnight", 1, 1),
 
     /**
      * The Melee enemy type.

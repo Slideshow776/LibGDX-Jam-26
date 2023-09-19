@@ -3,9 +3,10 @@ package no.sandramoen.libgdxjam26.screens.gameplay;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
@@ -15,9 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ParticleEffectActor;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
-import com.github.tommyettinger.textra.TypingLabel;
 import no.sandramoen.libgdxjam26.actions.CenterCamera;
 import no.sandramoen.libgdxjam26.actions.LungeMoveTo;
 import no.sandramoen.libgdxjam26.actors.Player;
@@ -38,13 +37,13 @@ import java.util.Iterator;
 
 public class LevelScreen extends BaseScreen {
     private final Comparator<Actor> ySortComparator = Comparator.comparing((Actor actor) -> -actor.getY());
+    public PlayerHearts hearts;
     private TiledMap currentMap;
     private Array<ImpassableTerrain> impassables;
     private Player player;
     private QuitWindow quitWindow;
     private EnemySpawnSystem enemySpawnSystem;
     private Label levelLabel;
-    public PlayerHearts hearts;
     private AbilityBar abilityBar;
     private Vector2 source = new Vector2(), target = new Vector2();
 
@@ -134,8 +133,12 @@ public class LevelScreen extends BaseScreen {
     }
 
     @Override
-    public void update(float delta) {
+    public void render(float delta) {
+        super.render(delta);
+    }
 
+    @Override
+    public void update(float delta) {
         // Sort actors by layer.
         sortActors();
 
@@ -172,14 +175,14 @@ public class LevelScreen extends BaseScreen {
     }
 
     private void initializeGUI() {
-        Label abilityLabel = new Label("Ability unlocked at level 20",  new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-20", BitmapFont.class), null));
-        Label continueLabel = new Label("Continues left 4",  new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-20", BitmapFont.class), null));
+        Label abilityLabel = new Label("Ability unlocked at level 20", new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-20", BitmapFont.class), null));
+        Label continueLabel = new Label("Continues left 4", new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-20", BitmapFont.class), null));
 
         float horizontalPadding = Gdx.graphics.getWidth() * .02f;
         float verticalPadding = Gdx.graphics.getHeight() * .02f;
 
         this.quitWindow = new QuitWindow();
-        this.levelLabel = new Label("Level " + player.getLevel(),  new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-20", BitmapFont.class), null));
+        this.levelLabel = new Label("Level " + player.getLevel(), new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-20", BitmapFont.class), null));
         this.levelLabel.setPosition(horizontalPadding, Gdx.graphics.getHeight() - levelLabel.getHeight() - verticalPadding);
 
         this.hearts = new PlayerHearts();
