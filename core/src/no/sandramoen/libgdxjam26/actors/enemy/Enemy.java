@@ -61,6 +61,10 @@ public class Enemy extends BaseActor {
         loadAnimation(data.getResource());
         setBoundaryRectangle();
 
+        setOrigin(Align.center);
+        image.setAlign(Align.center);
+        image.setOrigin(Align.center);
+
         // Initialize enemy-specific attributes
         this.data = data;
         this.currentHealth = data.getBaseHealth();
@@ -91,7 +95,6 @@ public class Enemy extends BaseActor {
                 getHeight() / 2 - attackCollisionBox.getHeight() / 2
         );
         attackCollisionBox.setBoundaryRectangle();
-        attackCollisionBox.setVisible(false);
         attackCollisionBox.setDebug(true);
         attackCollisionBox.isCollisionEnabled = false;
         addActor(attackCollisionBox);
@@ -138,7 +141,6 @@ public class Enemy extends BaseActor {
                 state = EnemyState.ATTACK;
                 following.applyDamage(data.attackDamage);
                 attackCollisionBox.isCollisionEnabled = false;
-                attackCollisionBox.setVisible(false);
             }
             return;
         }
@@ -187,13 +189,13 @@ public class Enemy extends BaseActor {
                     Vector2 finalPosition = enemyPosition.add(lungeVector);
 
                     MoveToAction moveAction = Actions.moveTo(finalPosition.x, finalPosition.y, 0.5f, Interpolation.exp10);
+                    moveAction.setAlignment(Align.center);
                     SequenceAction sequence = Actions.sequence(
                             moveAction,
                             Actions.delay(0.1f),
                             Actions.run(() -> {
                                 state = EnemyState.IDLE;
                                 attackCollisionBox.isCollisionEnabled = false;
-                                attackCollisionBox.setVisible(false);
                                 attackCooldown = 1.5f;
                                 setAnimation(idleAnimation);
                             })
@@ -206,7 +208,6 @@ public class Enemy extends BaseActor {
                                     Actions.run(() -> {
                                         state = EnemyState.DETECT_DAMAGE;
                                         attackCollisionBox.isCollisionEnabled = true;
-                                        attackCollisionBox.setVisible(true);
                                     })
                             )
                     );
@@ -292,7 +293,6 @@ public class Enemy extends BaseActor {
         parallelAction.addAction(Actions.alpha(1));
         parallelAction.addAction(Actions.fadeOut(0.25f));
         parallelAction.addAction(moveAction);
-
 
         // Check if the enemy has been defeated
         if (this.currentHealth <= 0) {

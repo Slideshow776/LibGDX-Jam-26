@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ParticleEffectActor;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.compression.lzma.Base;
 import no.sandramoen.libgdxjam26.actions.CenterCamera;
@@ -117,10 +118,11 @@ public class LevelScreen extends BaseScreen {
 
             // Get normalized Vector between player and mouse.
             target.set(mainStage.screenToStageCoordinates(new Vector2(screenX, screenY)));
-            source.set(player.getX(), player.getY());  // No idea why but Align.center breaks this.
+            source.set(player.getX(Align.center), player.getY(Align.center));
             Vector2 lungeVector = target.sub(source).nor().scl(player.LUNGE_DISTANCE);
 
             MoveToAction moveAction = new LungeMoveTo(player, enemySpawnSystem.getEnemies());
+            moveAction.setAlignment(Align.center);
             moveAction.setDuration(0.6f);
             moveAction.setInterpolation(Interpolation.exp10);
             Vector2 finalPosition = source.add(lungeVector);

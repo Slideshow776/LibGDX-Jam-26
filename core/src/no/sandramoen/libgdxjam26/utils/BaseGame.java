@@ -22,8 +22,7 @@ import com.badlogic.gdx.utils.Array;
 import com.github.czyzby.websocket.serialization.impl.JsonSerializer;
 import no.sandramoen.libgdxjam26.screens.gameplay.LevelScreen;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public abstract class BaseGame extends Game implements AssetErrorListener {
 
@@ -44,6 +43,9 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
     public static Sound hoverOverEnterSound;
     public static Sound kill0Sound;
     public static Sound miss0Sound;
+    public static List<Sound> hitSounds = new ArrayList<>();
+    public static Integer hitSoundsPreviousIndex = -1;
+    public static List<Sound> swingSounds;
     public static Sound levelUpSound;
 
     public static Music menuMusic;
@@ -66,6 +68,8 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
 
     private final Map<String, Pixmap> pixmapCache = new HashMap<String, Pixmap>();
     public static JsonSerializer jsonSerializer = new JsonSerializer();
+
+    public static Random random = new Random();
 
     public BaseGame() {
         game = this;
@@ -146,6 +150,10 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         assetManager.load("audio/sound/hoverOverEnter.wav", Sound.class);
         assetManager.load("audio/sound/player/kill0.ogg", Sound.class);
         assetManager.load("audio/sound/player/miss0.ogg", Sound.class);
+        assetManager.load("audio/sound/player/hit1.ogg", Sound.class);
+        assetManager.load("audio/sound/player/hit2.ogg", Sound.class);
+        assetManager.load("audio/sound/player/hit3.ogg", Sound.class);
+        assetManager.load("audio/sound/player/hit4.ogg", Sound.class);
         assetManager.load("audio/sound/GUI/levelUp.wav", Sound.class);
 
         assetManager.finishLoading();
@@ -163,6 +171,10 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         hoverOverEnterSound = assetManager.get("audio/sound/hoverOverEnter.wav", Sound.class);
         kill0Sound = assetManager.get("audio/sound/player/kill0.ogg", Sound.class);
         miss0Sound = assetManager.get("audio/sound/player/miss0.ogg", Sound.class);
+        hitSounds.add(assetManager.get("audio/sound/player/hit1.ogg", Sound.class));
+        hitSounds.add(assetManager.get("audio/sound/player/hit2.ogg", Sound.class));
+        hitSounds.add(assetManager.get("audio/sound/player/hit3.ogg", Sound.class));
+        hitSounds.add(assetManager.get("audio/sound/player/hit4.ogg", Sound.class));
         levelUpSound = assetManager.get("audio/sound/GUI/levelUp.wav", Sound.class);
 
         textureAtlas = assetManager.get("images/included/packed/images.pack.atlas");

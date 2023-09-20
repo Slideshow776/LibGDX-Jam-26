@@ -9,11 +9,16 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
+import com.badlogic.gdx.utils.compression.lzma.Base;
+import no.sandramoen.libgdxjam26.actors.enemy.EnemyData;
 import no.sandramoen.libgdxjam26.screens.gameplay.LevelScreen;
 import no.sandramoen.libgdxjam26.utils.BaseActor;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
+import no.sandramoen.libgdxjam26.utils.GameUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class Player extends BaseActor {
     public static final float MOVE_SPEED = 18;
@@ -68,6 +73,18 @@ public class Player extends BaseActor {
     }
 
     public void applyDamage(int amount) {
+
+        // Play a random 'hit' noise.
+        // Don't play the previous hit noise.
+        List<Integer> numberList = new ArrayList<>();
+        for (int i = 0; i < BaseGame.hitSounds.size(); ++i) {
+            numberList.add(i);
+        }
+        numberList.remove(BaseGame.hitSoundsPreviousIndex);
+        int randomIndex =  numberList.get(BaseGame.random.nextInt(numberList.size()));
+        BaseGame.hitSoundsPreviousIndex = randomIndex;
+        GameUtils.playWithRandomPitch(BaseGame.hitSounds.get(randomIndex), .8f, .9f);
+
         health -= amount;
 
         if (BaseGame.levelScreen != null) {
