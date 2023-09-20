@@ -10,6 +10,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.TextureData;
@@ -40,9 +41,13 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
     public static Sound hoverOverEnterSound;
     public static Sound kill0Sound;
     public static Sound miss0Sound;
+    public static Sound levelUpSound;
 
     public static Music menuMusic;
     public static Music levelMusic;
+
+    public static Color paletteRed = new Color(0.353f, 0.125f, 0.2f, 1f);
+    public static Color paletteGreen = new Color(0.255f, 0.455f, 0.353f, 1f);
 
     // game state
     public static Preferences preferences;
@@ -138,6 +143,7 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         assetManager.load("audio/sound/hoverOverEnter.wav", Sound.class);
         assetManager.load("audio/sound/player/kill0.ogg", Sound.class);
         assetManager.load("audio/sound/player/miss0.ogg", Sound.class);
+        assetManager.load("audio/sound/GUI/levelUp.wav", Sound.class);
 
         assetManager.finishLoading();
 
@@ -154,6 +160,7 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         hoverOverEnterSound = assetManager.get("audio/sound/hoverOverEnter.wav", Sound.class);
         kill0Sound = assetManager.get("audio/sound/player/kill0.ogg", Sound.class);
         miss0Sound = assetManager.get("audio/sound/player/miss0.ogg", Sound.class);
+        levelUpSound = assetManager.get("audio/sound/GUI/levelUp.wav", Sound.class);
 
         textureAtlas = assetManager.get("images/included/packed/images.pack.atlas");
         GameUtils.printLoadingTime(getClass().getSimpleName(), "Assetmanager", startTime);
