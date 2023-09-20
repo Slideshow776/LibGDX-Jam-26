@@ -1,6 +1,7 @@
 package no.sandramoen.libgdxjam26.utils;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
@@ -8,8 +9,7 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
@@ -106,6 +106,10 @@ public abstract class BaseScreen implements Screen, InputProcessor, ControllerLi
 
     @Override
     public boolean keyDown(int keycode) {
+        if (keycode == Input.Keys.F1 && BaseGame.debugEnabled) {
+            for (Actor actor : mainStage.getActors()) actor.setDebug(!actor.getDebug());
+            for (Actor actor : uiStage.getActors()) actor.setDebug(!actor.getDebug());
+        }
         return false;
     }
 
