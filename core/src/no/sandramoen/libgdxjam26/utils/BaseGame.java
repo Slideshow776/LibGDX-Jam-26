@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 
@@ -35,6 +36,8 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
 
     public static String defaultShader;
     public static String shockwaveShader;
+
+    public static ShaderProgram hallucinationShader;
 
     public static Sound click1Sound;
     public static Sound hoverOverEnterSound;
@@ -157,6 +160,11 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
 
         textureAtlas = assetManager.get("images/included/packed/images.pack.atlas");
         GameUtils.printLoadingTime(getClass().getSimpleName(), "Assetmanager", startTime);
+
+
+        String defaultVertexShader = Gdx.files.internal("shaders/default.vs").readString();
+        String fragmentShader = Gdx.files.internal("shaders/hallucination.fs").readString();
+        hallucinationShader = new ShaderProgram(defaultVertexShader, fragmentShader);
 
         // TODO: particle effects.
     }

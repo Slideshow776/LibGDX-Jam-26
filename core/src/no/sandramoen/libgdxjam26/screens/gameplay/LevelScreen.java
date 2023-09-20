@@ -5,11 +5,15 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
@@ -17,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ParticleEffectActor;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.compression.lzma.Base;
 import no.sandramoen.libgdxjam26.actions.CenterCamera;
 import no.sandramoen.libgdxjam26.actions.LungeMoveTo;
 import no.sandramoen.libgdxjam26.actors.Player;
@@ -58,7 +63,6 @@ public class LevelScreen extends BaseScreen {
         OrthographicCamera test = (OrthographicCamera) mainStage.getCamera();
         this.enemySpawnSystem = new EnemySpawnSystem(player);
         mainStage.addActor(new CenterCamera(mainStage.getCamera()));
-
     }
 
     @Override
@@ -133,9 +137,7 @@ public class LevelScreen extends BaseScreen {
     }
 
     @Override
-    public void render(float delta) {
-        super.render(delta);
-    }
+    public void render(float delta) {  super.render(delta); }
 
     @Override
     public void update(float delta) {
