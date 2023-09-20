@@ -140,6 +140,7 @@ public class Enemy extends BaseActor {
             if (attackCollisionBox.overlaps(following.getCollisionBox())) {
                 state = EnemyState.ATTACK;
                 following.applyDamage(data.attackDamage);
+                following.applyKnockBack(this);
                 attackCollisionBox.isCollisionEnabled = false;
             }
             return;

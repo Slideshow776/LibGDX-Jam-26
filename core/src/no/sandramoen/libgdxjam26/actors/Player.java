@@ -4,13 +4,22 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
 import com.badlogic.gdx.utils.compression.lzma.Base;
+import no.sandramoen.libgdxjam26.actions.CenterCamera;
+import no.sandramoen.libgdxjam26.actions.LungeMoveTo;
+import no.sandramoen.libgdxjam26.actions.Shake;
+import no.sandramoen.libgdxjam26.actors.enemy.Enemy;
 import no.sandramoen.libgdxjam26.actors.enemy.EnemyData;
+import no.sandramoen.libgdxjam26.actors.particles.EnemyHitEffect;
 import no.sandramoen.libgdxjam26.screens.gameplay.LevelScreen;
 import no.sandramoen.libgdxjam26.utils.BaseActor;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
@@ -72,14 +81,57 @@ public class Player extends BaseActor {
         return collisionBox;
     }
 
+    public void applyKnockBack(Enemy enemy) {
+        getActions().clear();
+
+        shakeCamera(4f);
+//        CenterCamera.MOVE_DURATION = .125f;
+//        CenterCamera.INTERPOLATION = Interpolation.slowFast;
+
+        // Get normalized Vector between player and mouse.
+        target.set(getX(Align.center), getY(Align.center));
+        source.set(enemy.getX(Align.center), enemy.getY(Align.center));
+        Vector2 lungeVector = target.sub(source).nor().scl(10);
+        Vector2 finalPosition = source.add(lungeVector);
+
+        MoveToAction moveAction = Actions.moveTo(finalPosition.x, finalPosition.y, 0.2f, Interpolation.exp10Out);
+        moveAction.setAlignment(Align.center);
+        SequenceAction sequence = Actions.sequence(
+                moveAction,
+                Actions.delay(0.3f),
+                Actions.run(() -> state = State.IDLE)
+        );
+        addAction(sequence);
+
+        sequence = Actions.sequence(
+                Actions.moveBy(0, BaseGame.UNIT_SCALE * 4f),
+                Actions.delay(0.1f),
+                Actions.moveBy(0, -BaseGame.UNIT_SCALE * 4f)
+        );
+        addAction(sequence);
+
+        addAction(new Shake(.2f));
+
+        // Hit particle effect.
+        EnemyHitEffect hitEffect = new EnemyHitEffect();
+        hitEffect.setPosition(+getWidth() / 2 - BaseGame.UNIT_SCALE * 16, getHeight() / 3);
+        hitEffect.setScale(BaseGame.UNIT_SCALE / 4f);
+        hitEffect.deltaScale = 1f / 3f;
+        hitEffect.start();
+        addActor(hitEffect);
+
+
+        state = State.KNOCKED_BACK;
+    }
+
     public void applyDamage(int amount) {
 
         // Play a random 'hit' noise.
-        // Don't play the previous hit noise.
         List<Integer> numberList = new ArrayList<>();
         for (int i = 0; i < BaseGame.hitSounds.size(); ++i) {
             numberList.add(i);
         }
+        // Don't play the previous hit noise.
         numberList.remove(BaseGame.hitSoundsPreviousIndex);
         int randomIndex =  numberList.get(BaseGame.random.nextInt(numberList.size()));
         BaseGame.hitSoundsPreviousIndex = randomIndex;
@@ -120,7 +172,7 @@ public class Player extends BaseActor {
     }
 
     private void handleMovement(float delta) {
-        if (state != Player.State.LUNGING) {
+        if (state != State.LUNGING && state != State.KNOCKED_BACK) {
 
             // Update attackCooldown.
             if (this.attackCooldown > 0) this.attackCooldown -= delta;
@@ -186,7 +238,8 @@ public class Player extends BaseActor {
     public enum State {
         IDLE,
         MOVING,
-        LUNGING;
+        LUNGING,
+        KNOCKED_BACK;
     }
 
 }

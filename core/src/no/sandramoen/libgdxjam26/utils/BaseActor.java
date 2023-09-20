@@ -340,15 +340,19 @@ public class BaseActor extends Group {
     }
 
     public void shakeCamera() {
+        shakeCamera(shakyCamIntensity);
+    }
+
+    public void shakeCamera(float intensity) {
         this.getStage().getCamera().position.set(
                 new Vector3(
                         this.getStage().getCamera().position.x + MathUtils.random(
-                                -shakyCamIntensity,
-                                shakyCamIntensity
+                                -intensity,
+                                intensity
                         ),
                         this.getStage().getCamera().position.y + MathUtils.random(
-                                -shakyCamIntensity,
-                                shakyCamIntensity
+                                -intensity,
+                                intensity
                         ),
                         0f
                 )

@@ -61,6 +61,7 @@ public class ParticleActor extends Group {
         if (effect.isComplete() && !effect.getEmitters().first().isContinuous()) {
             effect.dispose();
             this.remove();
+            renderingActor.remove();
         }
     }
 
