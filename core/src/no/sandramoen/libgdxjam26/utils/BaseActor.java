@@ -238,6 +238,11 @@ public class BaseActor extends Group {
         accelerationVec.set(0, 0);
     }
 
+    protected void checkIfFlip(float angleDeg) {
+        if (!isFacingRight && (angleDeg >= 270 || angleDeg <= 90)) flip();
+        else if (isFacingRight && (angleDeg > 90 && angleDeg < 270)) flip();
+    }
+
     // camera ---------------------------------------------------------------------------------------------------
     public void zoomCamera(float zoom) {
         if (this.getStage() != null) {

@@ -70,8 +70,8 @@ public class Player extends BaseActor {
     public void applyDamage(int amount) {
         health -= amount;
 
-        if (BaseGame.levelScreen instanceof LevelScreen) {
-            ((LevelScreen)BaseGame.levelScreen).hearts.decreaseHealth(amount);
+        if (BaseGame.levelScreen != null) {
+            BaseGame.levelScreen.hearts.decreaseHealth(amount);
         }
 
         if (health <= 0)
@@ -136,11 +136,6 @@ public class Player extends BaseActor {
             }
             applyPhysics(delta);
         }
-    }
-
-    private void checkIfFlip(float angleDeg) {
-        if (!isFacingRight && (angleDeg >= 270 || angleDeg <= 90)) flip();
-        else if (isFacingRight && (angleDeg > 90 && angleDeg < 270)) flip();
     }
 
     @Override

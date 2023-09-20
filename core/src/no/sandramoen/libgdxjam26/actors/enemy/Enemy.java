@@ -89,6 +89,7 @@ public class Enemy extends BaseActor {
                 getHeight() / 2 - attackCollisionBox.getHeight() / 2
         );
         attackCollisionBox.setBoundaryRectangle();
+        attackCollisionBox.setVisible(false);
         attackCollisionBox.setDebug(true);
         attackCollisionBox.isCollisionEnabled = false;
         addActor(attackCollisionBox);
@@ -135,6 +136,7 @@ public class Enemy extends BaseActor {
                 state = EnemyState.ATTACK;
                 following.applyDamage(data.attackDamage);
                 attackCollisionBox.isCollisionEnabled = false;
+                attackCollisionBox.setVisible(false);
             }
             return;
         }
@@ -155,9 +157,12 @@ public class Enemy extends BaseActor {
             playerPosition.set(following.getX(Align.center), following.getY(Align.center));
             enemyPosition.set(this.getX(Align.center), this.getY(Align.center));
 
+            float angleDegrees = playerPosition.cpy().sub(enemyPosition).angleDeg();
+            checkIfFlip(angleDegrees);
+
             // Check if the player is out of attack range, and if so, move towards the player
             if (playerPosition.dst(enemyPosition) > data.getAttackRange()) {
-                setMotionAngle(playerPosition.sub(enemyPosition).angleDeg());
+                setMotionAngle(angleDegrees);
                 setSpeed(Player.MOVE_SPEED / 2f);
                 state = EnemyState.MOVE;
             } else {
@@ -186,6 +191,7 @@ public class Enemy extends BaseActor {
                             Actions.run(() -> {
                                 state = EnemyState.IDLE;
                                 attackCollisionBox.isCollisionEnabled = false;
+                                attackCollisionBox.setVisible(false);
                                 attackCooldown = 1.5f;
                                 setAnimation(idleAnimation);
                             })
@@ -198,6 +204,7 @@ public class Enemy extends BaseActor {
                                     Actions.run(() -> {
                                         state = EnemyState.DETECT_DAMAGE;
                                         attackCollisionBox.isCollisionEnabled = true;
+                                        attackCollisionBox.setVisible(true);
                                     })
                             )
                     );
