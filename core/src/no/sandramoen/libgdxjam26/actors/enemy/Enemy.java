@@ -68,12 +68,15 @@ public class Enemy extends BaseActor {
         this.enemyPosition = new Vector2();
         this.chatGroup = new Group();
         this.chatLabel = new Label("", new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-20", BitmapFont.class), null));
-        this.hitLabel = new Label("", new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-20", BitmapFont.class), Color.RED));
+        Color redPaletteColour = new Color(0.353f, 0.125f, 0.2f, 1f);
+        this.hitLabel = new Label("", new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-20", BitmapFont.class), redPaletteColour));
         this.chatLabel.setAlignment(Align.center);
         this.hitLabel.setAlignment(Align.center);
+
         this.chatGroup.setScale(BaseGame.UNIT_SCALE);
         this.chatGroup.addActor(chatLabel);
         this.chatGroup.addActor(hitLabel);
+
         this.projectile = new Sprite(new Texture(Gdx.files.internal("images/included/GUI/arrow.png")));
         this.projectile.flip(true, true);
 
