@@ -82,10 +82,8 @@ public class BaseActor extends Group {
         if (!pause)
             super.act(delta);
 
-        if (animation != null && !animationPaused) {
+        if (animation != null && !animationPaused)
             animationTime += delta;
-            ((TextureRegionDrawable) image.getDrawable()).setRegion(animation.getKeyFrame(animationTime));
-        }
     }
 
     @Override
@@ -93,6 +91,34 @@ public class BaseActor extends Group {
         Color c = getColor();
         batch.setColor(c.r, c.g, c.b, c.a);
 
+        if (animation != null && isVisible()) {
+            if (isFacingRight)
+                batch.draw(
+                        animation.getKeyFrame(animationTime),
+                        getX() + abs(getWidth() - animationWidth) / 2,
+                        getY() + abs(getHeight() - animationHeight) / 2,
+                        getOriginX(),
+                        getOriginY(),
+                        animationWidth,
+                        animationHeight,
+                        getScaleX(),
+                        getScaleY(),
+                        getRotation()
+                );
+            else
+                batch.draw(
+                        animation.getKeyFrame(animationTime),
+                        getX() + getWidth(),
+                        getY(),
+                        getOriginX() - getWidth(),
+                        getOriginY(),
+                        -getWidth(),
+                        getHeight(),
+                        getScaleX(),
+                        getScaleY(),
+                        getRotation()
+                );
+        }
         super.draw(batch, parentAlpha);
     }
 
@@ -150,14 +176,12 @@ public class BaseActor extends Group {
         setSize(w, h);
         setOrigin(Align.center);
 
-        if (image != null) image.remove();
         TextureRegionDrawable textureRegionDrawable = new TextureRegionDrawable();
         textureRegionDrawable.setRegion(tr);
         image = new Image(textureRegionDrawable);
         image.setSize(w, h);
         image.setAlign(Align.center);
         image.setOrigin(Align.center);
-        addActor(image);
 
         if (boundaryPolygon == null)
             setBoundaryRectangle();
