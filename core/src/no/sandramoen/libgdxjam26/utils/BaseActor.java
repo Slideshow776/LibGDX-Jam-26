@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.g2d.Animation;
+import io.github.fourlastor.harlequin.animation.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
@@ -19,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import io.github.fourlastor.harlequin.animation.FixedFrameAnimation;
 
 
 public class BaseActor extends Group {
@@ -34,7 +35,7 @@ public class BaseActor extends Group {
     public float shakyCamIntensity = 1f;
     public boolean isShakyCam = false;
     protected Image image;
-    private float animationTime = 0f;
+    public float animationTime = 0f;
     private boolean animationPaused = false;
     private Vector2 velocityVec = new Vector2(0f, 0f);
     private Vector2 accelerationVec = new Vector2(0f, 0f);
@@ -155,7 +156,7 @@ public class BaseActor extends Group {
             textureArray.add(new TextureRegion(texture));
         }
 
-        Animation<TextureRegion> anim = new Animation(frameDuration, textureArray);
+        Animation<TextureRegion> anim = new FixedFrameAnimation<>(frameDuration, textureArray);
 
         if (loop)
             anim.setPlayMode(Animation.PlayMode.LOOP);
@@ -170,6 +171,7 @@ public class BaseActor extends Group {
 
     public void setAnimation(Animation<TextureRegion> anim) {
         animation = anim;
+
         TextureRegion tr = animation.getKeyFrame(0);
         float w = tr.getRegionWidth() * BaseGame.UNIT_SCALE;
         float h = tr.getRegionHeight() * BaseGame.UNIT_SCALE;
@@ -191,7 +193,9 @@ public class BaseActor extends Group {
         TextureRegion region = BaseGame.textureAtlas.findRegion(name);
         if (region == null)
             Gdx.app.error(getClass().getSimpleName(), "Error: region is null. Are you sure the image '" + name + "' exists?");
-        setAnimation(new Animation(1f, region));
+        Array<TextureRegion> regions = new Array<>();
+        regions.add(region);
+        setAnimation(new FixedFrameAnimation<>(1f, regions));
     }
 
     public float getSpeed() {

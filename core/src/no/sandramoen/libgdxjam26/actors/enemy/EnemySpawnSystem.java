@@ -54,7 +54,7 @@ public class EnemySpawnSystem {
     public void spawnRandomEnemy() {
         // Generate a random index to select an enemy type from the EnemyData enum.
         int randomIndex = (int) (Math.random() * EnemyData.values().length);
-        EnemyData data = EnemyData.values()[randomIndex];
+        EnemyData data = EnemyData.values()[2];
 
         // Generate random X and Y coordinates within the game map bounds.
         int randomX = (int) (Math.random() * player.getStage().getViewport().getWorldWidth());

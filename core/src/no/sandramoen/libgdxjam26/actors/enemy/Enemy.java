@@ -1,7 +1,6 @@
 package no.sandramoen.libgdxjam26.actors.enemy;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Interpolation;
@@ -15,9 +14,12 @@ import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import io.github.fourlastor.harlequin.animation.Animation;
+import io.github.fourlastor.harlequin.animation.FixedFrameAnimation;
 import no.sandramoen.libgdxjam26.actors.Player;
 import no.sandramoen.libgdxjam26.actors.Projectile;
 import no.sandramoen.libgdxjam26.actors.particles.EnemyHitEffect;
+import no.sandramoen.libgdxjam26.utils.AsepriteAnimationLoader;
 import no.sandramoen.libgdxjam26.utils.BaseActor;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
 
@@ -103,19 +105,18 @@ public class Enemy extends BaseActor {
     private void loadAnimation(String enemyName) {
         Array<TextureAtlas.AtlasRegion> animationImages = new Array<>();
 
-        animationImages.add(BaseGame.textureAtlas.findRegion("characters/" + enemyName + "/walking1"));
-        animationImages.add(BaseGame.textureAtlas.findRegion("characters/" + enemyName + "/walking2"));
-        walkingAnimation = new Animation<>(.2f, animationImages, Animation.PlayMode.LOOP);
+        walkingAnimation = AsepriteAnimationLoader.load("assets/images/included/characters/enemyMask/walking");
+        walkingAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
         animationImages.clear();
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/" + enemyName + "/attacking1"));
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/" + enemyName + "/attacking2"));
-        attackingAnimation = new Animation<>(.2f, animationImages, Animation.PlayMode.NORMAL);
+        attackingAnimation = new FixedFrameAnimation<>(.2f, animationImages, Animation.PlayMode.NORMAL);
 
         animationImages.clear();
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/" + enemyName + "/idle1"));
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/" + enemyName + "/idle2"));
-        idleAnimation = new Animation<>(.6f, animationImages, Animation.PlayMode.LOOP);
+        idleAnimation = new FixedFrameAnimation<>(.6f, animationImages, Animation.PlayMode.LOOP);
 
         setAnimation(walkingAnimation);
     }

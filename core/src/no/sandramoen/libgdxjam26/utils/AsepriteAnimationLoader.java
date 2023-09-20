@@ -39,8 +39,8 @@ public class AsepriteAnimationLoader {
 
     static Json json = new Json();
 
-    public static Animation<TextureRegionDrawable> load(String animationName) {
-        List<KeyFrame<TextureRegionDrawable>> keyFrames = new ArrayList<>();
+    public static Animation<TextureRegion> load(String animationName) {
+        List<KeyFrame<TextureRegion>> keyFrames = new ArrayList<>();
 
         int startTime = 0;
         try {
@@ -52,8 +52,8 @@ public class AsepriteAnimationLoader {
             JsonValue asepriteAnimation = (JsonValue) BaseGame.jsonSerializer.deserialize(bytes);
             inputStream.close();
             JsonValue frames = asepriteAnimation.get("frames");
+            animationName = animationName.split("/", 4)[3];
 
-            fileHandle = Gdx.files.internal(animationName + ".png");
             for (JsonValue key : frames) {
                 TextureAtlas.AtlasRegion frameTexture = BaseGame.textureAtlas.findRegion(animationName);
 
@@ -61,8 +61,8 @@ public class AsepriteAnimationLoader {
 
                 keyFrames.add(KeyFrame.create(
                         startTime,
-                        new TextureRegionDrawable(new TextureRegion(
-                                frameTexture, frame.frame.x, frame.frame.y, frame.frame.w, frame.frame.h))));
+                        new TextureRegion(
+                                frameTexture, frame.frame.x, frame.frame.y, frame.frame.w, frame.frame.h)));
                 startTime += frame.duration;
             }
 

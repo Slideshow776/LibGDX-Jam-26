@@ -1,7 +1,7 @@
 package no.sandramoen.libgdxjam26.actors;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.Animation;
+import io.github.fourlastor.harlequin.animation.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
@@ -13,14 +13,11 @@ import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
-import com.badlogic.gdx.utils.compression.lzma.Base;
-import no.sandramoen.libgdxjam26.actions.CenterCamera;
-import no.sandramoen.libgdxjam26.actions.LungeMoveTo;
+import io.github.fourlastor.harlequin.animation.FixedFrameAnimation;
 import no.sandramoen.libgdxjam26.actions.Shake;
 import no.sandramoen.libgdxjam26.actors.enemy.Enemy;
-import no.sandramoen.libgdxjam26.actors.enemy.EnemyData;
 import no.sandramoen.libgdxjam26.actors.particles.EnemyHitEffect;
-import no.sandramoen.libgdxjam26.screens.gameplay.LevelScreen;
+import no.sandramoen.libgdxjam26.utils.AsepriteAnimationLoader;
 import no.sandramoen.libgdxjam26.utils.BaseActor;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
 import no.sandramoen.libgdxjam26.utils.GameUtils;
@@ -156,17 +153,15 @@ public class Player extends BaseActor {
 
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/walking1"));
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/walking2"));
-        walkingAnimation = new Animation<>(.2f, animationImages, Animation.PlayMode.LOOP);
+        walkingAnimation = new FixedFrameAnimation<>(.2f, animationImages, Animation.PlayMode.LOOP);
 
         animationImages.clear();
-        animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/attacking1"));
-        animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/attacking2"));
-        attackingAnimation = new Animation<>(.2f, animationImages, Animation.PlayMode.NORMAL);
+        attackingAnimation = AsepriteAnimationLoader.load("assets/images/included/characters/player/attack");
 
         animationImages.clear();
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/idle1"));
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/idle2"));
-        idleAnimation = new Animation<>(.6f, animationImages, Animation.PlayMode.LOOP);
+        idleAnimation = new FixedFrameAnimation<>(.6f, animationImages, Animation.PlayMode.LOOP);
 
         setAnimation(idleAnimation);
     }
