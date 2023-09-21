@@ -63,9 +63,7 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
     public static float soundVolume = .5f;
     public static float musicVolume = .1f;
     public static final float UNIT_SCALE = .125f;
-
     public static final boolean debugEnabled = true;
-
     private final Map<String, Pixmap> pixmapCache = new HashMap<String, Pixmap>();
     public static JsonSerializer jsonSerializer = new JsonSerializer();
 
@@ -142,8 +140,8 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         assetManager.load(new AssetDescriptor("shaders/shockwave.fs", Text.class, new TextLoader.TextParameter()));
 
         // music
-        assetManager.load("audio/music/575803__peepee321__doom-loop-90-bpm.ogg", Music.class);
-        assetManager.load("audio/music/672783__bertsz__cyberpunk_metal.ogg", Music.class);
+        assetManager.load("audio/music/menuMusic.ogg", Music.class);
+        assetManager.load("audio/music/levelMusic.ogg", Music.class);
 
         // sound
         assetManager.load("audio/sound/click1.wav", Sound.class);
@@ -163,8 +161,8 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         shockwaveShader = assetManager.get("shaders/shockwave.fs", Text.class).getString();
 
         // music
-        menuMusic = assetManager.get("audio/music/575803__peepee321__doom-loop-90-bpm.ogg", Music.class);
-        levelMusic = assetManager.get("audio/music/672783__bertsz__cyberpunk_metal.ogg", Music.class);
+        menuMusic = assetManager.get("audio/music/menuMusic.ogg", Music.class);
+        levelMusic = assetManager.get("audio/music/levelMusic.ogg", Music.class);
 
         // sound
         click1Sound = assetManager.get("audio/sound/click1.wav", Sound.class);

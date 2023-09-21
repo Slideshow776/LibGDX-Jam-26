@@ -45,7 +45,7 @@ public class LevelScreen extends BaseScreen {
     public PlayerHearts hearts;
     private TiledMap currentMap;
     private Array<ImpassableTerrain> impassables;
-    private Player player;
+    public Player player;
     private QuitWindow quitWindow;
     private EnemySpawnSystem enemySpawnSystem;
     private Label levelLabel;
