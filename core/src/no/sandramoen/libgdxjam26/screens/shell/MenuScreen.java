@@ -134,6 +134,7 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void start() {
+        BaseGame.continuesLeft = BaseGame.MAX_CONTINUES;
         BaseGame.setActiveScreen(new LevelScreen(1, 0));
     }
 

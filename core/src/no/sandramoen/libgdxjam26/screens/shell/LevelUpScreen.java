@@ -86,7 +86,16 @@ public class LevelUpScreen extends BaseScreen {
         experienceBar.progress.addAction(Actions.after(Actions.run(() ->
                 new BaseActor(0f, 0f, mainStage).addAction(Actions.sequence(
                         Actions.delay(animationDelayOut),
-                        Actions.run(() -> BaseGame.setActiveScreen(new LevelScreen(startingLevel, percentToNextLevel)))
+                        Actions.run(() -> {
+                            BaseGame.continuesLeft--;
+
+                            if (BaseGame.continuesLeft > 0) {
+                                BaseGame.setActiveScreen(new LevelScreen(startingLevel, percentToNextLevel));
+                            } else {
+                                BaseGame.levelScreen = null;
+                                BaseGame.setActiveScreen(new MenuScreen());
+                            }
+                        })
                 ))
         )));
     }

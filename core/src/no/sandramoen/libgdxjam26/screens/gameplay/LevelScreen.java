@@ -181,7 +181,7 @@ public class LevelScreen extends BaseScreen {
 
     private void initializeGUI() {
         Label abilityLabel = new Label("Ability unlocked at level 20", new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-20", BitmapFont.class), null));
-        Label continueLabel = new Label("Continues left 4", new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-20", BitmapFont.class), null));
+        Label continueLabel = new Label("Continues left " + BaseGame.continuesLeft, new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-20", BitmapFont.class), null));
 
         float horizontalPadding = Gdx.graphics.getWidth() * .02f;
         float verticalPadding = Gdx.graphics.getHeight() * .02f;
