@@ -112,13 +112,13 @@ public class LevelScreen extends BaseScreen {
     }
 
     public void checkPlayerLunge(int screenX, int screenY, int pointer, int button) {
-        if (player.state == Player.State.IDLE && button == Input.Buttons.LEFT) {
+        if ((player.state == Player.State.IDLE || player.state == Player.State.MOVING) && button == Input.Buttons.LEFT) {
             player.getActions().clear();
 
             // Get normalized Vector between player and mouse.
             target.set(mainStage.screenToStageCoordinates(new Vector2(screenX, screenY)));
             source.set(player.getX(Align.center), player.getY(Align.center));
-            Vector2 lungeVector = target.sub(source).nor().scl(player.LUNGE_DISTANCE);
+            Vector2 lungeVector = target.sub(source).nor().scl(Player.LUNGE_DISTANCE);
 
             MoveToAction moveAction = new LungeMoveTo(player, enemySpawnSystem.getEnemies());
             moveAction.setAlignment(Align.center);
@@ -131,7 +131,6 @@ public class LevelScreen extends BaseScreen {
                     Actions.delay(0.1f),
                     Actions.run(() -> {
                         player.state = Player.State.IDLE;
-                        player.setAnimation(player.idleAnimation);
                     })
             );
             player.addAction(sequence);

@@ -89,15 +89,14 @@ public class Enemy extends BaseActor {
         this.addActor(chatGroup);
 
         // Set attack collision box.
-        // TODO: should depend on enemy.data rather than being universal for all enemy types.
         attackCollisionBox = new BaseActor(0, 0, stage);
-        attackCollisionBox.setSize(12f, 12f);
+        attackCollisionBox.setSize(10f, 10f);
         attackCollisionBox.setPosition(
                 getWidth() / 2 - attackCollisionBox.getWidth() / 2,
                 getHeight() / 2 - attackCollisionBox.getHeight() / 2
         );
-        attackCollisionBox.setBoundaryRectangle();
-        // attackCollisionBox.setDebug(true);
+        attackCollisionBox.setBoundaryPolygon(8);
+        attackCollisionBox.setDebug(true);
         attackCollisionBox.isCollisionEnabled = false;
         addActor(attackCollisionBox);
     }
@@ -232,17 +231,12 @@ public class Enemy extends BaseActor {
                 int randomIndex = (int) (Math.random() * EnemyData.CHAT_MESSAGES.length);
                 chatLabel.setText(EnemyData.CHAT_MESSAGES[randomIndex]);
             }
-
             // Hide chat message when its duration expires
             if (chatDuration <= 0) {
                 chatDuration = 0;
                 chatLabel.setText("");
             }
         }
-
-        // TODO: remove if unneeded
-//        // Position the chat group above the enemy
-//        chatGroup.setPosition(((getWidth() - chatGroup.getWidth()) / 2f), getHeight() + 2f);
 
         // Apply physics and continue actor processing
         this.applyPhysics(delta);
@@ -288,7 +282,7 @@ public class Enemy extends BaseActor {
         // Create an action to display the damage received
         MoveToAction moveAction = new MoveToAction();
         moveAction.setDuration(0.25f);
-        moveAction.setPosition(((chatGroup.getWidth() - hitLabel.getWidth()) / 2f), 15);
+        moveAction.setPosition(getX(Align.center), 45 + 15);
 
         ParallelAction parallelAction = new ParallelAction();
         parallelAction.setActor(hitLabel);
@@ -302,10 +296,9 @@ public class Enemy extends BaseActor {
             parallelAction.addAction(Actions.delay(0.25f, Actions.run(this::remove)));
         }
 
-
         // Clear existing actions on the hit label and update its position and text
         this.hitLabel.getActions().clear();
-        this.hitLabel.setPosition(((chatGroup.getWidth() - hitLabel.getWidth()) / 2f), 0);
+        this.hitLabel.setPosition(getX(Align.center), 45);
         this.hitLabel.setText("" + (int) damage);
         this.hitLabel.addAction(parallelAction);
 

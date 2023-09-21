@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import io.github.fourlastor.harlequin.animation.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -34,6 +35,7 @@ public class BaseActor extends Group {
     public boolean isCollisionEnabled = true;
     public float shakyCamIntensity = 1f;
     public boolean isShakyCam = false;
+
     protected Image image;
     public float animationTime = 0f;
     private boolean animationPaused = false;
@@ -80,6 +82,9 @@ public class BaseActor extends Group {
 
     @Override
     public void act(float delta) {
+        if (getStage() == null)
+            return;
+
         if (!pause)
             super.act(delta);
 
@@ -370,6 +375,8 @@ public class BaseActor extends Group {
         float[] vertices = {0, 0, w, 0, w, h, 0, h};
         boundaryPolygon = new Polygon(vertices);
     }
+
+    // Collision detection --------------------------------------------------------------------------------------
 
     public Polygon getBoundaryPolygon() {
         boundaryPolygon.setPosition(getX(), getY());

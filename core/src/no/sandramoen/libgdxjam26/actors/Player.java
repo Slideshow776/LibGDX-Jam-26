@@ -45,7 +45,6 @@ public class Player extends BaseActor {
     }
 
     public boolean isDead;
-    public boolean isMoving;
     public int attackPower = 2;
     public State state = State.IDLE;
     private final BaseActor collisionBox;
@@ -74,7 +73,7 @@ public class Player extends BaseActor {
                 getHeight() / 3 - collisionBox.getHeight() / 2
         );
         collisionBox.setBoundaryRectangle();
-        // collisionBox.setDebug(true);
+//        collisionBox.setDebug(true);
         addActor(collisionBox);
     }
 
@@ -186,11 +185,11 @@ public class Player extends BaseActor {
             target.set(mouseX, mouseY);
             getStage().screenToStageCoordinates(target);
 
-            if (target.dst2(source) > 1) {
+            if (target.dst2(source) > 5) {
                 // Move player towards cursor.
-                if (!isMoving) {
+                if (state != State.MOVING) {
                     setAnimation(walkingAnimation);
-                    isMoving = true;
+                    state = State.MOVING;
                 }
                 float angleDeg = target.sub(source).angleDeg();
                 angleDeg = Math.floorMod((int) angleDeg, 360);
@@ -198,9 +197,9 @@ public class Player extends BaseActor {
                 setSpeed(Player.MOVE_SPEED);
                 checkIfFlip(angleDeg);
             } else {
-                if (isMoving) {
+                if (state == State.MOVING) {
                     setAnimation(idleAnimation);
-                    isMoving = false;
+                    state = State.IDLE;
                 }
                 setMotionAngle(0f);
                 setSpeed(0);

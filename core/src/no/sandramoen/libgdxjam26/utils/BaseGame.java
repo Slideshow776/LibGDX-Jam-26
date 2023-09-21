@@ -182,8 +182,6 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         String defaultVertexShader = Gdx.files.internal("shaders/default.vs").readString();
         String fragmentShader = Gdx.files.internal("shaders/hallucination.fs").readString();
         hallucinationShader = new ShaderProgram(defaultVertexShader, fragmentShader);
-
-        // TODO: particle effects.
     }
 
     /**
