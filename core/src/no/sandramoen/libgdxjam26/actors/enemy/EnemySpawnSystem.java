@@ -16,7 +16,7 @@ public class EnemySpawnSystem {
     private final ArrayList<Enemy> enemies;
 
     // The time interval (in seconds) between enemy spawns.
-    private float spawnTime = 3;
+    private float spawnTime = 1;
 
     // A timer to keep track of the time elapsed since the last enemy spawn.
     private float surpassed;

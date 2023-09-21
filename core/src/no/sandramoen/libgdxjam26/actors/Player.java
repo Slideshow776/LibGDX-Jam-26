@@ -1,7 +1,9 @@
 package no.sandramoen.libgdxjam26.actors;
 
 import com.badlogic.gdx.Gdx;
+
 import io.github.fourlastor.harlequin.animation.Animation;
+
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
@@ -17,6 +19,7 @@ import io.github.fourlastor.harlequin.animation.FixedFrameAnimation;
 import no.sandramoen.libgdxjam26.actions.Shake;
 import no.sandramoen.libgdxjam26.actors.enemy.Enemy;
 import no.sandramoen.libgdxjam26.actors.particles.EnemyHitEffect;
+import no.sandramoen.libgdxjam26.screens.shell.LevelUpScreen;
 import no.sandramoen.libgdxjam26.utils.AsepriteAnimationLoader;
 import no.sandramoen.libgdxjam26.utils.BaseActor;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
@@ -48,9 +51,14 @@ public class Player extends BaseActor {
     private final BaseActor collisionBox;
     private float attackCooldown = 0f;
     private int level = 1;
+    private final int startingLevel = level;
     private float experience;
-    private int health = 20;
-    public int getHealth() { return health; }
+    private int health = 4;
+    private final int MAX_LEVEL = 100;
+
+    public int getHealth() {
+        return health;
+    }
 
     public Animation<TextureRegion> walkingAnimation, attackingAnimation, idleAnimation;
 
@@ -66,7 +74,7 @@ public class Player extends BaseActor {
                 getHeight() / 3 - collisionBox.getHeight() / 2
         );
         collisionBox.setBoundaryRectangle();
-        collisionBox.setDebug(true);
+        // collisionBox.setDebug(true);
         addActor(collisionBox);
     }
 
@@ -130,7 +138,7 @@ public class Player extends BaseActor {
         }
         // Don't play the previous hit noise.
         numberList.remove(BaseGame.hitSoundsPreviousIndex);
-        int randomIndex =  numberList.get(BaseGame.random.nextInt(numberList.size()));
+        int randomIndex = numberList.get(BaseGame.random.nextInt(numberList.size()));
         BaseGame.hitSoundsPreviousIndex = randomIndex;
         GameUtils.playWithRandomPitch(BaseGame.hitSounds.get(randomIndex), .8f, .9f);
 
@@ -146,6 +154,16 @@ public class Player extends BaseActor {
 
     public void die() {
         isDead = true;
+
+        Array<Integer> abilityUnlocks = new Array<>();
+        abilityUnlocks.add(20, 40, 60);
+
+        float xpForNextLevel = getExperienceForNextLevel();
+        float currentXp = experience;
+        float percent = ((currentXp * 100) / xpForNextLevel) / 100;
+
+        System.out.println("percent is: " + percent);
+        BaseGame.setActiveScreen(new LevelUpScreen(startingLevel, level - startingLevel, percent, abilityUnlocks));
     }
 
     private void loadAnimation() {
@@ -186,7 +204,7 @@ public class Player extends BaseActor {
                     isMoving = true;
                 }
                 float angleDeg = target.sub(source).angleDeg();
-                angleDeg = Math.floorMod((int)angleDeg, 360);
+                angleDeg = Math.floorMod((int) angleDeg, 360);
                 setMotionAngle(angleDeg);
                 setSpeed(Player.MOVE_SPEED);
                 checkIfFlip(angleDeg);
@@ -211,10 +229,10 @@ public class Player extends BaseActor {
     public void addExperience(float experience) {
         this.experience += experience;
         if (this.experience >= getExperienceForCurrentLevel()) {
-            this.experience -= getExperienceForCurrentLevel();
-            this.level += 1;
-            if (level >= 100)
-                level = 100;
+            if (level < MAX_LEVEL) {
+                this.experience -= getExperienceForCurrentLevel();
+                this.level += 1;
+            }
         }
     }
 
@@ -224,6 +242,12 @@ public class Player extends BaseActor {
 
     public float getExperienceForCurrentLevel() {
         return EXPERIENCE_MAP.get(level);
+    }
+
+    private float getExperienceForNextLevel() {
+        if (level < MAX_LEVEL)
+            return EXPERIENCE_MAP.get(level + 1);
+        else return 0;
     }
 
     public int getLevel() {
