@@ -74,23 +74,20 @@ public class LevelScreen extends BaseScreen {
     private void sortActors() {
         Array<Actor> actors = mainStage.getActors();
         Array<Actor> particles = new Array<Actor>();
-        Array<Actor> players = new Array<Actor>();
-        Array<Actor> enemies = new Array<Actor>();
+        Array<Actor> characters = new Array<Actor>();
         Array<Actor> other = new Array<Actor>();
         for (Actor actor : actors) {
-            if (actor instanceof Player) players.add(actor);
-            else if (actor instanceof Enemy) enemies.add(actor);
-            else if (actor instanceof ParticleEffectActor) enemies.add(actor);
+            if (actor instanceof Player) characters.add(actor);
+            else if (actor instanceof Enemy) characters.add(actor);
+            else if (actor instanceof ParticleEffectActor) characters.add(actor);
             else other.add(actor);
         }
-        players.sort(ySortComparator);
-        enemies.sort(ySortComparator);
+        characters.sort(ySortComparator);
         actors.clear();
 
         // (sheerst) NOTE: could make a more formal layer system here.
         actors.addAll(other);
-        actors.addAll(enemies);
-        actors.addAll(players);
+        actors.addAll(characters);
         actors.addAll(particles);
     }
 
