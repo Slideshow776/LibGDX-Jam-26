@@ -1,0 +1,50 @@
+{ "frames": {
+   "PlayerWalking 0.ase": {
+    "frame": { "x": 0, "y": 0, "w": 71, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 71, "h": 56 },
+    "sourceSize": { "w": 71, "h": 56 },
+    "duration": 200
+   },
+   "PlayerWalking 1.ase": {
+    "frame": { "x": 71, "y": 0, "w": 71, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 71, "h": 56 },
+    "sourceSize": { "w": 71, "h": 56 },
+    "duration": 200
+   },
+   "PlayerWalking 2.ase": {
+    "frame": { "x": 142, "y": 0, "w": 71, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 71, "h": 56 },
+    "sourceSize": { "w": 71, "h": 56 },
+    "duration": 200
+   },
+   "PlayerWalking 3.ase": {
+    "frame": { "x": 213, "y": 0, "w": 71, "h": 56 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 71, "h": 56 },
+    "sourceSize": { "w": 71, "h": 56 },
+    "duration": 200
+   }
+ },
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.2.40-x64",
+  "image": "walking.png",
+  "format": "I8",
+  "size": { "w": 284, "h": 56 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Layer", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}

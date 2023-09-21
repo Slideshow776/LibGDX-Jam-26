@@ -14,14 +14,12 @@ import no.sandramoen.libgdxjam26.utils.BaseActor;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
 
 public class Background extends BaseActor {
-    private Array<TextureAtlas.AtlasRegion> animationImages = new Array();
-
     Vector2 center = new Vector2(40,30);
-
     float scroll = .2f;
 
     public Background(float x, float y, Stage stage) {
         super(x, y, stage);
+        Array<TextureAtlas.AtlasRegion> animationImages = new Array<>();
         animationImages.add(BaseGame.textureAtlas.findRegion("bg2"));
         animation = new FixedFrameAnimation<>(2f, animationImages, Animation.PlayMode.LOOP);
         setAnimation(animation);
@@ -30,8 +28,6 @@ public class Background extends BaseActor {
     @Override
     public void act(float delta) {
         super.act(delta);
-
-        setPosition(-(center.x - BaseGame.levelScreen.player.getX(Align.center)) * scroll, -(center.y - BaseGame.levelScreen.player.getY(Align.center) * scroll));
-
+        setPosition((BaseGame.levelScreen.player.getX(Align.center) - center.x) * scroll, (BaseGame.levelScreen.player.getY(Align.center) - center.y) * scroll);
     }
 }

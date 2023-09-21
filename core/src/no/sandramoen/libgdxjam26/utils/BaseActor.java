@@ -30,7 +30,7 @@ public class BaseActor extends Group {
     public boolean isFacingRight = true;
     public boolean pause = false;
     public float animationWidth = getWidth();
-    public float animationHeight = getWidth();
+    public float animationHeight = getHeight();
     public boolean isCollisionEnabled = true;
     public float shakyCamIntensity = 1f;
     public boolean isShakyCam = false;
@@ -93,9 +93,11 @@ public class BaseActor extends Group {
         batch.setColor(c.r, c.g, c.b, c.a);
 
         if (animation != null && isVisible()) {
+            TextureRegion textureRegion = animation.getKeyFrame(animationTime);
+
             if (isFacingRight)
                 batch.draw(
-                        animation.getKeyFrame(animationTime),
+                        textureRegion,
                         getX() + abs(getWidth() - animationWidth) / 2,
                         getY() + abs(getHeight() - animationHeight) / 2,
                         getOriginX(),
@@ -108,7 +110,7 @@ public class BaseActor extends Group {
                 );
             else
                 batch.draw(
-                        animation.getKeyFrame(animationTime),
+                        textureRegion,
                         getX() + getWidth(),
                         getY(),
                         getOriginX() - getWidth(),
@@ -128,10 +130,7 @@ public class BaseActor extends Group {
         animationHeight = height;
     }
 
-    public void flip() {
-        isFacingRight = !isFacingRight;
-        image.setScaleX(-image.getScaleX());
-    }
+    public void flip() { isFacingRight = !isFacingRight; }
 
     public void setAnimationPaused(Boolean pause) {
         animationPaused = pause;

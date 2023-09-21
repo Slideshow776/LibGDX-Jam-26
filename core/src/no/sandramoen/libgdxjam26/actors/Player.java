@@ -70,13 +70,7 @@ public class Player extends BaseActor {
         addActor(collisionBox);
     }
 
-    public BaseActor getCollisionBox() {
-//        collisionBox.setPosition(
-//                getX(Align.center) + getWidth() / 2 - collisionBox.getWidth() / 2,
-//                getY(Align.center) + getHeight() / 2 - collisionBox.getHeight() / 2
-//        );
-        return collisionBox;
-    }
+    public BaseActor getCollisionBox() { return collisionBox; }
 
     public void applyKnockBack(Enemy enemy) {
         getActions().clear();
@@ -117,7 +111,6 @@ public class Player extends BaseActor {
         hitEffect.start();
         addActor(hitEffect);
 
-
         state = State.KNOCKED_BACK;
     }
 
@@ -149,20 +142,16 @@ public class Player extends BaseActor {
     }
 
     private void loadAnimation() {
-        Array<TextureAtlas.AtlasRegion> animationImages = new Array<>();
 
-        animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/walking1"));
-        animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/walking2"));
-        walkingAnimation = new FixedFrameAnimation<>(.2f, animationImages, Animation.PlayMode.LOOP);
+        walkingAnimation = AsepriteAnimationLoader.load("assets/images/included/characters/player/walking");
+        walkingAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
-        animationImages.clear();
         attackingAnimation = AsepriteAnimationLoader.load("assets/images/included/characters/player/attack");
 
-        animationImages.clear();
+        Array<TextureAtlas.AtlasRegion> animationImages = new Array<>();
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/idle1"));
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/idle2"));
         idleAnimation = new FixedFrameAnimation<>(.6f, animationImages, Animation.PlayMode.LOOP);
-
         setAnimation(idleAnimation);
     }
 
@@ -179,7 +168,7 @@ public class Player extends BaseActor {
             target.set(mouseX, mouseY);
             getStage().screenToStageCoordinates(target);
 
-            if (target.dst2(source) > 1e-1) {
+            if (target.dst2(source) > 1) {
                 // Move player towards cursor.
                 if (!isMoving) {
                     setAnimation(walkingAnimation);
