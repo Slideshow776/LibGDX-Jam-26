@@ -105,6 +105,7 @@ project(":html") {
         api "com.badlogicgames.ashley:ashley:$ashleyVersion:sources"
         implementation "com.github.tommyettinger:textratypist:0.10.0:sources"
         implementation "com.github.tommyettinger:regexodus:0.1.15:sources"
+        implementation("io.github.fourlastor.gdx:harlequin:1.1.2:sources")
 
     }
 

@@ -9,7 +9,7 @@
 	<inherits name='com.badlogic.ashley_gwt' />
 	<inherits name="regexodus.regexodus" />
 	<inherits name="com.github.tommyettinger.textratypist" />
-
+	<inherits name="io.github.fourlastor.Harlequin" />
 	<inherits name='MyGdxGame' />
 	<entry-point class='no.sandramoen.libgdxjam26.client.HtmlLauncher' />
 	<set-configuration-property name='xsiframe.failIfScriptTag' value='FALSE'/>
