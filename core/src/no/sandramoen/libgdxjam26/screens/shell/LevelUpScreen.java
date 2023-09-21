@@ -35,7 +35,7 @@ public class LevelUpScreen extends BaseScreen {
             messageLabel.setText("");
         } else {
             int index = findAbilityUnlockIndex(levelBefore, abilityUnlocks);
-            showNextAbilityMessage(index, abilityUnlocks);
+            showNextAbilityMessage(index, abilityUnlocks, false);
         }
 
         new BaseActor(0f, 0f, mainStage).addAction(Actions.sequence(
@@ -76,7 +76,7 @@ public class LevelUpScreen extends BaseScreen {
         } else if (levelBefore + levelsGained >= abilityUnlocks.get(index)) {
             unlockAbility();
         } else {
-            showNextAbilityMessage(index, abilityUnlocks);
+            showNextAbilityMessage(index, abilityUnlocks, true);
         }
 
         goToScreenWithDelay();
@@ -116,8 +116,9 @@ public class LevelUpScreen extends BaseScreen {
         experienceBar.progress.addAction(Actions.after(Actions.run(() -> messageLabel.setText("Ability Unlocked!"))));
     }
 
-    private void showNextAbilityMessage(int index, Array<Integer> abilityUnlocks) {
-        experienceBar.progress.addAction(Actions.after(Actions.run(() -> turnLabelColorTo(BaseGame.paletteRed))));
+    private void showNextAbilityMessage(int index, Array<Integer> abilityUnlocks, boolean isChangeColour) {
+        if (isChangeColour)
+            experienceBar.progress.addAction(Actions.after(Actions.run(() -> turnLabelColorTo(BaseGame.paletteRed))));
         messageLabel.setText("next ability in level " + abilityUnlocks.get(index));
     }
 
