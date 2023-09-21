@@ -1,6 +1,5 @@
 package no.sandramoen.libgdxjam26.ui;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -14,7 +13,7 @@ public class PlayerLabelGroup extends Group {
         TypingLabel label = new TypingLabel("Level Up!", new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-59", BitmapFont.class), null));
         addActor(label);
         setScale(.025f);
-        setColor(new Color(0.125f, 0.286f, 0.294f, 1f));
+        setColor(BaseGame.paletteColourIDX12);
         getColor().a = 0f;
     }
 

@@ -52,6 +52,7 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
 
     public static Color paletteRed = new Color(0.353f, 0.125f, 0.2f, 1f);
     public static Color paletteGreen = new Color(0.255f, 0.455f, 0.353f, 1f);
+    public static Color paletteColourIDX12 = new Color(0.125f, 0.286f, 0.294f, 1f);
 
     // game state
     public static Preferences preferences;

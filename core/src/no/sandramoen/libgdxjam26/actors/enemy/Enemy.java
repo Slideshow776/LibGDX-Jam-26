@@ -78,9 +78,9 @@ public class Enemy extends BaseActor {
         this.chatLabel.setAlignment(Align.center);
         this.hitLabel.setAlignment(Align.center);
 
-        this.chatGroup.setScale(BaseGame.UNIT_SCALE);
         this.chatGroup.addActor(chatLabel);
         this.chatGroup.addActor(hitLabel);
+        this.chatGroup.setScale(.025f);
 
         this.projectile = new Sprite(new Texture(Gdx.files.internal("images/included/GUI/arrow.png")));
         this.projectile.flip(true, true);
@@ -230,6 +230,7 @@ public class Enemy extends BaseActor {
                 // Randomly select and display a chat message
                 int randomIndex = (int) (Math.random() * EnemyData.CHAT_MESSAGES.length);
                 chatLabel.setText(EnemyData.CHAT_MESSAGES[randomIndex]);
+                this.chatGroup.setPosition(getWidth() / 2, getHeight() - 1f);
             }
             // Hide chat message when its duration expires
             if (chatDuration <= 0) {
