@@ -96,7 +96,7 @@ public class Enemy extends BaseActor {
                 getHeight() / 2 - attackCollisionBox.getHeight() / 2
         );
         attackCollisionBox.setBoundaryPolygon(8);
-        attackCollisionBox.setDebug(true);
+//        attackCollisionBox.setDebug(true);
         attackCollisionBox.isCollisionEnabled = false;
         addActor(attackCollisionBox);
     }
@@ -306,9 +306,9 @@ public class Enemy extends BaseActor {
         shakeCamera();
 
         EnemyHitEffect enemyHitEffect = new EnemyHitEffect();
-        enemyHitEffect.setPosition(+getWidth() / 2 - BaseGame.UNIT_SCALE * 16, getHeight() / 2);
-        enemyHitEffect.setScale(BaseGame.UNIT_SCALE / 4f);
-//        enemyHitEffect.deltaScale = 4f;
+        enemyHitEffect.setPosition(+getWidth() / 2 - BaseGame.UNIT_SCALE * 18, getHeight() / 2 - BaseGame.UNIT_SCALE * 4);
+        enemyHitEffect.setScale(4f * BaseGame.UNIT_SCALE / 15f);
+        enemyHitEffect.deltaScale = 3f / 4f;
         enemyHitEffect.start();
         addActor(enemyHitEffect);
     }

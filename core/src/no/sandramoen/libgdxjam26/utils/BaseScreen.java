@@ -18,10 +18,10 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 public abstract class BaseScreen implements Screen, InputProcessor, ControllerListener {
     public float slowdown = 1f;
     public float slowdownDuration = 1f;
-    protected Stage mainStage;
-    protected Stage uiStage;
+    public Stage mainStage;
+    public Stage uiStage;
     protected Table uiTable;
-    private boolean pause;
+    protected boolean pause;
 
     public BaseScreen() {
         mainStage = new Stage(new ExtendViewport(80, 45));
@@ -41,6 +41,7 @@ public abstract class BaseScreen implements Screen, InputProcessor, ControllerLi
 
     @Override
     public void render(float delta) {
+
         if (slowdown > 0 && slowdown < 1) {
             delta = delta * slowdown;
             slowdownDuration -= Gdx.graphics.getDeltaTime();
