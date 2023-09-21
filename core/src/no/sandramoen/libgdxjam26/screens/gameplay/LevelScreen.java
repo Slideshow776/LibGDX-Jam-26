@@ -4,13 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
@@ -19,8 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ParticleEffectActor;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.compression.lzma.Base;
-import io.github.fourlastor.harlequin.animation.Animation;
+
 import no.sandramoen.libgdxjam26.actions.CenterCamera;
 import no.sandramoen.libgdxjam26.actions.LungeMoveTo;
 import no.sandramoen.libgdxjam26.actors.Player;
@@ -32,7 +28,6 @@ import no.sandramoen.libgdxjam26.actors.map.ImpassableTerrain;
 import no.sandramoen.libgdxjam26.ui.AbilityBar;
 import no.sandramoen.libgdxjam26.ui.PlayerHearts;
 import no.sandramoen.libgdxjam26.ui.QuitWindow;
-import no.sandramoen.libgdxjam26.utils.AsepriteAnimationLoader;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
 import no.sandramoen.libgdxjam26.utils.BaseScreen;
 import no.sandramoen.libgdxjam26.utils.GameUtils;
@@ -91,7 +86,7 @@ public class LevelScreen extends BaseScreen {
         actors.addAll(particles);
     }
 
-    private void checkIfEnemiesHit() {
+    private void checkIfPlayerHitsEnemies() {
         if (slowdown >= 1) {
             Iterator<Enemy> it = this.enemySpawnSystem.getEnemies().iterator();
             while (it.hasNext()) {
@@ -151,7 +146,7 @@ public class LevelScreen extends BaseScreen {
 
         // Check if the player is currently hitting any enemies.
         // Apply slow down effect and damage to enemies if so.
-        checkIfEnemiesHit();
+        checkIfPlayerHitsEnemies();
     }
 
     @Override

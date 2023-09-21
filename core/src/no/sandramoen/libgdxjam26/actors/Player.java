@@ -4,22 +4,28 @@ import com.badlogic.gdx.Gdx;
 
 import io.github.fourlastor.harlequin.animation.Animation;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import com.github.tommyettinger.textra.TypingLabel;
 
 import io.github.fourlastor.harlequin.animation.FixedFrameAnimation;
 import no.sandramoen.libgdxjam26.actions.Shake;
 import no.sandramoen.libgdxjam26.actors.enemy.Enemy;
 import no.sandramoen.libgdxjam26.actors.particles.EnemyHitEffect;
 import no.sandramoen.libgdxjam26.screens.shell.LevelUpScreen;
+import no.sandramoen.libgdxjam26.ui.PlayerLabelGroup;
 import no.sandramoen.libgdxjam26.utils.AsepriteAnimationLoader;
 import no.sandramoen.libgdxjam26.utils.BaseActor;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
@@ -55,6 +61,8 @@ public class Player extends BaseActor {
     private int health = 4;
     private final int MAX_LEVEL = 100;
 
+    private PlayerLabelGroup playerLabelGroup;
+
     public int getHealth() {
         return health;
     }
@@ -75,9 +83,15 @@ public class Player extends BaseActor {
         collisionBox.setBoundaryRectangle();
 //        collisionBox.setDebug(true);
         addActor(collisionBox);
+
+        playerLabelGroup = new PlayerLabelGroup();
+        playerLabelGroup.setPosition(getWidth() / 2 - 2.5f, getHeight() - 1.5f);
+        addActor(playerLabelGroup);
     }
 
-    public BaseActor getCollisionBox() { return collisionBox; }
+    public BaseActor getCollisionBox() {
+        return collisionBox;
+    }
 
     public void applyKnockBack(Enemy enemy) {
         getActions().clear();
@@ -220,6 +234,10 @@ public class Player extends BaseActor {
             if (level < MAX_LEVEL) {
                 this.experience -= getExperienceForCurrentLevel();
                 this.level += 1;
+
+                playerLabelGroup.showLabelAndAnimate();
+
+                GameUtils.playWithRandomPitch(BaseGame.levelUpSound, .99f, 1.01f);
             }
         }
     }

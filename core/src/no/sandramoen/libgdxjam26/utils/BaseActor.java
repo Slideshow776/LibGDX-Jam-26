@@ -352,6 +352,11 @@ public class BaseActor extends Group {
     }
 
     public void shakeCamera(float intensity) {
+        if (this.getStage() == null) {
+            Gdx.app.error(getClass().getSimpleName(), "Error: couldn't shake camera stage is: " + getStage());
+            return;
+        }
+
         this.getStage().getCamera().position.set(
                 new Vector3(
                         this.getStage().getCamera().position.x + MathUtils.random(
