@@ -97,7 +97,7 @@ public class Enemy extends BaseActor {
                 getHeight() / 2 - attackCollisionBox.getHeight() / 2
         );
         attackCollisionBox.setBoundaryRectangle();
-        attackCollisionBox.setDebug(true);
+        // attackCollisionBox.setDebug(true);
         attackCollisionBox.isCollisionEnabled = false;
         addActor(attackCollisionBox);
     }

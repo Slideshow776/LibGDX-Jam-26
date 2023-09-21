@@ -8,8 +8,10 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
 
+import no.sandramoen.libgdxjam26.screens.gameplay.LevelScreen;
 import no.sandramoen.libgdxjam26.ui.experienceBar.ExperienceBar;
 import no.sandramoen.libgdxjam26.ui.QuitWindow;
+import no.sandramoen.libgdxjam26.utils.BaseActor;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
 import no.sandramoen.libgdxjam26.utils.BaseScreen;
 
@@ -18,20 +20,15 @@ public class LevelUpScreen extends BaseScreen {
     private ExperienceBar experienceBar;
     private Label levelLabel;
     private Label messageLabel;
+    private final float animationDelayIn = 1f;
+    private final float animationDelayOut = 3f;
 
     public LevelUpScreen(int levelBefore, int levelsGained, float percentCompletedToNextLevel, Array<Integer> abilityUnlocks) {
-        animateExperienceBarLevels(levelBefore, levelsGained);
-        experienceBar.animateToPercent(percentCompletedToNextLevel);
 
-        int index = findAbilityUnlockIndex(levelBefore, abilityUnlocks);
-
-        if (levelBefore >= abilityUnlocks.get(abilityUnlocks.size - 1)) {
-            messageLabel.setText("");
-        } else if (levelBefore + levelsGained >= abilityUnlocks.get(index)) {
-            unlockAbility();
-        } else {
-            showNextAbilityMessage(index, abilityUnlocks);
-        }
+        new BaseActor(0f, 0f, mainStage).addAction(Actions.sequence(
+                Actions.delay(animationDelayIn),
+                Actions.run(() -> startAnimation(levelBefore, levelsGained, percentCompletedToNextLevel, abilityUnlocks))
+        ));
     }
 
     @Override
@@ -55,9 +52,36 @@ public class LevelUpScreen extends BaseScreen {
         return super.keyDown(keycode);
     }
 
-    private void animateExperienceBarLevels(int levelBefore, int levelsGained) {
+    private void startAnimation(int levelBefore, int levelsGained, float percentCompletedToNextLevel, Array<Integer> abilityUnlocks) {
+        animateExperienceBarAndLevels(levelBefore, levelsGained);
+        experienceBar.animateToPercent(percentCompletedToNextLevel);
+
+        int index = findAbilityUnlockIndex(levelBefore, abilityUnlocks);
+
+        if (levelBefore >= abilityUnlocks.get(abilityUnlocks.size - 1)) {
+            messageLabel.setText("");
+        } else if (levelBefore + levelsGained >= abilityUnlocks.get(index)) {
+            unlockAbility();
+        } else {
+            showNextAbilityMessage(index, abilityUnlocks);
+        }
+
+        goToScreenWithDelay();
+    }
+
+    private void goToScreenWithDelay() {
+        experienceBar.progress.addAction(Actions.after(Actions.run(() ->
+                new BaseActor(0f, 0f, mainStage).addAction(Actions.sequence(
+                        Actions.delay(animationDelayOut),
+                        Actions.run(() -> BaseGame.setActiveScreen(new LevelScreen()))
+                ))
+        )));
+    }
+
+    private void animateExperienceBarAndLevels(int levelBefore, int levelsGained) {
         for (int i = 0; i < levelsGained; i++) {
             experienceBar.animateToPercent(1f);
+
             int finalI = levelBefore + i + 1;
             experienceBar.progress.addAction(Actions.after(Actions.run(() -> levelLabel.setText("Level " + finalI))));
         }
