@@ -56,8 +56,8 @@ public class Player extends BaseActor {
     public State state = State.IDLE;
     private final BaseActor collisionBox;
     private float attackCooldown = 0f;
-    private int level = 1;
-    private final int startingLevel = level;
+    private int level = -1;
+    private int startingLevel = -1;
     private float experience;
     private int health = 4;
     private final int MAX_LEVEL = 100;
@@ -73,8 +73,9 @@ public class Player extends BaseActor {
     public Player(float x, float y, int startingLevel, float percentToNextLevel, Stage stage) {
         super(x, y, stage);
 
-        level = startingLevel;
-        experience = MathUtils.ceil(getExperienceForNextLevel() * percentToNextLevel);
+        this.level = startingLevel;
+        this.startingLevel = level;
+        this.experience = MathUtils.ceil(getExperienceForNextLevel() * percentToNextLevel);
 
         loadAnimation();
         setBoundaryRectangle();
@@ -173,7 +174,6 @@ public class Player extends BaseActor {
         float currentXp = experience;
         float percent = ((currentXp * 100) / xpForNextLevel) / 100;
 
-        System.out.println("percent is: " + percent);
         BaseGame.setActiveScreen(new LevelUpScreen(startingLevel, level - startingLevel, percent, abilityUnlocks));
     }
 

@@ -40,7 +40,11 @@ public class ExperienceBar extends BaseActor {
         progress.addAction(Actions.after(Actions.sequence(
                 resetAction(),
                 progressAction(percent),
-                Actions.run(() -> GameUtils.playWithRandomPitch(BaseGame.levelUpSound, .99f, 1.01f)),
+                Actions.run(() -> {
+                    if (percent == 1f) {
+                        GameUtils.playWithRandomPitch(BaseGame.levelUpSound, .99f, 1.01f);
+                    }
+                }),
                 bounceAction()
         )));
     }
