@@ -15,7 +15,7 @@ public class MyGdxGame extends BaseGame {
 		super.create();
 		// setActiveScreen(new SplashScreen());
 		setActiveScreen(new MenuScreen());
-		// setActiveScreen(new LevelScreen());
+		// setActiveScreen(new LevelScreen(1, 0));
 
 		/*Array<Integer> abilityUnlocks = new Array<>();
 		abilityUnlocks.add(20, 40, 60);

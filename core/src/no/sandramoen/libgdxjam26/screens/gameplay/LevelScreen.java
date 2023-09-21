@@ -48,8 +48,13 @@ public class LevelScreen extends BaseScreen {
     private AbilityBar abilityBar;
     private Vector2 source = new Vector2(), target = new Vector2();
 
-    public LevelScreen() {
+    private int startingLevel;
+    private float percentToNextLevel;
+
+    public LevelScreen(int startingLevel, float percentToNextLevel) {
         BaseGame.levelScreen = this;
+        this.startingLevel = startingLevel;
+        this.percentToNextLevel = percentToNextLevel;
 
         initializeActors();
         initializeGUI();
@@ -154,7 +159,7 @@ public class LevelScreen extends BaseScreen {
         if (keycode == Keys.ESCAPE || keycode == Keys.Q)
             quitWindow.setVisible(!quitWindow.isVisible());
         else if (keycode == Keys.R)
-            BaseGame.setActiveScreen(new LevelScreen());
+            BaseGame.setActiveScreen(new LevelScreen(startingLevel, percentToNextLevel));
         return super.keyDown(keycode);
     }
 
@@ -171,7 +176,7 @@ public class LevelScreen extends BaseScreen {
     private void initializeActors() {
         this.impassables = new Array();
         new Background(-2, -2, mainStage);
-        this.player = new Player(0, 0, mainStage);
+        this.player = new Player(35, 20, startingLevel, percentToNextLevel, mainStage);
     }
 
     private void initializeGUI() {

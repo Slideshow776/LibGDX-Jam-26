@@ -23,7 +23,13 @@ public class LevelUpScreen extends BaseScreen {
     private final float animationDelayIn = 1f;
     private final float animationDelayOut = 3f;
 
+    private int startingLevel;
+    private float percentToNextLevel;
+
     public LevelUpScreen(int levelBefore, int levelsGained, float percentCompletedToNextLevel, Array<Integer> abilityUnlocks) {
+        this.startingLevel = levelBefore + levelsGained;
+        this.percentToNextLevel = percentCompletedToNextLevel;
+
         levelLabel.setText("Level " + levelBefore);
         if (levelBefore >= abilityUnlocks.get(abilityUnlocks.size - 1)) {
             messageLabel.setText("");
@@ -80,7 +86,7 @@ public class LevelUpScreen extends BaseScreen {
         experienceBar.progress.addAction(Actions.after(Actions.run(() ->
                 new BaseActor(0f, 0f, mainStage).addAction(Actions.sequence(
                         Actions.delay(animationDelayOut),
-                        Actions.run(() -> BaseGame.setActiveScreen(new LevelScreen()))
+                        Actions.run(() -> BaseGame.setActiveScreen(new LevelScreen(startingLevel, percentToNextLevel)))
                 ))
         )));
     }

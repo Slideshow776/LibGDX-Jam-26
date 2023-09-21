@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -42,10 +43,10 @@ public class Player extends BaseActor {
 
     private Vector2 source = new Vector2(), target = new Vector2();
 
-    static {
+    {
         // Pre-load the experience map
         float baseExperience = 200; // starting experience at level 1
-        for (int level = 1; level <= 100; level++) { // from level 1 to 100
+        for (int level = this.level; level <= 100; level++) { // from level 1 to 100
             EXPERIENCE_MAP.put(level, baseExperience + (100 * (level - 1)));
         }
     }
@@ -69,8 +70,12 @@ public class Player extends BaseActor {
 
     public Animation<TextureRegion> walkingAnimation, attackingAnimation, idleAnimation;
 
-    public Player(float x, float y, Stage stage) {
+    public Player(float x, float y, int startingLevel, float percentToNextLevel, Stage stage) {
         super(x, y, stage);
+
+        level = startingLevel;
+        experience = MathUtils.ceil(getExperienceForNextLevel() * percentToNextLevel);
+
         loadAnimation();
         setBoundaryRectangle();
 
