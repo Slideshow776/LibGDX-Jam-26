@@ -17,9 +17,8 @@ import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.utils.Array;
 
-import com.github.czyzby.websocket.serialization.impl.JsonSerializer;
+import com.badlogic.gdx.utils.JsonReader;
 import no.sandramoen.libgdxjam26.screens.gameplay.LevelScreen;
 
 import java.util.*;
@@ -65,7 +64,7 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
     public static final float UNIT_SCALE = .125f;  // .125f;
     public static final boolean debugEnabled = true;
     private final Map<String, Pixmap> pixmapCache = new HashMap<String, Pixmap>();
-    public static JsonSerializer jsonSerializer = new JsonSerializer();
+    public static JsonReader jsonSerializer = new JsonReader();
 
     public static Random random = new Random();
 
