@@ -24,6 +24,13 @@ public class LevelUpScreen extends BaseScreen {
     private final float animationDelayOut = 3f;
 
     public LevelUpScreen(int levelBefore, int levelsGained, float percentCompletedToNextLevel, Array<Integer> abilityUnlocks) {
+        levelLabel.setText("Level " + levelBefore);
+        if (levelBefore >= abilityUnlocks.get(abilityUnlocks.size - 1)) {
+            messageLabel.setText("");
+        } else {
+            int index = findAbilityUnlockIndex(levelBefore, abilityUnlocks);
+            showNextAbilityMessage(index, abilityUnlocks);
+        }
 
         new BaseActor(0f, 0f, mainStage).addAction(Actions.sequence(
                 Actions.delay(animationDelayIn),
