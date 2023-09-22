@@ -64,8 +64,6 @@ public class Player extends BaseActor {
         loadAnimation();
         setBoundaryRectangle();
 
-        setDebug(true);
-
         collisionBox = new BaseActor(0, 0, stage);
         collisionBox.setSize(2, 4f);
         collisionBox.setPosition(
@@ -73,7 +71,6 @@ public class Player extends BaseActor {
                 (getHeight() - collisionBox.getHeight()) / 4
         );
         collisionBox.setBoundaryRectangle();
-        collisionBox.setDebug(true);
         addActor(collisionBox);
 
         playerLabelGroup = new PlayerLabelGroup();
