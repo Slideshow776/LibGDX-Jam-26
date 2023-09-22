@@ -30,7 +30,7 @@ public class LungeMoveTo extends MoveToAction {
         while (it.hasNext()) {
             Enemy enemy = it.next();
             if (enemy == null) continue;
-            if (enemy.getState().equals(EnemyState.DEAD)) continue;
+            if (enemy.isDead()) continue;
             Rectangle enemyBounds = new Rectangle(enemy.getX(), enemy.getY(), enemy.getWidth(), enemy.getHeight());
             Rectangle playerBounds = new Rectangle(player.getX(), player.getY(), player.getWidth(), player.getHeight());
             if (enemyBounds.overlaps(playerBounds) || playerBounds.overlaps(enemyBounds)) {

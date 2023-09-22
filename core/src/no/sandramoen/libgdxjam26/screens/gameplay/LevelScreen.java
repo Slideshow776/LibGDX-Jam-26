@@ -41,6 +41,8 @@ public class LevelScreen extends BaseScreen {
     private TiledMap currentMap;
     private Array<ImpassableTerrain> impassables;
 
+    public Background background;
+
     public Player player;
     private QuitWindow quitWindow;
     private EnemySpawnSystem enemySpawnSystem;
@@ -98,10 +100,9 @@ public class LevelScreen extends BaseScreen {
                 Enemy enemy = it.next();
                 if (enemy == null) continue;
 
-                if (enemy.getState().equals(EnemyState.DEAD)) {
+                if (enemy.isDead()) {
                     int previousLevel = player.getLevel();
                     player.addExperience(enemy.getData().getBaseExperience());
-                    it.remove();
                     if (player.getLevel() > previousLevel)
                         levelLabel.setText("Level: " + player.getLevel());
                 }
@@ -175,7 +176,7 @@ public class LevelScreen extends BaseScreen {
 
     private void initializeActors() {
         this.impassables = new Array();
-        new Background(-2, -2, mainStage);
+        this.background = new Background(-2, -2, mainStage);
         this.player = new Player(35, 20, startingLevel, percentToNextLevel, mainStage);
     }
 

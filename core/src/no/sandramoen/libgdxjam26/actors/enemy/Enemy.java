@@ -1,6 +1,7 @@
 package no.sandramoen.libgdxjam26.actors.enemy;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Interpolation;
@@ -16,9 +17,12 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import io.github.fourlastor.harlequin.animation.Animation;
 import io.github.fourlastor.harlequin.animation.FixedFrameAnimation;
+import no.sandramoen.libgdxjam26.actions.ContrastShader;
+import no.sandramoen.libgdxjam26.actions.Shake;
 import no.sandramoen.libgdxjam26.actors.Player;
 import no.sandramoen.libgdxjam26.actors.Projectile;
 import no.sandramoen.libgdxjam26.actors.particles.EnemyHitEffect;
+import no.sandramoen.libgdxjam26.actors.particles.ParticleActor;
 import no.sandramoen.libgdxjam26.utils.AsepriteAnimationLoader;
 import no.sandramoen.libgdxjam26.utils.BaseActor;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
@@ -47,6 +51,8 @@ public class Enemy extends BaseActor {
 
     private Animation<TextureRegion> walkingAnimation, attackingAnimation, idleAnimation;
     private Sprite projectile;
+
+    private Vector2 diePosition = new Vector2();
 
     /**
      * Constructs an `Enemy` instance with the provided data and initial position.
@@ -129,6 +135,14 @@ public class Enemy extends BaseActor {
     public void act(float delta) {
         super.act(delta);
 
+        if (state == EnemyState.CORPSE) {
+            setPosition(BaseGame.levelScreen.background.getX() + diePosition.x, BaseGame.levelScreen.background.getY() + diePosition.y);
+        }
+
+        if (isDead()) {
+            return;
+        }
+
         // Update chat delay and duration
         chatDelay += delta;
         if (chatDuration > 0) chatDuration -= delta;
@@ -158,7 +172,7 @@ public class Enemy extends BaseActor {
         }
 
         // Handle enemy movement and attack behaviors when following a player
-        if (following != null && state != EnemyState.DEAD) {
+        if (following != null) {
             playerPosition.set(following.getX(Align.center), following.getY(Align.center));
             enemyPosition.set(this.getX(Align.center), this.getY(Align.center));
 
@@ -220,23 +234,20 @@ public class Enemy extends BaseActor {
             setSpeed(0);
         }
 
-        // Chat messages above enemy heads.
-        if (state != EnemyState.DEAD) {
-            // Update chat messages
-            if (chatDelay >= 3) {
-                chatDelay = 0;
-                chatDuration = 2f;
+        // Update chat messages
+        if (chatDelay >= 3) {
+            chatDelay = 0;
+            chatDuration = 2f;
 
-                // Randomly select and display a chat message
-                int randomIndex = (int) (Math.random() * EnemyData.CHAT_MESSAGES.length);
-                chatLabel.setText(EnemyData.CHAT_MESSAGES[randomIndex]);
-                this.chatGroup.setPosition(getWidth() / 2, getHeight() - 1f);
-            }
-            // Hide chat message when its duration expires
-            if (chatDuration <= 0) {
-                chatDuration = 0;
-                chatLabel.setText("");
-            }
+            // Randomly select and display a chat message
+            int randomIndex = (int) (Math.random() * EnemyData.CHAT_MESSAGES.length);
+            chatLabel.setText(EnemyData.CHAT_MESSAGES[randomIndex]);
+            this.chatGroup.setPosition(getWidth() / 2, getHeight() - 1f);
+        }
+        // Hide chat message when its duration expires
+        if (chatDuration <= 0) {
+            chatDuration = 0;
+            chatLabel.setText("");
         }
 
         // Apply physics and continue actor processing
@@ -267,6 +278,10 @@ public class Enemy extends BaseActor {
         this.following = player;
     }
 
+    public boolean isDead() {
+        return state == EnemyState.DEAD || state == EnemyState.CORPSE;
+    }
+
     /**
      * Inflicts damage on the enemy and updates chat and health-related attributes.
      *
@@ -294,8 +309,47 @@ public class Enemy extends BaseActor {
         // Check if the enemy has been defeated
         if (this.currentHealth <= 0) {
             state = EnemyState.DEAD;
-            parallelAction.addAction(Actions.delay(0.25f, Actions.run(this::remove)));
+            ParticleActor particleActor =  new ParticleActor("effects/EnemyDie2.pfx");
+            SequenceAction sequenceAction =  Actions.sequence(
+                    Actions.parallel(
+                            Actions.color(new Color(0.3882353f, 0.1254902f, 0.2627451f, 1f), .4f, Interpolation.exp10),
+                            new ContrastShader(.4f, Interpolation.exp10)
+                    ),
+                    Actions.delay(.05f),
+                    Actions.fadeOut(.2f),
+                    Actions.run(() -> {
+                        setColor(0f, 0f, 0f, 0f);
+                    }),
+                    Actions.delay(.15f),
+                    Actions.parallel(
+                            Actions.fadeIn(.15f),
+                            Actions.color(Color.WHITE, .15f),
+                            Actions.run(() -> {
+                                particleActor.remove();
+                                shaderProgram = null;
+                                loadImage("characters/enemyMask/dead2");
+                                state = EnemyState.CORPSE;
+                            })
+                    ),
+                    Actions.delay(10f),
+                    Actions.fadeOut(.2f),
+                    Actions.run(this::remove)
+
+            );
+            addAction(sequenceAction);
+            Shake shake = new Shake(1f);
+            shake.shakeDuration = 4f / 60f;
+            shake.shakeOffset = 2f;
+            addAction(shake);
+            particleActor.setPosition(+getWidth() / 2, getHeight() / 3);
+            particleActor.setScale(BaseGame.UNIT_SCALE / 4f);
+            particleActor.deltaScale = 3f / 4f;
+            particleActor.start();
+            addActor(particleActor);
+
+            diePosition.set(getX(), getY() - 4f);
         }
+
 
         // Clear existing actions on the hit label and update its position and text
         this.hitLabel.getActions().clear();

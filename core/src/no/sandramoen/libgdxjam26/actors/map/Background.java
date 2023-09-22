@@ -15,7 +15,7 @@ import no.sandramoen.libgdxjam26.utils.BaseGame;
 
 public class Background extends BaseActor {
     Vector2 center = new Vector2(40,30);
-    float scroll = .2f;
+    float scroll = .1f;
 
     public Background(float x, float y, Stage stage) {
         super(x, y, stage);

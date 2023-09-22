@@ -26,4 +26,6 @@ public enum EnemyState {
     DEAD,
     DETECT_DAMAGE,
     IDLE,
+
+    CORPSE,
 }
