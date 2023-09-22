@@ -1,26 +1,18 @@
 package no.sandramoen.libgdxjam26.actors;
 
 import com.badlogic.gdx.Gdx;
-
-import io.github.fourlastor.harlequin.animation.Animation;
-
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
-import com.github.tommyettinger.textra.TypingLabel;
-
+import io.github.fourlastor.harlequin.animation.Animation;
 import io.github.fourlastor.harlequin.animation.FixedFrameAnimation;
 import no.sandramoen.libgdxjam26.actions.Shake;
 import no.sandramoen.libgdxjam26.actors.enemy.Enemy;
@@ -40,8 +32,19 @@ public class Player extends BaseActor {
     public static final float MOVE_SPEED = 18;
     public static final float LUNGE_DISTANCE = 18;
     private static final HashMap<Integer, Float> EXPERIENCE_MAP = new HashMap<>(); // Experience required depending on the level
-
+    private final BaseActor collisionBox;
+    private final int MAX_LEVEL = 100;
+    public boolean isDead;
+    public int attackPower = 2;
+    public State state = State.IDLE;
+    public Animation<TextureRegion> walkingAnimation, attackingAnimation, idleAnimation;
     private Vector2 source = new Vector2(), target = new Vector2();
+    private float attackCooldown = 0f;
+    private int level = -1;
+    private int startingLevel = -1;
+    private float experience;
+    private int health = 4;
+    private PlayerLabelGroup playerLabelGroup;
 
     {
         // Pre-load the experience map
@@ -50,25 +53,6 @@ public class Player extends BaseActor {
             EXPERIENCE_MAP.put(level, baseExperience + (100 * (level - 1)));
         }
     }
-
-    public boolean isDead;
-    public int attackPower = 2;
-    public State state = State.IDLE;
-    private final BaseActor collisionBox;
-    private float attackCooldown = 0f;
-    private int level = -1;
-    private int startingLevel = -1;
-    private float experience;
-    private int health = 4;
-    private final int MAX_LEVEL = 100;
-
-    private PlayerLabelGroup playerLabelGroup;
-
-    public int getHealth() {
-        return health;
-    }
-
-    public Animation<TextureRegion> walkingAnimation, attackingAnimation, idleAnimation;
 
     public Player(float x, float y, int startingLevel, float percentToNextLevel, Stage stage) {
         super(x, y, stage);
@@ -80,19 +64,25 @@ public class Player extends BaseActor {
         loadAnimation();
         setBoundaryRectangle();
 
+        setDebug(true);
+
         collisionBox = new BaseActor(0, 0, stage);
-        collisionBox.setSize(1 / 2f, 1 / 2f);
+        collisionBox.setSize(2, 4f);
         collisionBox.setPosition(
-                getWidth() / 2 - collisionBox.getWidth() / 2,
-                getHeight() / 3 - collisionBox.getHeight() / 2
+                (getWidth() - collisionBox.getWidth()) / 2,
+                (getHeight() - collisionBox.getHeight()) / 4
         );
         collisionBox.setBoundaryRectangle();
-//        collisionBox.setDebug(true);
+        collisionBox.setDebug(true);
         addActor(collisionBox);
 
         playerLabelGroup = new PlayerLabelGroup();
         playerLabelGroup.setPosition(getWidth() / 2 - 2.5f, getHeight() - 1.5f);
         addActor(playerLabelGroup);
+    }
+
+    public int getHealth() {
+        return health;
     }
 
     public BaseActor getCollisionBox() {

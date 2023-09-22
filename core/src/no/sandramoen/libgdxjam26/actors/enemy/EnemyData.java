@@ -22,7 +22,7 @@ public enum EnemyData {
      * - Base Experience: 50 units
      * - Resource: whitePixel (a placeholder resource)
      */
-    ARCHER("Archer", 5, 5, 15, 1, 100, 50, "enemyKnight", 1, 1),
+    ARCHER("Archer", 5, 5, 15, 1, 100, 250, "enemyKnight", 1, 1),
 
     /**
      * The Mage enemy type.
@@ -35,7 +35,7 @@ public enum EnemyData {
      * - Base Experience: 60 units
      * - Resource: whitePixel (a placeholder resource)
      */
-    MAGE("Mage", 5, 5, 12, 1, 120, 60, "enemyKnight", 1, 1),
+    MAGE("Mage", 5, 5, 12, 1, 120, 260, "enemyKnight", 1, 1),
 
     /**
      * The Melee enemy type.
@@ -48,9 +48,9 @@ public enum EnemyData {
      * - Base Experience: 40 units
      * - Resource: whitePixel (a placeholder resource)
      */
-    MELEE("Melee", 5, 5, 5, 1, 80, 40, "enemyKnight", 5, 1);
+    MELEE("Melee", 5, 5, 5, 1, 80, 240, "enemyKnight", 5, 1);
 
-    public static final String[] CHAT_MESSAGES = {"You credit score sucks!", "I'm going to kill you!", "Ich will nicht sterben!", "Stand still!", "Die!", "Come here!"};
+    public static final String[] CHAT_MESSAGES = {"I'm going to kill you!", "Stand still!", "Die!", "Come here!"};
 
     // Private fields to store enemy characteristics.
     private final String name, resource;
