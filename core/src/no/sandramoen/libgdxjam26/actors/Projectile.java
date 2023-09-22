@@ -26,7 +26,6 @@ public class Projectile extends BaseActor {
         setSize(sprite.getWidth(), sprite.getHeight());
         setOrigin(Align.center);
         setBoundaryRectangle();
-        setDebug(true);
     }
 
 

@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
@@ -16,13 +16,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ParticleEffectActor;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
-
 import no.sandramoen.libgdxjam26.actions.CenterCamera;
 import no.sandramoen.libgdxjam26.actions.LungeMoveTo;
 import no.sandramoen.libgdxjam26.actors.Player;
 import no.sandramoen.libgdxjam26.actors.enemy.Enemy;
 import no.sandramoen.libgdxjam26.actors.enemy.EnemySpawnSystem;
-import no.sandramoen.libgdxjam26.actors.enemy.EnemyState;
 import no.sandramoen.libgdxjam26.actors.map.Background;
 import no.sandramoen.libgdxjam26.actors.map.ImpassableTerrain;
 import no.sandramoen.libgdxjam26.ui.AbilityBar;
@@ -38,18 +36,17 @@ import java.util.Iterator;
 public class LevelScreen extends BaseScreen {
     private final Comparator<Actor> ySortComparator = Comparator.comparing((Actor actor) -> -actor.getY());
     public PlayerHearts hearts;
+    public Background background;
+    public Player player;
+    public Label waveLabel;
+    public Label waveFadeLabel;
     private TiledMap currentMap;
     private Array<ImpassableTerrain> impassables;
-
-    public Background background;
-
-    public Player player;
     private QuitWindow quitWindow;
     private EnemySpawnSystem enemySpawnSystem;
     private Label levelLabel;
     private AbilityBar abilityBar;
     private Vector2 source = new Vector2(), target = new Vector2();
-
     private int startingLevel;
     private float percentToNextLevel;
 
@@ -64,7 +61,6 @@ public class LevelScreen extends BaseScreen {
         GameUtils.playLoopingMusic(BaseGame.levelMusic);
 
         OrthographicCamera test = (OrthographicCamera) mainStage.getCamera();
-        this.enemySpawnSystem = new EnemySpawnSystem(player);
         mainStage.addActor(new CenterCamera(mainStage.getCamera()));
     }
 
@@ -99,7 +95,6 @@ public class LevelScreen extends BaseScreen {
             while (it.hasNext()) {
                 Enemy enemy = it.next();
                 if (enemy == null) continue;
-
 
 
                 if (enemy.countDead) {
@@ -144,7 +139,9 @@ public class LevelScreen extends BaseScreen {
     }
 
     @Override
-    public void render(float delta) {  super.render(delta); }
+    public void render(float delta) {
+        super.render(delta);
+    }
 
     @Override
     public void update(float delta) {
@@ -184,6 +181,8 @@ public class LevelScreen extends BaseScreen {
     }
 
     private void initializeGUI() {
+        this.enemySpawnSystem = new EnemySpawnSystem(player);
+
         Label abilityLabel = new Label("Ability unlocked at level 20", new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-20", BitmapFont.class), null));
         Label continueLabel = new Label("Continues left " + BaseGame.continuesLeft, new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-20", BitmapFont.class), null));
 
@@ -200,8 +199,19 @@ public class LevelScreen extends BaseScreen {
         this.abilityBar = new AbilityBar(3);
         this.abilityBar.setPosition((Gdx.graphics.getWidth() - abilityBar.getWidth()) / 2f, verticalPadding);
 
+        this.waveLabel = new Label("Wave " + enemySpawnSystem.getCurrentWave().wave, new Label.LabelStyle(BaseGame.mySkin.getFont("MetalMania-20"), null));
+        this.waveLabel.setPosition((Gdx.graphics.getWidth() - waveLabel.getWidth()) / 2, Gdx.graphics.getHeight() - waveLabel.getHeight() - verticalPadding);
+
+        this.waveFadeLabel = new Label("Wave " + enemySpawnSystem.getCurrentWave().wave, new Label.LabelStyle(BaseGame.mySkin.getFont("MetalMania-20"), null));
+        this.waveFadeLabel.setFillParent(true);
+        this.waveFadeLabel.setAlignment(Align.center);
+        this.waveFadeLabel.addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(1), Actions.fadeOut(1)));
+        this.waveFadeLabel.setFontScale(5);
+
         uiTable.addActor(quitWindow);
         uiTable.addActor(levelLabel);
+        uiTable.addActor(waveLabel);
+        uiTable.addActor(waveFadeLabel);
         uiTable.addActor(hearts);
         uiTable.addActor(abilityBar);
 
