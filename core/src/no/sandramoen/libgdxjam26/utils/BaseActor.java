@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.g3d.Shader;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import io.github.fourlastor.harlequin.animation.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -45,6 +47,8 @@ public class BaseActor extends Group {
     private float maxSpeed = 1000f;
     private float deceleration = 0f;
     private Polygon boundaryPolygon = null;
+
+    public ShaderProgram shaderProgram = null;
 
     public BaseActor(float x, float y, Stage stage) {
         super();
@@ -97,6 +101,10 @@ public class BaseActor extends Group {
         Color c = getColor();
         batch.setColor(c.r, c.g, c.b, c.a);
 
+        if (shaderProgram != null) {
+            batch.setShader(shaderProgram);
+        }
+
         if (animation != null && isVisible()) {
             TextureRegion textureRegion = animation.getKeyFrame(animationTime);
 
@@ -126,6 +134,10 @@ public class BaseActor extends Group {
                         getScaleY(),
                         getRotation()
                 );
+        }
+
+        if (shaderProgram != null) {
+            batch.setShader(null);
         }
         super.draw(batch, parentAlpha);
     }

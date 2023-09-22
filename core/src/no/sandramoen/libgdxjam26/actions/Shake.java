@@ -10,9 +10,12 @@ import java.util.List;
 
 public class Shake extends Action {
 
-    float currDir = BaseGame.UNIT_SCALE * 3f;
+    float currDir = BaseGame.UNIT_SCALE;
     float counter;
     float duration;
+
+    public float shakeDuration = 2f / 60f;
+    public float shakeOffset = 3f;
 
     public Shake(float duration) {
         this.duration = duration;
@@ -22,12 +25,11 @@ public class Shake extends Action {
     public boolean act(float delta) {
 
         counter += delta;
-        if (counter > 2f / 60f) {
+        if (counter > shakeDuration) {
             counter = 0;
-            getActor().addAction(Actions.moveBy(currDir, 0));
+            getActor().addAction(Actions.moveBy(currDir * shakeOffset, 0));
             currDir = -currDir;
         }
-
 
         duration -= delta;
         return duration < 0;
