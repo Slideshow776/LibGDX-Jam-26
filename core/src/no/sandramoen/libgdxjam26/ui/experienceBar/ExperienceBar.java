@@ -35,7 +35,7 @@ public class ExperienceBar extends BaseActor {
 
     public void animateToPercent(float percent) {
         if (percent < 0f || percent > 1f)
-            Gdx.app.error(getClass().getSimpleName(), "Error: percent must be [0f, 1f]");
+            Gdx.app.error(getClass().getSimpleName(), "Error: percent must be [0f, 1f], percent is: " + percent);
 
         progress.addAction(Actions.after(Actions.sequence(
                 resetAction(),

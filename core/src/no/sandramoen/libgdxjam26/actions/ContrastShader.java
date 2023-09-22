@@ -22,6 +22,9 @@ public class ContrastShader extends TemporalAction {
 //        baseActor.shaderProgram = null;
 //    }
     protected void update (float percent) {
+        if (baseActor.shaderProgram == null)
+            return;
+
         baseActor.shaderProgram.bind();
         baseActor.shaderProgram.setUniformf("u_contrast", 1f - percent);
     }
