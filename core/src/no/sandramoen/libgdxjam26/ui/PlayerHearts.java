@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import no.sandramoen.libgdxjam26.utils.BaseGame;
 
 public class PlayerHearts extends Actor {
     private int health; // Current health
@@ -20,6 +21,7 @@ public class PlayerHearts extends Actor {
         // Calculate the actor's width based on heart texture width and spacing
         setWidth(fullHeart.getWidth() * 4 + (3 * heartSpacing));
         setHeight(fullHeart.getHeight());
+        setScale(BaseGame.UNIT_SCALE);
     }
 
     public void decreaseHealth(int amount) {

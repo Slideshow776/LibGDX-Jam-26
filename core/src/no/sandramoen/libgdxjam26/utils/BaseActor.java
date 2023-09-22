@@ -8,7 +8,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g3d.Shader;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import io.github.fourlastor.harlequin.animation.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
@@ -19,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import io.github.fourlastor.harlequin.animation.FixedFrameAnimation;
 
 
 public class BaseActor extends Group {
@@ -29,12 +33,13 @@ public class BaseActor extends Group {
     public boolean isFacingRight = true;
     public boolean pause = false;
     public float animationWidth = getWidth();
-    public float animationHeight = getWidth();
+    public float animationHeight = getHeight();
     public boolean isCollisionEnabled = true;
     public float shakyCamIntensity = 1f;
     public boolean isShakyCam = false;
+
     protected Image image;
-    private float animationTime = 0f;
+    public float animationTime = 0f;
     private boolean animationPaused = false;
     private Vector2 velocityVec = new Vector2(0f, 0f);
     private Vector2 accelerationVec = new Vector2(0f, 0f);
@@ -42,6 +47,8 @@ public class BaseActor extends Group {
     private float maxSpeed = 1000f;
     private float deceleration = 0f;
     private Polygon boundaryPolygon = null;
+
+    public ShaderProgram shaderProgram = null;
 
     public BaseActor(float x, float y, Stage stage) {
         super();
@@ -79,13 +86,14 @@ public class BaseActor extends Group {
 
     @Override
     public void act(float delta) {
+        if (getStage() == null)
+            return;
+
         if (!pause)
             super.act(delta);
 
-        if (animation != null && !animationPaused) {
+        if (animation != null && !animationPaused)
             animationTime += delta;
-            ((TextureRegionDrawable) image.getDrawable()).setRegion(animation.getKeyFrame(animationTime));
-        }
     }
 
     @Override
@@ -93,6 +101,44 @@ public class BaseActor extends Group {
         Color c = getColor();
         batch.setColor(c.r, c.g, c.b, c.a);
 
+        if (shaderProgram != null) {
+            batch.setShader(shaderProgram);
+        }
+
+        if (animation != null && isVisible()) {
+            TextureRegion textureRegion = animation.getKeyFrame(animationTime);
+
+            if (isFacingRight)
+                batch.draw(
+                        textureRegion,
+                        getX() + abs(getWidth() - animationWidth) / 2,
+                        getY() + abs(getHeight() - animationHeight) / 2,
+                        getOriginX(),
+                        getOriginY(),
+                        animationWidth,
+                        animationHeight,
+                        getScaleX(),
+                        getScaleY(),
+                        getRotation()
+                );
+            else
+                batch.draw(
+                        textureRegion,
+                        getX() + getWidth(),
+                        getY(),
+                        getOriginX() - getWidth(),
+                        getOriginY(),
+                        -getWidth(),
+                        getHeight(),
+                        getScaleX(),
+                        getScaleY(),
+                        getRotation()
+                );
+        }
+
+        if (shaderProgram != null) {
+            batch.setShader(null);
+        }
         super.draw(batch, parentAlpha);
     }
 
@@ -101,10 +147,7 @@ public class BaseActor extends Group {
         animationHeight = height;
     }
 
-    public void flip() {
-        isFacingRight = !isFacingRight;
-        image.setScaleX(-image.getScaleX());
-    }
+    public void flip() { isFacingRight = !isFacingRight; }
 
     public void setAnimationPaused(Boolean pause) {
         animationPaused = pause;
@@ -129,7 +172,7 @@ public class BaseActor extends Group {
             textureArray.add(new TextureRegion(texture));
         }
 
-        Animation<TextureRegion> anim = new Animation(frameDuration, textureArray);
+        Animation<TextureRegion> anim = new FixedFrameAnimation<>(frameDuration, textureArray);
 
         if (loop)
             anim.setPlayMode(Animation.PlayMode.LOOP);
@@ -144,20 +187,19 @@ public class BaseActor extends Group {
 
     public void setAnimation(Animation<TextureRegion> anim) {
         animation = anim;
+
         TextureRegion tr = animation.getKeyFrame(0);
         float w = tr.getRegionWidth() * BaseGame.UNIT_SCALE;
         float h = tr.getRegionHeight() * BaseGame.UNIT_SCALE;
         setSize(w, h);
         setOrigin(Align.center);
 
-        if (image != null) image.remove();
         TextureRegionDrawable textureRegionDrawable = new TextureRegionDrawable();
         textureRegionDrawable.setRegion(tr);
         image = new Image(textureRegionDrawable);
         image.setSize(w, h);
         image.setAlign(Align.center);
         image.setOrigin(Align.center);
-        addActor(image);
 
         if (boundaryPolygon == null)
             setBoundaryRectangle();
@@ -167,7 +209,9 @@ public class BaseActor extends Group {
         TextureRegion region = BaseGame.textureAtlas.findRegion(name);
         if (region == null)
             Gdx.app.error(getClass().getSimpleName(), "Error: region is null. Are you sure the image '" + name + "' exists?");
-        setAnimation(new Animation(1f, region));
+        Array<TextureRegion> regions = new Array<>();
+        regions.add(region);
+        setAnimation(new FixedFrameAnimation<>(1f, regions));
     }
 
     public float getSpeed() {
@@ -236,6 +280,11 @@ public class BaseActor extends Group {
 
         // reset acceleration
         accelerationVec.set(0, 0);
+    }
+
+    protected void checkIfFlip(float angleDeg) {
+        if (!isFacingRight && (angleDeg >= 270 || angleDeg <= 90)) flip();
+        else if (isFacingRight && (angleDeg > 90 && angleDeg < 270)) flip();
     }
 
     // camera ---------------------------------------------------------------------------------------------------
@@ -311,15 +360,24 @@ public class BaseActor extends Group {
     }
 
     public void shakeCamera() {
+        shakeCamera(shakyCamIntensity);
+    }
+
+    public void shakeCamera(float intensity) {
+        if (this.getStage() == null) {
+            Gdx.app.error(getClass().getSimpleName(), "Error: couldn't shake camera stage is: " + getStage());
+            return;
+        }
+
         this.getStage().getCamera().position.set(
                 new Vector3(
                         this.getStage().getCamera().position.x + MathUtils.random(
-                                -shakyCamIntensity,
-                                shakyCamIntensity
+                                -intensity,
+                                intensity
                         ),
                         this.getStage().getCamera().position.y + MathUtils.random(
-                                -shakyCamIntensity,
-                                shakyCamIntensity
+                                -intensity,
+                                intensity
                         ),
                         0f
                 )
@@ -334,6 +392,8 @@ public class BaseActor extends Group {
         float[] vertices = {0, 0, w, 0, w, h, 0, h};
         boundaryPolygon = new Polygon(vertices);
     }
+
+    // Collision detection --------------------------------------------------------------------------------------
 
     public Polygon getBoundaryPolygon() {
         boundaryPolygon.setPosition(getX(), getY());

@@ -1,6 +1,7 @@
 package no.sandramoen.libgdxjam26.actors.particles;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -9,6 +10,9 @@ import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
 
 public class ParticleActor extends Group {
+
+    public float accumulate = 0f;
+    private float accumulateTimer = 0f;
 
     public float deltaScale = 1f;
     private ParticleEffect effect;
@@ -22,6 +26,9 @@ public class ParticleActor extends Group {
         }
 
         public void draw(Batch batch, float parentAlpha) {
+//            for (ParticleEmitter emitter : effect.getEmitters()) {
+//                emitter.getActiveCount();
+//            }
             effect.draw(batch);
         }
     }
@@ -55,12 +62,18 @@ public class ParticleActor extends Group {
     }
 
     public void act(float dt) {
+        accumulateTimer += dt;
+        if (accumulateTimer < accumulate) return;
+        dt += accumulate;
+        accumulateTimer -= accumulate;
+
         super.act(dt);
         effect.update(dt * deltaScale);
 
         if (effect.isComplete() && !effect.getEmitters().first().isContinuous()) {
             effect.dispose();
             this.remove();
+            renderingActor.remove();
         }
     }
 

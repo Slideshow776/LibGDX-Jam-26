@@ -48,9 +48,9 @@ public enum EnemyData {
      * - Base Experience: 40 units
      * - Resource: whitePixel (a placeholder resource)
      */
-    MELEE("Melee", 5, 5, 2, 1, 80, 40, "enemyKnight", 5, 1);
+    MELEE("Melee", 5, 5, 5, 1, 80, 40, "enemyKnight", 5, 1);
 
-    public static final String[] CHAT_MESSAGES = {"You credit score sucks!", "I'm going to kill you!", "Ich will nicht sterben!"};
+    public static final String[] CHAT_MESSAGES = {"You credit score sucks!", "I'm going to kill you!", "Ich will nicht sterben!", "Stand still!", "Die!", "Come here!"};
 
     // Private fields to store enemy characteristics.
     private final String name, resource;

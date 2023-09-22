@@ -2,17 +2,14 @@ package no.sandramoen.libgdxjam26.utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter.OutputType;
 import io.github.fourlastor.harlequin.animation.Animation;
 import io.github.fourlastor.harlequin.animation.KeyFrame;
 import io.github.fourlastor.harlequin.animation.KeyFrameAnimation;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,21 +36,17 @@ public class AsepriteAnimationLoader {
 
     static Json json = new Json();
 
-    public static Animation<TextureRegionDrawable> load(String animationName) {
-        List<KeyFrame<TextureRegionDrawable>> keyFrames = new ArrayList<>();
+    public static Animation<TextureRegion> load(String animationName) {
+        List<KeyFrame<TextureRegion>> keyFrames = new ArrayList<>();
 
         int startTime = 0;
         try {
 
             FileHandle fileHandle = Gdx.files.internal(animationName + ".json");
-            InputStream inputStream = fileHandle.read();
-            byte[] bytes = new byte[inputStream.available()];
-            inputStream.read(bytes);
-            JsonValue asepriteAnimation = (JsonValue) BaseGame.jsonSerializer.deserialize(bytes);
-            inputStream.close();
+            JsonValue asepriteAnimation = BaseGame.jsonSerializer.parse(fileHandle);
             JsonValue frames = asepriteAnimation.get("frames");
+            animationName = animationName.split("/", 4)[3];
 
-            fileHandle = Gdx.files.internal(animationName + ".png");
             for (JsonValue key : frames) {
                 TextureAtlas.AtlasRegion frameTexture = BaseGame.textureAtlas.findRegion(animationName);
 
@@ -61,8 +54,8 @@ public class AsepriteAnimationLoader {
 
                 keyFrames.add(KeyFrame.create(
                         startTime,
-                        new TextureRegionDrawable(new TextureRegion(
-                                frameTexture, frame.frame.x, frame.frame.y, frame.frame.w, frame.frame.h))));
+                        new TextureRegion(
+                                frameTexture, frame.frame.x, frame.frame.y, frame.frame.w, frame.frame.h)));
                 startTime += frame.duration;
             }
 

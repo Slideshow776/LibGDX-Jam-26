@@ -15,9 +15,15 @@ import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import io.github.fourlastor.harlequin.animation.Animation;
+import io.github.fourlastor.harlequin.animation.FixedFrameAnimation;
+import no.sandramoen.libgdxjam26.actions.ContrastShader;
+import no.sandramoen.libgdxjam26.actions.Shake;
 import no.sandramoen.libgdxjam26.actors.Player;
 import no.sandramoen.libgdxjam26.actors.Projectile;
 import no.sandramoen.libgdxjam26.actors.particles.EnemyHitEffect;
+import no.sandramoen.libgdxjam26.actors.particles.ParticleActor;
+import no.sandramoen.libgdxjam26.utils.AsepriteAnimationLoader;
 import no.sandramoen.libgdxjam26.utils.BaseActor;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
 
@@ -42,9 +48,12 @@ public class Enemy extends BaseActor {
     private float chatDelay = 0; // Delay between chat messages
     private float currentHealth; // Current health of the enemy
     private float attackCooldown = 0f;
+    public boolean countDead;
 
     private Animation<TextureRegion> walkingAnimation, attackingAnimation, idleAnimation;
     private Sprite projectile;
+
+    private Vector2 diePosition = new Vector2();
 
     /**
      * Constructs an `Enemy` instance with the provided data and initial position.
@@ -61,6 +70,10 @@ public class Enemy extends BaseActor {
         loadAnimation(data.getResource());
         setBoundaryRectangle();
 
+        setOrigin(Align.center);
+        image.setAlign(Align.center);
+        image.setOrigin(Align.center);
+
         // Initialize enemy-specific attributes
         this.data = data;
         this.currentHealth = data.getBaseHealth();
@@ -68,12 +81,14 @@ public class Enemy extends BaseActor {
         this.enemyPosition = new Vector2();
         this.chatGroup = new Group();
         this.chatLabel = new Label("", new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-20", BitmapFont.class), null));
-        this.hitLabel = new Label("", new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-20", BitmapFont.class), Color.RED));
+        this.hitLabel = new Label("", new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-20", BitmapFont.class), BaseGame.paletteRed));
         this.chatLabel.setAlignment(Align.center);
         this.hitLabel.setAlignment(Align.center);
-        this.chatGroup.setScale(BaseGame.UNIT_SCALE);
+
         this.chatGroup.addActor(chatLabel);
         this.chatGroup.addActor(hitLabel);
+        this.chatGroup.setScale(.025f);
+
         this.projectile = new Sprite(new Texture(Gdx.files.internal("images/included/GUI/arrow.png")));
         this.projectile.flip(true, true);
 
@@ -81,15 +96,14 @@ public class Enemy extends BaseActor {
         this.addActor(chatGroup);
 
         // Set attack collision box.
-        // TODO: should depend on enemy.data rather than being universal for all enemy types.
         attackCollisionBox = new BaseActor(0, 0, stage);
-        attackCollisionBox.setSize(12f, 12f);
+        attackCollisionBox.setSize(10f, 10f);
         attackCollisionBox.setPosition(
                 getWidth() / 2 - attackCollisionBox.getWidth() / 2,
                 getHeight() / 2 - attackCollisionBox.getHeight() / 2
         );
-        attackCollisionBox.setBoundaryRectangle();
-        attackCollisionBox.setDebug(true);
+        attackCollisionBox.setBoundaryPolygon(8);
+//        attackCollisionBox.setDebug(true);
         attackCollisionBox.isCollisionEnabled = false;
         addActor(attackCollisionBox);
     }
@@ -97,19 +111,18 @@ public class Enemy extends BaseActor {
     private void loadAnimation(String enemyName) {
         Array<TextureAtlas.AtlasRegion> animationImages = new Array<>();
 
-        animationImages.add(BaseGame.textureAtlas.findRegion("characters/" + enemyName + "/walking1"));
-        animationImages.add(BaseGame.textureAtlas.findRegion("characters/" + enemyName + "/walking2"));
-        walkingAnimation = new Animation<>(.2f, animationImages, Animation.PlayMode.LOOP);
+        walkingAnimation = AsepriteAnimationLoader.load("assets/images/included/characters/enemyMask/walking");
+        walkingAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
         animationImages.clear();
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/" + enemyName + "/attacking1"));
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/" + enemyName + "/attacking2"));
-        attackingAnimation = new Animation<>(.2f, animationImages, Animation.PlayMode.NORMAL);
+        attackingAnimation = new FixedFrameAnimation<>(.2f, animationImages, Animation.PlayMode.NORMAL);
 
         animationImages.clear();
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/" + enemyName + "/idle1"));
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/" + enemyName + "/idle2"));
-        idleAnimation = new Animation<>(.6f, animationImages, Animation.PlayMode.LOOP);
+        idleAnimation = new FixedFrameAnimation<>(.6f, animationImages, Animation.PlayMode.LOOP);
 
         setAnimation(walkingAnimation);
     }
@@ -123,6 +136,14 @@ public class Enemy extends BaseActor {
     public void act(float delta) {
         super.act(delta);
 
+        if (state == EnemyState.CORPSE) {
+            setPosition(BaseGame.levelScreen.background.getX() + diePosition.x, BaseGame.levelScreen.background.getY() + diePosition.y);
+        }
+
+        if (isDead()) {
+            return;
+        }
+
         // Update chat delay and duration
         chatDelay += delta;
         if (chatDuration > 0) chatDuration -= delta;
@@ -134,6 +155,7 @@ public class Enemy extends BaseActor {
             if (attackCollisionBox.overlaps(following.getCollisionBox())) {
                 state = EnemyState.ATTACK;
                 following.applyDamage(data.attackDamage);
+                following.applyKnockBack(this);
                 attackCollisionBox.isCollisionEnabled = false;
             }
             return;
@@ -151,13 +173,16 @@ public class Enemy extends BaseActor {
         }
 
         // Handle enemy movement and attack behaviors when following a player
-        if (following != null && state != EnemyState.DEAD) {
+        if (following != null) {
             playerPosition.set(following.getX(Align.center), following.getY(Align.center));
             enemyPosition.set(this.getX(Align.center), this.getY(Align.center));
 
+            float angleDegrees = playerPosition.cpy().sub(enemyPosition).angleDeg();
+            checkIfFlip(angleDegrees);
+
             // Check if the player is out of attack range, and if so, move towards the player
             if (playerPosition.dst(enemyPosition) > data.getAttackRange()) {
-                setMotionAngle(playerPosition.sub(enemyPosition).angleDeg());
+                setMotionAngle(angleDegrees);
                 setSpeed(Player.MOVE_SPEED / 2f);
                 state = EnemyState.MOVE;
             } else {
@@ -180,6 +205,7 @@ public class Enemy extends BaseActor {
                     Vector2 finalPosition = enemyPosition.add(lungeVector);
 
                     MoveToAction moveAction = Actions.moveTo(finalPosition.x, finalPosition.y, 0.5f, Interpolation.exp10);
+                    moveAction.setAlignment(Align.center);
                     SequenceAction sequence = Actions.sequence(
                             moveAction,
                             Actions.delay(0.1f),
@@ -209,28 +235,21 @@ public class Enemy extends BaseActor {
             setSpeed(0);
         }
 
-        // Chat messages above enemy heads.
-        if (state != EnemyState.DEAD) {
-            // Update chat messages
-            if (chatDelay >= 3) {
-                chatDelay = 0;
-                chatDuration = 2f;
+        // Update chat messages
+        if (chatDelay >= 3) {
+            chatDelay = 0;
+            chatDuration = 2f;
 
-                // Randomly select and display a chat message
-                int randomIndex = (int) (Math.random() * EnemyData.CHAT_MESSAGES.length);
-                chatLabel.setText(EnemyData.CHAT_MESSAGES[randomIndex]);
-            }
-
-            // Hide chat message when its duration expires
-            if (chatDuration <= 0) {
-                chatDuration = 0;
-                chatLabel.setText("");
-            }
+            // Randomly select and display a chat message
+            int randomIndex = (int) (Math.random() * EnemyData.CHAT_MESSAGES.length);
+            chatLabel.setText(EnemyData.CHAT_MESSAGES[randomIndex]);
+            this.chatGroup.setPosition(getWidth() / 2, getHeight() - 1f);
         }
-
-        // TODO: remove if unneeded
-//        // Position the chat group above the enemy
-//        chatGroup.setPosition(((getWidth() - chatGroup.getWidth()) / 2f), getHeight() + 2f);
+        // Hide chat message when its duration expires
+        if (chatDuration <= 0) {
+            chatDuration = 0;
+            chatLabel.setText("");
+        }
 
         // Apply physics and continue actor processing
         this.applyPhysics(delta);
@@ -260,6 +279,10 @@ public class Enemy extends BaseActor {
         this.following = player;
     }
 
+    public boolean isDead() {
+        return state == EnemyState.DEAD || state == EnemyState.CORPSE;
+    }
+
     /**
      * Inflicts damage on the enemy and updates chat and health-related attributes.
      *
@@ -276,7 +299,7 @@ public class Enemy extends BaseActor {
         // Create an action to display the damage received
         MoveToAction moveAction = new MoveToAction();
         moveAction.setDuration(0.25f);
-        moveAction.setPosition(((chatGroup.getWidth() - hitLabel.getWidth()) / 2f), 15);
+        moveAction.setPosition(getX(Align.center), 45 + 15);
 
         ParallelAction parallelAction = new ParallelAction();
         parallelAction.setActor(hitLabel);
@@ -284,17 +307,55 @@ public class Enemy extends BaseActor {
         parallelAction.addAction(Actions.fadeOut(0.25f));
         parallelAction.addAction(moveAction);
 
-
         // Check if the enemy has been defeated
         if (this.currentHealth <= 0) {
+            countDead = true;
             state = EnemyState.DEAD;
-            parallelAction.addAction(Actions.delay(0.25f, Actions.run(this::remove)));
+            ParticleActor particleActor =  new ParticleActor("effects/EnemyDie2.pfx");
+            SequenceAction sequenceAction =  Actions.sequence(
+                    Actions.parallel(
+                            Actions.color(new Color(0.3882353f, 0.1254902f, 0.2627451f, 1f), .4f, Interpolation.exp10),
+                            new ContrastShader(.4f, Interpolation.exp10)
+                    ),
+                    Actions.delay(.05f),
+                    Actions.fadeOut(.2f),
+                    Actions.run(() -> {
+                        setColor(0f, 0f, 0f, 0f);
+                    }),
+                    Actions.delay(.15f),
+                    Actions.parallel(
+                            Actions.fadeIn(.15f),
+                            Actions.color(Color.WHITE, .15f),
+                            Actions.run(() -> {
+                                particleActor.remove();
+                                shaderProgram = null;
+                                loadImage("characters/enemyMask/dead2");
+                                state = EnemyState.CORPSE;
+                            })
+                    ),
+                    Actions.delay(10f),
+                    Actions.fadeOut(.2f),
+                    Actions.run(this::remove)
+
+            );
+            addAction(sequenceAction);
+            Shake shake = new Shake(1f);
+            shake.shakeDuration = 4f / 60f;
+            shake.shakeOffset = 2f;
+            addAction(shake);
+            particleActor.setPosition(+getWidth() / 2, getHeight() / 3);
+            particleActor.setScale(BaseGame.UNIT_SCALE / 4f);
+            particleActor.deltaScale = 3f / 4f;
+            particleActor.start();
+            addActor(particleActor);
+
+            diePosition.set(getX(), getY() - 4f);
         }
 
 
         // Clear existing actions on the hit label and update its position and text
         this.hitLabel.getActions().clear();
-        this.hitLabel.setPosition(((chatGroup.getWidth() - hitLabel.getWidth()) / 2f), 0);
+        this.hitLabel.setPosition(getX(Align.center), 45);
         this.hitLabel.setText("" + (int) damage);
         this.hitLabel.addAction(parallelAction);
 
@@ -302,9 +363,9 @@ public class Enemy extends BaseActor {
         shakeCamera();
 
         EnemyHitEffect enemyHitEffect = new EnemyHitEffect();
-        enemyHitEffect.setPosition(+getWidth() / 2 - BaseGame.UNIT_SCALE * 16, getHeight() / 2);
-        enemyHitEffect.setScale(BaseGame.UNIT_SCALE / 4f);
-//        enemyHitEffect.deltaScale = 4f;
+        enemyHitEffect.setPosition(+getWidth() / 2 - BaseGame.UNIT_SCALE * 18, getHeight() / 2 - BaseGame.UNIT_SCALE * 4);
+        enemyHitEffect.setScale(4f * BaseGame.UNIT_SCALE / 15f);
+        enemyHitEffect.deltaScale = 3f / 4f;
         enemyHitEffect.start();
         addActor(enemyHitEffect);
     }

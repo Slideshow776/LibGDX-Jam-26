@@ -60,7 +60,7 @@ public class BaseSlider extends Table {
                     BaseGame.soundVolume = slider.getValue();
                 } else if (value.equalsIgnoreCase("music")) {
                     BaseGame.musicVolume = slider.getValue();
-                    // BaseGame.menuMusic.setVolume(BaseGame.musicVolume);
+                    BaseGame.menuMusic.setVolume(BaseGame.musicVolume);
                 } else if (value.equalsIgnoreCase("voice")) {
                     BaseGame.voiceVolume = slider.getValue();
                 }

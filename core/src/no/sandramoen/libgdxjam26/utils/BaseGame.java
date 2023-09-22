@@ -10,18 +10,18 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.TextureData;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.utils.Array;
 
-import com.github.czyzby.websocket.serialization.impl.JsonSerializer;
+import com.badlogic.gdx.utils.JsonReader;
 import no.sandramoen.libgdxjam26.screens.gameplay.LevelScreen;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public abstract class BaseGame extends Game implements AssetErrorListener {
 
@@ -32,17 +32,26 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
     public static TextureAtlas textureAtlas;
     public static Skin mySkin;
     public static LevelScreen levelScreen;
-
     public static String defaultShader;
     public static String shockwaveShader;
+    public static String contrastShader;
+    public static ShaderProgram hallucinationShader;
 
     public static Sound click1Sound;
     public static Sound hoverOverEnterSound;
     public static Sound kill0Sound;
     public static Sound miss0Sound;
+    public static List<Sound> hitSounds = new ArrayList<>();
+    public static Integer hitSoundsPreviousIndex = -1;
+    public static List<Sound> swingSounds;
+    public static Sound levelUpSound;
 
     public static Music menuMusic;
     public static Music levelMusic;
+
+    public static Color paletteRed = new Color(0.353f, 0.125f, 0.2f, 1f);
+    public static Color paletteGreen = new Color(0.255f, 0.455f, 0.353f, 1f);
+    public static Color paletteColourIDX12 = new Color(0.125f, 0.286f, 0.294f, 1f);
 
     // game state
     public static Preferences preferences;
@@ -53,11 +62,13 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
     public static float soundVolume = .5f;
     public static float musicVolume = .1f;
     public static final float UNIT_SCALE = .125f;
-
+    public static final int MAX_CONTINUES = 4;
+    public static int continuesLeft = -1 ;
     public static final boolean debugEnabled = true;
-
     private final Map<String, Pixmap> pixmapCache = new HashMap<String, Pixmap>();
-    public static JsonSerializer jsonSerializer = new JsonSerializer();
+    public static JsonReader jsonSerializer = new JsonReader();
+
+    public static Random random = new Random();
 
     public BaseGame() {
         game = this;
@@ -128,37 +139,52 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         // shaders
         assetManager.load(new AssetDescriptor("shaders/default.vs", Text.class, new TextLoader.TextParameter()));
         assetManager.load(new AssetDescriptor("shaders/shockwave.fs", Text.class, new TextLoader.TextParameter()));
+        assetManager.load(new AssetDescriptor("shaders/contrast.fs", Text.class, new TextLoader.TextParameter()));
 
         // music
-        assetManager.load("audio/music/575803__peepee321__doom-loop-90-bpm.ogg", Music.class);
-        assetManager.load("audio/music/672783__bertsz__cyberpunk_metal.ogg", Music.class);
+        assetManager.load("audio/music/menuMusic.ogg", Music.class);
+        assetManager.load("audio/music/levelMusic.ogg", Music.class);
 
         // sound
         assetManager.load("audio/sound/click1.wav", Sound.class);
         assetManager.load("audio/sound/hoverOverEnter.wav", Sound.class);
         assetManager.load("audio/sound/player/kill0.ogg", Sound.class);
         assetManager.load("audio/sound/player/miss0.ogg", Sound.class);
+        assetManager.load("audio/sound/player/hit1.ogg", Sound.class);
+        assetManager.load("audio/sound/player/hit2.ogg", Sound.class);
+        assetManager.load("audio/sound/player/hit3.ogg", Sound.class);
+        assetManager.load("audio/sound/player/hit4.ogg", Sound.class);
+        assetManager.load("audio/sound/GUI/levelUp.wav", Sound.class);
 
         assetManager.finishLoading();
 
         // shaders
         defaultShader = assetManager.get("shaders/default.vs", Text.class).getString();
         shockwaveShader = assetManager.get("shaders/shockwave.fs", Text.class).getString();
+        contrastShader = assetManager.get("shaders/contrast.fs", Text.class).getString();
 
         // music
-        menuMusic = assetManager.get("audio/music/575803__peepee321__doom-loop-90-bpm.ogg", Music.class);
-        levelMusic = assetManager.get("audio/music/672783__bertsz__cyberpunk_metal.ogg", Music.class);
+        menuMusic = assetManager.get("audio/music/menuMusic.ogg", Music.class);
+        levelMusic = assetManager.get("audio/music/levelMusic.ogg", Music.class);
 
         // sound
         click1Sound = assetManager.get("audio/sound/click1.wav", Sound.class);
         hoverOverEnterSound = assetManager.get("audio/sound/hoverOverEnter.wav", Sound.class);
         kill0Sound = assetManager.get("audio/sound/player/kill0.ogg", Sound.class);
         miss0Sound = assetManager.get("audio/sound/player/miss0.ogg", Sound.class);
+        hitSounds.add(assetManager.get("audio/sound/player/hit1.ogg", Sound.class));
+        hitSounds.add(assetManager.get("audio/sound/player/hit2.ogg", Sound.class));
+        hitSounds.add(assetManager.get("audio/sound/player/hit3.ogg", Sound.class));
+        hitSounds.add(assetManager.get("audio/sound/player/hit4.ogg", Sound.class));
+        levelUpSound = assetManager.get("audio/sound/GUI/levelUp.wav", Sound.class);
 
         textureAtlas = assetManager.get("images/included/packed/images.pack.atlas");
         GameUtils.printLoadingTime(getClass().getSimpleName(), "Assetmanager", startTime);
 
-        // TODO: particle effects.
+
+        String defaultVertexShader = Gdx.files.internal("shaders/default.vs").readString();
+        String fragmentShader = Gdx.files.internal("shaders/hallucination.fs").readString();
+        hallucinationShader = new ShaderProgram(defaultVertexShader, fragmentShader);
     }
 
     /**

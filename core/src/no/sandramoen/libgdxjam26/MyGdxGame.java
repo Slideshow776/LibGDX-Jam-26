@@ -1,5 +1,7 @@
 package no.sandramoen.libgdxjam26;
 
+import com.badlogic.gdx.utils.Array;
+
 import no.sandramoen.libgdxjam26.screens.gameplay.LevelScreen;
 import no.sandramoen.libgdxjam26.screens.shell.LevelUpScreen;
 import no.sandramoen.libgdxjam26.screens.shell.MenuScreen;
@@ -13,8 +15,11 @@ public class MyGdxGame extends BaseGame {
 		super.create();
 		// setActiveScreen(new SplashScreen());
 		setActiveScreen(new MenuScreen());
-		// setActiveScreen(new LevelScreen());
-		// setActiveScreen(new LevelUpScreen());
+		// setActiveScreen(new LevelScreen(1, 0));
+
+		/*Array<Integer> abilityUnlocks = new Array<>();
+		abilityUnlocks.add(20, 40, 60);
+		setActiveScreen(new LevelUpScreen(10, 10, .75f, abilityUnlocks));*/
 	}
 }
 

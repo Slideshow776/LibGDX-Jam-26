@@ -1,12 +1,15 @@
 package no.sandramoen.libgdxjam26.utils;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
@@ -15,10 +18,10 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 public abstract class BaseScreen implements Screen, InputProcessor, ControllerListener {
     public float slowdown = 1f;
     public float slowdownDuration = 1f;
-    protected Stage mainStage;
-    protected Stage uiStage;
+    public Stage mainStage;
+    public Stage uiStage;
     protected Table uiTable;
-    private boolean pause;
+    protected boolean pause;
 
     public BaseScreen() {
         mainStage = new Stage(new ExtendViewport(80, 45));
@@ -38,6 +41,7 @@ public abstract class BaseScreen implements Screen, InputProcessor, ControllerLi
 
     @Override
     public void render(float delta) {
+
         if (slowdown > 0 && slowdown < 1) {
             delta = delta * slowdown;
             slowdownDuration -= Gdx.graphics.getDeltaTime();
@@ -103,6 +107,10 @@ public abstract class BaseScreen implements Screen, InputProcessor, ControllerLi
 
     @Override
     public boolean keyDown(int keycode) {
+        if (keycode == Input.Keys.F1 && BaseGame.debugEnabled) {
+            for (Actor actor : mainStage.getActors()) actor.setDebug(!actor.getDebug());
+            for (Actor actor : uiStage.getActors()) actor.setDebug(!actor.getDebug());
+        }
         return false;
     }
 

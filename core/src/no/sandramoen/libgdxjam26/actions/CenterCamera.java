@@ -7,11 +7,11 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public class CenterCamera extends Actor {
-
     final Camera camera;
     final Vector3 currentPosition = new Vector3();
 
-    public final float moveDuration = .25f;
+    public static float MOVE_DURATION = .25f;
+    public static Interpolation INTERPOLATION = Interpolation.linear;
 
     public CenterCamera(Camera camera) {
         this.camera = camera;
@@ -24,7 +24,7 @@ public class CenterCamera extends Actor {
         super.act(delta);
         currentPosition.set(getX(), getY(), 0f);
         if (currentPosition.dst(camera.position) > 1e-1) {
-            camera.position.lerp(currentPosition, Interpolation.linear.apply(delta / moveDuration));
+            camera.position.lerp(currentPosition, INTERPOLATION.apply(delta / MOVE_DURATION));
         }
         else {
             camera.position.set(currentPosition);
