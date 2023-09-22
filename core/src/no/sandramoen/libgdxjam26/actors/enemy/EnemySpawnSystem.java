@@ -1,7 +1,6 @@
 package no.sandramoen.libgdxjam26.actors.enemy;
 
 import no.sandramoen.libgdxjam26.actors.Player;
-import no.sandramoen.libgdxjam26.utils.BaseGame;
 
 import java.util.ArrayList;
 
@@ -24,7 +23,7 @@ public class EnemySpawnSystem {
     /**
      * Constructor for the EnemySpawnSystem class.
      *
-     * @param player        The player character in the game.
+     * @param player The player character in the game.
      */
     public EnemySpawnSystem(Player player) {
         this.player = player;
@@ -54,14 +53,20 @@ public class EnemySpawnSystem {
     public void spawnRandomEnemy() {
         // Generate a random index to select an enemy type from the EnemyData enum.
         int randomIndex = (int) (Math.random() * EnemyData.values().length);
-        EnemyData data = EnemyData.values()[2];
+        EnemyData data = EnemyData.values()[randomIndex];
 
-        // Generate random X and Y coordinates within the game map bounds.
-        int randomX = (int) (Math.random() * player.getStage().getViewport().getWorldWidth());
-        int randomY = (int) (Math.random() * player.getStage().getViewport().getWorldHeight());
+        // Define the minimum distance between the player and the enemy spawn point (radius).
+        float minSpawnDistance = 30.0f; // Adjust this value as needed.
+
+        // Calculate a random angle (in radians) for the enemy's spawn point.
+        double randomAngle = Math.random() * 2 * Math.PI;
+
+        // Calculate the spawn point coordinates that are outside the player's radius.
+        float spawnX = (float) (player.getX() + minSpawnDistance * Math.cos(randomAngle));
+        float spawnY = (float) (player.getY() + minSpawnDistance * Math.sin(randomAngle));
 
         // Create a new enemy instance and add it to the game stage.
-        Enemy enemy = new Enemy(data, randomX, randomY, player.getStage());
+        Enemy enemy = new Enemy(data, spawnX, spawnY, player.getStage());
         enemies.add(enemy);
         enemy.setIndex(enemies.indexOf(enemy));
 
