@@ -48,6 +48,7 @@ public class Enemy extends BaseActor {
     private float chatDelay = 0; // Delay between chat messages
     private float currentHealth; // Current health of the enemy
     private float attackCooldown = 0f;
+    public boolean countDead;
 
     private Animation<TextureRegion> walkingAnimation, attackingAnimation, idleAnimation;
     private Sprite projectile;
@@ -308,6 +309,7 @@ public class Enemy extends BaseActor {
 
         // Check if the enemy has been defeated
         if (this.currentHealth <= 0) {
+            countDead = true;
             state = EnemyState.DEAD;
             ParticleActor particleActor =  new ParticleActor("effects/EnemyDie2.pfx");
             SequenceAction sequenceAction =  Actions.sequence(

@@ -100,7 +100,10 @@ public class LevelScreen extends BaseScreen {
                 Enemy enemy = it.next();
                 if (enemy == null) continue;
 
-                if (enemy.isDead()) {
+
+
+                if (enemy.countDead) {
+                    enemy.countDead = false;
                     int previousLevel = player.getLevel();
                     player.addExperience(enemy.getData().getBaseExperience());
                     if (player.getLevel() > previousLevel)
