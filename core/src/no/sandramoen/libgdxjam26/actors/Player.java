@@ -1,6 +1,7 @@
 package no.sandramoen.libgdxjam26.actors;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
@@ -54,10 +55,10 @@ public class Player extends BaseActor {
         }
     }
 
-    public LoopedSound chargeSound;
-    {
-        chargeSound = new LoopedSound(Gdx.files.internal("assets/audio/sound/player/charge1-start.ogg"), Gdx.files.internal("assets/audio/sound/player/charge1-loop.ogg"));
-    };
+    public Sound chargeSound = BaseGame.charge1Sound;
+//    {
+//        chargeSound = new LoopedSound(Gdx.files.internal("assets/audio/sound/player/charge1-start.ogg"), Gdx.files.internal("assets/audio/sound/player/charge1-loop.ogg"));
+//    };
 
     public Player(float x, float y, int startingLevel, float percentToNextLevel, Stage stage) {
         super(x, y, stage);

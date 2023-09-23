@@ -168,7 +168,7 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         assetManager.load("audio/sound/player/chargeDo1.ogg", Sound.class);
         assetManager.load("audio/sound/player/chargeDo2.ogg", Sound.class);
         assetManager.load("audio/sound/player/swordDrag1.ogg", Sound.class);
-        assetManager.load("audio/sound/GUI/levelUp.wav", Sound.class);
+        assetManager.load("audio/sound/GUI/levelUp.ogg", Sound.class);
 
         assetManager.finishLoading();
 
@@ -197,7 +197,7 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         hitSounds.add(assetManager.get("audio/sound/player/hit2.ogg", Sound.class));
         hitSounds.add(assetManager.get("audio/sound/player/hit3.ogg", Sound.class));
         hitSounds.add(assetManager.get("audio/sound/player/hit4.ogg", Sound.class));
-        levelUpSound = assetManager.get("audio/sound/GUI/levelUp.wav", Sound.class);
+        levelUpSound = assetManager.get("audio/sound/GUI/levelUp.ogg", Sound.class);
 
         textureAtlas = assetManager.get("images/included/packed/images.pack.atlas");
         GameUtils.printLoadingTime(getClass().getSimpleName(), "Assetmanager", startTime);

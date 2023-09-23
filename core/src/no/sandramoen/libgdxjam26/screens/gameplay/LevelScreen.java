@@ -139,8 +139,7 @@ public class LevelScreen extends BaseScreen {
         if (player.state != Player.State.IDLE && player.state != Player.State.MOVING && player.state != Player.State.CHARGEATTACK_CHARGE)
             return;
 
-        if (player.chargeSound.isPlaying())
-            player.chargeSound.stop();
+        player.chargeSound.stop();
 
         leftButtonDown = false;
 
@@ -161,21 +160,21 @@ public class LevelScreen extends BaseScreen {
             Vector2 finalPosition = source.cpy().add(lungeVector);
             lungeAction.setPosition(finalPosition.x, finalPosition.y);
             SequenceAction sequence = Actions.sequence(
-                    Actions.run(() -> {
-                        BaseGame.levelScreen.slowdown = 0.05f;
-                        BaseGame.levelScreen.slowdownDuration = 0.4f;
-                        GameUtils.playWithRandomPitch(BaseGame.chargeDo1Sound, 0.9f, 1.1f);
-                    }),
-                    Actions.delay(0.2f),
-                    Actions.run(() -> {
-                        player.addAction(new ColorShader(new Color(1f, 1f, 1f, 1f), 0.4f, Interpolation.elastic));
-                        GameUtils.playWithRandomPitch(BaseGame.chargeDo2Sound, 0.9f, 1.1f);
-                    }),
-                    lungeAction,
-                    Actions.delay(0.1f),
-                    Actions.run(() -> {
-                        player.state = Player.State.IDLE;
-                    })
+                Actions.run(() -> {
+                    BaseGame.levelScreen.slowdown = 0.05f;
+                    BaseGame.levelScreen.slowdownDuration = 0.4f;
+                    GameUtils.playWithRandomPitch(BaseGame.chargeDo1Sound, 0.9f, 1.1f);
+                }),
+                Actions.delay(0.2f),
+                Actions.run(() -> {
+                    player.addAction(new ColorShader(new Color(1f, 1f, 1f, 1f), 0.4f, Interpolation.elastic));
+                    GameUtils.playWithRandomPitch(BaseGame.chargeDo2Sound, 0.9f, 1.1f);
+                }),
+                lungeAction,
+                Actions.delay(0.1f),
+                Actions.run(() -> {
+                    player.state = Player.State.IDLE;
+                })
             );
 
             player.addAction(sequence);
@@ -226,8 +225,7 @@ public class LevelScreen extends BaseScreen {
         if (player.state != Player.State.IDLE && player.state != Player.State.MOVING && player.state != Player.State.SHOCKWAVE_CHARGE)
             return;
 
-        if (player.chargeSound.isPlaying())
-            player.chargeSound.stop();
+        player.chargeSound.stop();
 
         rightButtonDown = false;
 
@@ -342,10 +340,9 @@ public class LevelScreen extends BaseScreen {
                 player.addAction(sequenceAction);
 //                player.addAction(moveAction);
 
-                if (player.chargeSound.isPlaying())
-                    player.chargeSound.stop();
-
-                player.chargeSound.play();
+                player.chargeSound.stop();
+                long soundId = player.chargeSound.play();
+                player.chargeSound.setLooping(soundId, true);
             }
         }
         if (leftButtonDown) {
@@ -361,9 +358,7 @@ public class LevelScreen extends BaseScreen {
                 );
                 player.addAction(sequenceAction);
 
-                if (player.chargeSound.isPlaying())
-                    player.chargeSound.stop();
-
+                player.chargeSound.stop();
                 player.chargeSound.play();
             }
 
