@@ -238,7 +238,7 @@ public class LevelScreen extends BaseScreen {
             shockWaveTimer = 0f;
 
             player.state = Player.State.SHOCKWAVE_DO;
-            target.set(source.cpy().add(0, -Player.SHOCKWAVE_DISTANCE));
+            target.set(source.cpy().add(0, -1));
             Vector2 shockwaveVector = target.cpy().sub(source).nor().scl(Player.SHOCKWAVE_DISTANCE);
             final Vector2 finalPosition = source.cpy().add(shockwaveVector);
             MoveToAction moveAction = Actions.moveToAligned(finalPosition.x, finalPosition.y, Align.center, 0.1f, Interpolation.exp10Out);
@@ -284,8 +284,8 @@ public class LevelScreen extends BaseScreen {
             player.addAction(sequence);
 
             // Small jump beginning
-            target.set(source.cpy().add(0, 12f));
-            Vector2 moveVector = target.cpy().sub(source);
+            target.set(source.cpy().add(0, 1f));
+            Vector2 moveVector = target.cpy().sub(source).nor().scl(Player.SHOCKWAVE_DISTANCE);
             Vector2 finalPosition2 = source.cpy().add(moveVector);
             moveAction = Actions.moveToAligned(finalPosition2.x, finalPosition2.y, Align.center, 0.1f, Interpolation.exp10Out);
             player.addAction(moveAction);
@@ -332,15 +332,15 @@ public class LevelScreen extends BaseScreen {
                 player.loadImage("characters/player/shockwave1");
                 player.state = Player.State.SHOCKWAVE_CHARGE;
 
-                source.set(player.getX(Align.center), player.getY(Align.center));
-                target.set(source.cpy().add(0, Player.SHOCKWAVE_DISTANCE / 6f));
-                MoveToAction moveAction = Actions.moveToAligned(target.x, target.y, Align.center, 0.1f, Interpolation.exp10Out);
+//                source.set(player.getX(Align.center), player.getY(Align.center));
+//                target.set(source.cpy().add(0, Player.SHOCKWAVE_DISTANCE / 6f));
+//                MoveToAction moveAction = Actions.moveToAligned(target.x, target.y, Align.center, 0.1f, Interpolation.exp10Out);
                 SequenceAction sequenceAction = Actions.sequence(
                         Actions.delay(.8f),
                         new ColorShader(new Color(1f, 1f, 1f, 1f), 0.4f, Interpolation.elastic)
                 );
                 player.addAction(sequenceAction);
-                player.addAction(moveAction);
+//                player.addAction(moveAction);
 
                 if (player.chargeSound.isPlaying())
                     player.chargeSound.stop();
