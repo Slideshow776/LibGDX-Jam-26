@@ -43,6 +43,7 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
     public static Sound kill0Sound;
     public static Sound miss0Sound;
     public static Sound dash1Sound;
+    public static Sound charge1Sound;
     public static List<Sound> hitSounds = new ArrayList<>();
     public static Integer hitSoundsPreviousIndex = -1;
     public static List<Sound> swingSounds;
@@ -157,6 +158,7 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         assetManager.load("audio/sound/player/hit2.ogg", Sound.class);
         assetManager.load("audio/sound/player/hit3.ogg", Sound.class);
         assetManager.load("audio/sound/player/hit4.ogg", Sound.class);
+        assetManager.load("audio/sound/player/charge1.ogg", Sound.class);
         assetManager.load("audio/sound/player/dash1.ogg", Sound.class);
         assetManager.load("audio/sound/GUI/levelUp.wav", Sound.class);
 
@@ -177,6 +179,7 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         hoverOverEnterSound = assetManager.get("audio/sound/hoverOverEnter.wav", Sound.class);
         kill0Sound = assetManager.get("audio/sound/player/kill0.ogg", Sound.class);
         miss0Sound = assetManager.get("audio/sound/player/miss0.ogg", Sound.class);
+        charge1Sound = assetManager.get("audio/sound/player/charge1.ogg", Sound.class);
         dash1Sound = assetManager.get("audio/sound/player/dash1.ogg", Sound.class);
         hitSounds.add(assetManager.get("audio/sound/player/hit1.ogg", Sound.class));
         hitSounds.add(assetManager.get("audio/sound/player/hit2.ogg", Sound.class));

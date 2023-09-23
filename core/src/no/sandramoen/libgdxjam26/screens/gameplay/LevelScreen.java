@@ -8,11 +8,10 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.actions.ParallelAction;
@@ -21,10 +20,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ParticleEffectActor;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
-import com.github.tommyettinger.textra.effects.ShakeEffect;
 import no.sandramoen.libgdxjam26.actions.*;
 import no.sandramoen.libgdxjam26.actors.Player;
-import no.sandramoen.libgdxjam26.actors.ShockwaveBackground;
 import no.sandramoen.libgdxjam26.actors.enemy.Enemy;
 import no.sandramoen.libgdxjam26.actors.enemy.EnemySpawnSystem;
 import no.sandramoen.libgdxjam26.actors.enemy.EnemyState;
@@ -36,6 +33,7 @@ import no.sandramoen.libgdxjam26.ui.QuitWindow;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
 import no.sandramoen.libgdxjam26.utils.BaseScreen;
 import no.sandramoen.libgdxjam26.utils.GameUtils;
+import no.sandramoen.libgdxjam26.utils.LoopedSound;
 
 import java.util.Comparator;
 import java.util.Iterator;
@@ -56,9 +54,10 @@ public class LevelScreen extends BaseScreen {
     private Vector2 source = new Vector2(), target = new Vector2();
     private int startingLevel;
     private float percentToNextLevel;
-
     public float shockWaveTimer = 0f;
+    public float chargeAttackTimer = 0f;
     private boolean rightButtonDown;
+    private boolean leftButtonDown;
 
     public LevelScreen(int startingLevel, float percentToNextLevel) {
         BaseGame.levelScreen = this;
@@ -118,23 +117,42 @@ public class LevelScreen extends BaseScreen {
         }
     }
 
-    public void checkPlayerLunge(int screenX, int screenY, int pointer, int button) {
+    public void updateButtonsDown(int screenX, int screenY, int pointer, int button) {
 
         if (player.state != Player.State.IDLE && player.state != Player.State.MOVING)
             return;
 
         if (button == Input.Buttons.LEFT) {
+            leftButtonDown = true;
+        }
+        else if (button == Input.Buttons.RIGHT) {
+            rightButtonDown = true;
+        }
+    }
 
-            player.getActions().clear();
+    public void checkPlayerLunge(int screenX, int screenY, int pointer, int button) {
 
-            // Get normalized Vector between player and mouse.
-            target.set(mainStage.screenToStageCoordinates(new Vector2(screenX, screenY)));
-            source.set(player.getX(Align.center), player.getY(Align.center));
-            Vector2 lungeVector = target.sub(source).nor().scl(Player.LUNGE_DISTANCE);
+        if (button != Input.Buttons.LEFT)
+            return;
 
+        if (player.state != Player.State.IDLE && player.state != Player.State.MOVING && player.state != Player.State.CHARGEATTACK_CHARGE)
+            return;
+
+        leftButtonDown = false;
+
+        player.getActions().clear();
+        source.set(player.getX(Align.center), player.getY(Align.center));
+
+        if (chargeAttackTimer > 1.8f) {
+            chargeAttackTimer = 0f;
+
+            player.state = Player.State.LUNGING;
+            target.set(source.cpy().add(0, -Player.CHARGEATTACK_DISTANCE));
+
+            Vector2 lungeVector = target.cpy().sub(source).nor().scl(Player.CHARGEATTACK_DISTANCE);
             MoveToAction moveAction = new LungeMoveTo(player, enemySpawnSystem.getEnemies());
             moveAction.setAlignment(Align.center);
-            moveAction.setDuration(0.6f);
+            moveAction.setDuration(0.3f);
             moveAction.setInterpolation(Interpolation.exp10);
             Vector2 finalPosition = source.add(lungeVector);
             moveAction.setPosition(finalPosition.x, finalPosition.y);
@@ -149,19 +167,42 @@ public class LevelScreen extends BaseScreen {
             player.state = Player.State.LUNGING;
             player.setAnimation(player.attackingAnimation);
             player.animationTime = .55f;
-            GameUtils.playWithRandomPitch(BaseGame.miss0Sound, .9f, 1.1f);
+
+            return;
         }
-        else if (button == Input.Buttons.RIGHT) {
-            rightButtonDown = true;
-        }
+
+
+        // Get normalized Vector between player and mouse.
+        target.set(mainStage.screenToStageCoordinates(new Vector2(screenX, screenY)));
+        Vector2 lungeVector = target.sub(source).nor().scl(Player.LUNGE_DISTANCE);
+
+        MoveToAction moveAction = new LungeMoveTo(player, enemySpawnSystem.getEnemies());
+        moveAction.setAlignment(Align.center);
+        moveAction.setDuration(0.6f);
+        moveAction.setInterpolation(Interpolation.exp10);
+        Vector2 finalPosition = source.add(lungeVector);
+        moveAction.setPosition(finalPosition.x, finalPosition.y);
+        SequenceAction sequence = Actions.sequence(
+                moveAction,
+                Actions.delay(0.1f),
+                Actions.run(() -> {
+                    player.state = Player.State.IDLE;
+                })
+        );
+        player.addAction(sequence);
+        player.state = Player.State.LUNGING;
+        player.setAnimation(player.attackingAnimation);
+        player.animationTime = .55f;
+        GameUtils.playWithRandomPitch(BaseGame.miss0Sound, .9f, 1.1f);
+
     }
 
     public void checkPlayerDash(int screenX, int screenY, int pointer, int button) {
 
-        if (player.state != Player.State.IDLE && player.state != Player.State.MOVING && player.state != Player.State.SHOCKWAVE_CHARGE)
+        if (button != Input.Buttons.RIGHT)
             return;
 
-        if (button != Input.Buttons.RIGHT)
+        if (player.state != Player.State.IDLE && player.state != Player.State.MOVING && player.state != Player.State.SHOCKWAVE_CHARGE)
             return;
 
         rightButtonDown = false;
@@ -264,6 +305,25 @@ public class LevelScreen extends BaseScreen {
                 player.addAction(moveAction);
             }
         }
+        if (leftButtonDown) {
+            chargeAttackTimer += delta;
+
+            if (player.state != Player.State.CHARGEATTACK_CHARGE && chargeAttackTimer > 1f) {
+                player.loadImage("characters/player/charge1");
+                player.state = Player.State.CHARGEATTACK_CHARGE;
+                SequenceAction sequenceAction = Actions.sequence(
+                        Actions.delay(.8f),
+                        new ColorShader(new Color(1f, 1f, 1f, 1f), 0.4f, Interpolation.elastic)
+                );
+                player.addAction(sequenceAction);
+
+                if (player.chargeSound.isPlaying())
+                    player.chargeSound.stop();
+
+                player.chargeSound.play();
+            }
+
+        }
 
         // Sort actors by layer.
         sortActors();
@@ -287,14 +347,15 @@ public class LevelScreen extends BaseScreen {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 
-        // Check if player is able to perform a lunge attack,
-        // and perform the attack if so.
-        checkPlayerLunge(screenX, screenY, pointer, button);
+        updateButtonsDown(screenX, screenY, pointer, button);
 
         return super.touchDown(screenX, screenY, pointer, button);
     }
+
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+
+        checkPlayerLunge(screenX, screenY, pointer, button);
 
         checkPlayerDash(screenX, screenY, pointer, button);
 

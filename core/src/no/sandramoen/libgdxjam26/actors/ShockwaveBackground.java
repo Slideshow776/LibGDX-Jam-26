@@ -1,27 +1,21 @@
 package no.sandramoen.libgdxjam26.actors;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
-import com.badlogic.gdx.utils.Array;
-import io.github.fourlastor.harlequin.animation.Animation;
-import io.github.fourlastor.harlequin.animation.FixedFrameAnimation;
 import no.sandramoen.libgdxjam26.utils.BaseActor;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
 import no.sandramoen.libgdxjam26.utils.GameUtils;
 
 public class ShockwaveBackground extends BaseActor {
     public ShaderProgram shaderProgram;
-
     private float totalTime;
-    private float animationDelay = 1;
+    private float animationDelay = 1f;
     private float shockWavePositionX = -5f;
     private float shockWavePositionY = -5f;
 
@@ -33,16 +27,15 @@ public class ShockwaveBackground extends BaseActor {
 
     public void init() {
         shaderProgram = GameUtils.initShaderProgram(BaseGame.defaultShader, BaseGame.shockwaveShader);
-
         addListener(
-                (Event event) -> {
-                    if (GameUtils.isTouchDownEvent(event)) {
-                        float xNormalized = Gdx.input.getX() / (float) Gdx.graphics.getWidth();
-                        float yNormalized = Gdx.input.getY() / (float) Gdx.graphics.getHeight();
-                        start(xNormalized, yNormalized);
-                    }
-                    return false;
+            (Event event) -> {
+                if (GameUtils.isTouchDownEvent(event)) {
+                    float xNormalized = Gdx.input.getX() / (float) Gdx.graphics.getWidth();
+                    float yNormalized = Gdx.input.getY() / (float) Gdx.graphics.getHeight();
+                    start(xNormalized, yNormalized);
                 }
+                return false;
+            }
         );
     }
 

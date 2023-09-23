@@ -19,10 +19,7 @@ import no.sandramoen.libgdxjam26.actors.enemy.Enemy;
 import no.sandramoen.libgdxjam26.actors.particles.EnemyHitEffect;
 import no.sandramoen.libgdxjam26.screens.shell.LevelUpScreen;
 import no.sandramoen.libgdxjam26.ui.PlayerLabelGroup;
-import no.sandramoen.libgdxjam26.utils.AsepriteAnimationLoader;
-import no.sandramoen.libgdxjam26.utils.BaseActor;
-import no.sandramoen.libgdxjam26.utils.BaseGame;
-import no.sandramoen.libgdxjam26.utils.GameUtils;
+import no.sandramoen.libgdxjam26.utils.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +28,7 @@ import java.util.List;
 public class Player extends BaseActor {
     public static final float MOVE_SPEED = 18;
     public static final float LUNGE_DISTANCE = 18;
+    public static final float CHARGEATTACK_DISTANCE = 24;
     public static final float DASH_DISTANCE = 22;
     public static final float SHOCKWAVE_DISTANCE = 10;
     private static final HashMap<Integer, Float> EXPERIENCE_MAP = new HashMap<>(); // Experience required depending on the level
@@ -55,6 +53,11 @@ public class Player extends BaseActor {
             EXPERIENCE_MAP.put(level, baseExperience + (100 * (level - 1)));
         }
     }
+
+    public LoopedSound chargeSound;
+    {
+        chargeSound = new LoopedSound(Gdx.files.internal("assets/audio/sound/player/charge1-start.ogg"), Gdx.files.internal("assets/audio/sound/player/charge1-loop.ogg"));
+    };
 
     public Player(float x, float y, int startingLevel, float percentToNextLevel, Stage stage) {
         super(x, y, stage);
@@ -266,6 +269,7 @@ public class Player extends BaseActor {
         KNOCKED_BACK,
         SHOCKWAVE_CHARGE,
         SHOCKWAVE_DO,
+        CHARGEATTACK_CHARGE,
         ;
     }
 
