@@ -47,8 +47,8 @@ public class BaseActor extends Group {
     private float maxSpeed = 1000f;
     private float deceleration = 0f;
     private Polygon boundaryPolygon = null;
-
     public ShaderProgram shaderProgram = null;
+    public Image shadow;
 
     public BaseActor(float x, float y, Stage stage) {
         super();
@@ -98,6 +98,9 @@ public class BaseActor extends Group {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
+
+        super.draw(batch, parentAlpha);
+
         Color c = getColor();
         batch.setColor(c.r, c.g, c.b, c.a);
 
@@ -139,7 +142,6 @@ public class BaseActor extends Group {
         if (shaderProgram != null) {
             batch.setShader(null);
         }
-        super.draw(batch, parentAlpha);
     }
 
     private void setAnimationSize(float width, float height) {

@@ -81,7 +81,7 @@ public class EnemySpawnSystem {
     public void spawnEnemyFromCurrentWave() {
         // Generate a random index to select an enemy type from the EnemyData enum.
         int randomIndex = (int) (Math.random() * EnemyData.values().length);
-        EnemyData data = EnemyData.values()[2];
+        EnemyData data = EnemyData.values()[randomIndex];
 
         // Define the minimum distance between the player and the enemy spawn point (radius).
         float minSpawnDistance = 30.0f; // Adjust this value as needed.

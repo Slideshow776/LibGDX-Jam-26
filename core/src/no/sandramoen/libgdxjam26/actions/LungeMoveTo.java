@@ -17,6 +17,8 @@ public class LungeMoveTo extends MoveToAction {
     Player player;
     List<Enemy> enemies;
 
+    List<Enemy> alreadyHit = new ArrayList<>();
+
     public LungeMoveTo(Player player, List<Enemy> enemies) {
         this.player = player;
         this.enemies = new ArrayList<>(enemies);
@@ -29,12 +31,20 @@ public class LungeMoveTo extends MoveToAction {
         Iterator<Enemy> it = enemies.iterator();
         while (it.hasNext()) {
             Enemy enemy = it.next();
+
             if (enemy == null) continue;
             if (enemy.isDead()) continue;
+            if (alreadyHit.contains(enemy)) continue;
+
             Rectangle enemyBounds = new Rectangle(enemy.getX(), enemy.getY(), enemy.getWidth(), enemy.getHeight());
             Rectangle playerBounds = new Rectangle(player.getX(), player.getY(), player.getWidth(), player.getHeight());
             if (enemyBounds.overlaps(playerBounds) || playerBounds.overlaps(enemyBounds)) {
-                enemy.hit(50);
+
+                int damage = 50;
+                if (player.state == Player.State.CHARGEATTACK_DO)
+                    damage = 150;
+                enemy.hit(damage);
+                alreadyHit.add(enemy);
 
                 if (enemy.getState().equals(EnemyState.DEAD)) {
                     GameUtils.playWithRandomPitch(BaseGame.kill0Sound, .9f, 1.1f);

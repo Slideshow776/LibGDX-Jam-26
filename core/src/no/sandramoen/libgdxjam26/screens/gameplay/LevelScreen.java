@@ -106,7 +106,6 @@ public class LevelScreen extends BaseScreen {
                 Enemy enemy = it.next();
                 if (enemy == null) continue;
 
-
                 if (enemy.countDead) {
                     enemy.countDead = false;
                     int previousLevel = player.getLevel();
@@ -149,7 +148,6 @@ public class LevelScreen extends BaseScreen {
         if (chargeAttackTimer > 1.8f) {
             chargeAttackTimer = 0f;
 
-            player.state = Player.State.LUNGING;
             target.set(mainStage.screenToStageCoordinates(new Vector2(screenX, screenY)));
 
             Vector2 lungeVector = target.cpy().sub(source).nor().scl(Player.CHARGEATTACK_DISTANCE);
@@ -178,7 +176,7 @@ public class LevelScreen extends BaseScreen {
             );
 
             player.addAction(sequence);
-            player.state = Player.State.LUNGING;
+            player.state = Player.State.CHARGEATTACK_DO;
             player.setAnimation(player.attackingAnimation);
             player.animationTime = .55f;
             player.chargeSound.stop();
@@ -204,11 +202,10 @@ public class LevelScreen extends BaseScreen {
         Vector2 finalPosition = source.add(lungeVector);
         moveAction.setPosition(finalPosition.x, finalPosition.y);
         SequenceAction sequence = Actions.sequence(
-                moveAction,
-                Actions.delay(0.1f),
-                Actions.run(() -> {
-                    player.state = Player.State.IDLE;
-                })
+            moveAction,
+            Actions.run(() -> {
+                player.state = Player.State.IDLE;
+            })
         );
         player.addAction(sequence);
         player.state = Player.State.LUNGING;
@@ -333,12 +330,13 @@ public class LevelScreen extends BaseScreen {
 //                source.set(player.getX(Align.center), player.getY(Align.center));
 //                target.set(source.cpy().add(0, Player.SHOCKWAVE_DISTANCE / 6f));
 //                MoveToAction moveAction = Actions.moveToAligned(target.x, target.y, Align.center, 0.1f, Interpolation.exp10Out);
+//                player.addAction(moveAction);
+
                 SequenceAction sequenceAction = Actions.sequence(
                         Actions.delay(.8f),
                         new ColorShader(new Color(1f, 1f, 1f, 1f), 0.4f, Interpolation.elastic)
                 );
                 player.addAction(sequenceAction);
-//                player.addAction(moveAction);
 
                 player.chargeSound.stop();
                 long soundId = player.chargeSound.play();

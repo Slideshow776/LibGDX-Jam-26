@@ -11,12 +11,15 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import io.github.fourlastor.harlequin.animation.Animation;
 import io.github.fourlastor.harlequin.animation.FixedFrameAnimation;
 import no.sandramoen.libgdxjam26.actions.Shake;
 import no.sandramoen.libgdxjam26.actors.enemy.Enemy;
+import no.sandramoen.libgdxjam26.actors.enemy.EnemyData;
 import no.sandramoen.libgdxjam26.actors.particles.EnemyHitEffect;
 import no.sandramoen.libgdxjam26.screens.shell.LevelUpScreen;
 import no.sandramoen.libgdxjam26.ui.PlayerLabelGroup;
@@ -82,10 +85,16 @@ public class Player extends BaseActor {
         playerLabelGroup = new PlayerLabelGroup();
         playerLabelGroup.setPosition(getWidth() / 2 - 2.5f, getHeight() - 1.5f);
         addActor(playerLabelGroup);
+
+        TextureAtlas.AtlasRegion atlasRegion = BaseGame.textureAtlas.findRegion("characters/player/shadow");
+        shadow = new Image(new TextureRegionDrawable(atlasRegion));
+        shadow.setScale(BaseGame.UNIT_SCALE);
+        shadow.setPosition(0f, -2f * BaseGame.UNIT_SCALE);
+        addActor(shadow);
     }
 
     public boolean isDamageable() {
-        return state == State.MOVING || state == State.IDLE || state == State.SHOCKWAVE_CHARGE || state == State.CHARGEATTACK_CHARGE|| state == State.LUNGING;
+        return state == State.MOVING || state == State.IDLE || state == State.SHOCKWAVE_CHARGE || state == State.CHARGEATTACK_CHARGE;
     }
 
     public int getHealth() {
@@ -277,6 +286,7 @@ public class Player extends BaseActor {
         SHOCKWAVE_CHARGE,
         SHOCKWAVE_DO,
         CHARGEATTACK_CHARGE,
+        CHARGEATTACK_DO,
         ;
     }
 

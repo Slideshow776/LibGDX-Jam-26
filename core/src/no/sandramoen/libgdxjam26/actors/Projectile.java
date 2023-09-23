@@ -49,7 +49,7 @@ public class Projectile extends BaseActor {
 
         float angle = target.cpy().sub(startPosition).angleDeg();
         setMotionAngle(angle);
-        setSpeed(300f);
+        setSpeed(600f);
         applyPhysics(delta);
 
         BaseActor a = player.getCollisionBox();

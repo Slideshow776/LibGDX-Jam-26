@@ -12,7 +12,9 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.actions.ParallelAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import io.github.fourlastor.harlequin.animation.Animation;
@@ -51,7 +53,6 @@ public class Enemy extends BaseActor {
     private float attackCooldown = 0f;
     private Animation<TextureRegion> walkingAnimation, attackingAnimation, idleAnimation;
     private Sprite projectile;
-
     private Vector2 diePosition = new Vector2();
 
     /**
@@ -106,6 +107,14 @@ public class Enemy extends BaseActor {
 //        attackCollisionBox.setDebug(true);
         attackCollisionBox.isCollisionEnabled = false;
         addActor(attackCollisionBox);
+
+        TextureAtlas.AtlasRegion atlasRegion = BaseGame.textureAtlas.findRegion("characters/" + data.getResource() + "/shadow");
+        shadow = new Image(new TextureRegionDrawable(atlasRegion));
+        shadow.setScale(BaseGame.UNIT_SCALE);
+        if (data == EnemyData.ARCHER)
+            shadow.setPosition(0f, -2f);
+        addActor(shadow);
+
     }
 
     private void loadAnimation(String enemyName) {
@@ -187,7 +196,7 @@ public class Enemy extends BaseActor {
                 setMotionAngle(angleDegrees);
                 setSpeed(Player.MOVE_SPEED / 2f);
                 state = EnemyState.MOVE;
-            } else {
+            } else if (following.isDamageable()){
                 // Player is in attack range, stop moving and enter attack state
                 state = EnemyState.ATTACK;
                 setMotionAngle(0);
@@ -323,6 +332,7 @@ public class Enemy extends BaseActor {
                     Actions.fadeOut(.2f),
                     Actions.run(() -> {
                         setColor(0f, 0f, 0f, 0f);
+                        shadow.remove();
                     }),
                     Actions.delay(.15f),
                     Actions.parallel(
@@ -331,7 +341,7 @@ public class Enemy extends BaseActor {
                             Actions.run(() -> {
                                 particleActor.remove();
                                 shaderProgram = null;
-                                loadImage("characters/enemyMask/dead2");
+                                loadImage("characters/" + data.getResource() + "/dead");
                                 state = EnemyState.CORPSE;
                             })
                     ),
@@ -351,7 +361,9 @@ public class Enemy extends BaseActor {
             particleActor.start();
             addActor(particleActor);
 
-            diePosition.set(getX(), getY() - 4f);
+            diePosition.set(getX(), getY());
+            if (data == EnemyData.ARCHER)
+                diePosition.y -= 4f;
         }
 
 
