@@ -35,12 +35,14 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
     public static String defaultShader;
     public static String shockwaveShader;
     public static String contrastShader;
+    public static String colorShader;
     public static ShaderProgram hallucinationShader;
 
     public static Sound click1Sound;
     public static Sound hoverOverEnterSound;
     public static Sound kill0Sound;
     public static Sound miss0Sound;
+    public static Sound dash1Sound;
     public static List<Sound> hitSounds = new ArrayList<>();
     public static Integer hitSoundsPreviousIndex = -1;
     public static List<Sound> swingSounds;
@@ -140,6 +142,7 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         assetManager.load(new AssetDescriptor("shaders/default.vs", Text.class, new TextLoader.TextParameter()));
         assetManager.load(new AssetDescriptor("shaders/shockwave.fs", Text.class, new TextLoader.TextParameter()));
         assetManager.load(new AssetDescriptor("shaders/contrast.fs", Text.class, new TextLoader.TextParameter()));
+        assetManager.load(new AssetDescriptor("shaders/color.fs", Text.class, new TextLoader.TextParameter()));
 
         // music
         assetManager.load("audio/music/menuMusic.ogg", Music.class);
@@ -154,6 +157,7 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         assetManager.load("audio/sound/player/hit2.ogg", Sound.class);
         assetManager.load("audio/sound/player/hit3.ogg", Sound.class);
         assetManager.load("audio/sound/player/hit4.ogg", Sound.class);
+        assetManager.load("audio/sound/player/dash1.ogg", Sound.class);
         assetManager.load("audio/sound/GUI/levelUp.wav", Sound.class);
 
         assetManager.finishLoading();
@@ -162,6 +166,7 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         defaultShader = assetManager.get("shaders/default.vs", Text.class).getString();
         shockwaveShader = assetManager.get("shaders/shockwave.fs", Text.class).getString();
         contrastShader = assetManager.get("shaders/contrast.fs", Text.class).getString();
+        colorShader = assetManager.get("shaders/color.fs", Text.class).getString();
 
         // music
         menuMusic = assetManager.get("audio/music/menuMusic.ogg", Music.class);
@@ -172,6 +177,7 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         hoverOverEnterSound = assetManager.get("audio/sound/hoverOverEnter.wav", Sound.class);
         kill0Sound = assetManager.get("audio/sound/player/kill0.ogg", Sound.class);
         miss0Sound = assetManager.get("audio/sound/player/miss0.ogg", Sound.class);
+        dash1Sound = assetManager.get("audio/sound/player/dash1.ogg", Sound.class);
         hitSounds.add(assetManager.get("audio/sound/player/hit1.ogg", Sound.class));
         hitSounds.add(assetManager.get("audio/sound/player/hit2.ogg", Sound.class));
         hitSounds.add(assetManager.get("audio/sound/player/hit3.ogg", Sound.class));

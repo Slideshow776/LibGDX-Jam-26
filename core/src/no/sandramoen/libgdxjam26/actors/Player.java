@@ -31,6 +31,7 @@ import java.util.List;
 public class Player extends BaseActor {
     public static final float MOVE_SPEED = 18;
     public static final float LUNGE_DISTANCE = 18;
+    public static final float DASH_DISTANCE = 22;
     private static final HashMap<Integer, Float> EXPERIENCE_MAP = new HashMap<>(); // Experience required depending on the level
     private final BaseActor collisionBox;
     private final int MAX_LEVEL = 100;
@@ -87,7 +88,6 @@ public class Player extends BaseActor {
     }
 
     public void applyKnockBack(Enemy enemy) {
-        getActions().clear();
 
         shakeCamera(4f);
 //        CenterCamera.MOVE_DURATION = .125f;
@@ -179,39 +179,40 @@ public class Player extends BaseActor {
     }
 
     private void handleMovement(float delta) {
-        if (state != State.LUNGING && state != State.KNOCKED_BACK) {
 
-            // Update attackCooldown.
-            if (this.attackCooldown > 0) this.attackCooldown -= delta;
+        if (state == State.LUNGING || state == State.KNOCKED_BACK || state == State.DASHING)
+            return;
 
-            // Set mouse and player position for use in calculations.
-            source.set(getX(Align.center), getY(Align.center));
-            float mouseX = Gdx.input.getX();
-            float mouseY = Gdx.input.getY();
-            target.set(mouseX, mouseY);
-            getStage().screenToStageCoordinates(target);
+        // Update attackCooldown.
+        if (this.attackCooldown > 0) this.attackCooldown -= delta;
 
-            if (target.dst2(source) > 5) {
-                // Move player towards cursor.
-                if (state != State.MOVING) {
-                    setAnimation(walkingAnimation);
-                    state = State.MOVING;
-                }
-                float angleDeg = target.sub(source).angleDeg();
-                angleDeg = Math.floorMod((int) angleDeg, 360);
-                setMotionAngle(angleDeg);
-                setSpeed(Player.MOVE_SPEED);
-                checkIfFlip(angleDeg);
-            } else {
-                if (state == State.MOVING) {
-                    setAnimation(idleAnimation);
-                    state = State.IDLE;
-                }
-                setMotionAngle(0f);
-                setSpeed(0);
+        // Set mouse and player position for use in calculations.
+        source.set(getX(Align.center), getY(Align.center));
+        float mouseX = Gdx.input.getX();
+        float mouseY = Gdx.input.getY();
+        target.set(mouseX, mouseY);
+        getStage().screenToStageCoordinates(target);
+
+        if (target.dst2(source) > 5) {
+            // Move player towards cursor.
+            if (state != State.MOVING) {
+                setAnimation(walkingAnimation);
+                state = State.MOVING;
             }
-            applyPhysics(delta);
+            float angleDeg = target.sub(source).angleDeg();
+            angleDeg = Math.floorMod((int) angleDeg, 360);
+            setMotionAngle(angleDeg);
+            setSpeed(Player.MOVE_SPEED);
+            checkIfFlip(angleDeg);
+        } else {
+            if (state == State.MOVING) {
+                setAnimation(idleAnimation);
+                state = State.IDLE;
+            }
+            setMotionAngle(0f);
+            setSpeed(0);
         }
+        applyPhysics(delta);
     }
 
     @Override
@@ -256,6 +257,7 @@ public class Player extends BaseActor {
         IDLE,
         MOVING,
         LUNGING,
+        DASHING,
         KNOCKED_BACK;
     }
 

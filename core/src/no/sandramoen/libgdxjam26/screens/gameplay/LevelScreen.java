@@ -3,6 +3,7 @@ package no.sandramoen.libgdxjam26.screens.gameplay;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -11,12 +12,15 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
+import com.badlogic.gdx.scenes.scene2d.actions.ParallelAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ParticleEffectActor;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import no.sandramoen.libgdxjam26.actions.CenterCamera;
+import no.sandramoen.libgdxjam26.actions.ColorShader;
+import no.sandramoen.libgdxjam26.actions.ContrastShader;
 import no.sandramoen.libgdxjam26.actions.LungeMoveTo;
 import no.sandramoen.libgdxjam26.actors.Player;
 import no.sandramoen.libgdxjam26.actors.enemy.Enemy;
@@ -109,7 +113,10 @@ public class LevelScreen extends BaseScreen {
     }
 
     public void checkPlayerLunge(int screenX, int screenY, int pointer, int button) {
-        if ((player.state == Player.State.IDLE || player.state == Player.State.MOVING) && button == Input.Buttons.LEFT) {
+
+        if (player.state != Player.State.IDLE && player.state != Player.State.MOVING) return;
+
+        if (button == Input.Buttons.LEFT) {
             player.getActions().clear();
 
             // Get normalized Vector between player and mouse.
@@ -135,6 +142,31 @@ public class LevelScreen extends BaseScreen {
             player.setAnimation(player.attackingAnimation);
             player.animationTime = .55f;
             GameUtils.playWithRandomPitch(BaseGame.miss0Sound, .9f, 1.1f);
+        }
+        else if (button == Input.Buttons.RIGHT) {
+            player.getActions().clear();
+
+            // Get normalized Vector between player and mouse.
+            target.set(mainStage.screenToStageCoordinates(new Vector2(screenX, screenY)));
+            source.set(player.getX(Align.center), player.getY(Align.center));
+            Vector2 lungeVector = target.sub(source).nor().scl(Player.DASH_DISTANCE);
+
+            Vector2 finalPosition = source.add(lungeVector);
+            MoveToAction moveAction = Actions.moveToAligned(finalPosition.x, finalPosition.y, Align.center, 0.4f, Interpolation.exp10Out);
+            SequenceAction sequence = Actions.sequence(
+                    moveAction,
+                    Actions.run(() -> {
+                        player.state = Player.State.IDLE;
+                    })
+            );
+            player.addAction(sequence);
+            ParallelAction parallelAction = Actions.parallel(
+                    new ColorShader(new Color(1f, 1f, 1f, 1f), 0.4f, Interpolation.elastic)
+            );
+            player.addAction(parallelAction);
+            player.state = Player.State.DASHING;
+            player.loadImage("characters/player/dash1");
+            GameUtils.playWithRandomPitch(BaseGame.dash1Sound, .9f, 1.2f);
         }
     }
 
