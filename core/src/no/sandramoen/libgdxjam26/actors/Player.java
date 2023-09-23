@@ -32,6 +32,7 @@ public class Player extends BaseActor {
     public static final float MOVE_SPEED = 18;
     public static final float LUNGE_DISTANCE = 18;
     public static final float DASH_DISTANCE = 22;
+    public static final float SHOCKWAVE_DISTANCE = 10;
     private static final HashMap<Integer, Float> EXPERIENCE_MAP = new HashMap<>(); // Experience required depending on the level
     private final BaseActor collisionBox;
     private final int MAX_LEVEL = 100;
@@ -77,6 +78,10 @@ public class Player extends BaseActor {
         playerLabelGroup = new PlayerLabelGroup();
         playerLabelGroup.setPosition(getWidth() / 2 - 2.5f, getHeight() - 1.5f);
         addActor(playerLabelGroup);
+    }
+
+    public boolean isDamageable() {
+        return state == State.MOVING || state == State.IDLE || state == State.SHOCKWAVE_CHARGE || state == State.LUNGING;
     }
 
     public int getHealth() {
@@ -180,7 +185,7 @@ public class Player extends BaseActor {
 
     private void handleMovement(float delta) {
 
-        if (state == State.LUNGING || state == State.KNOCKED_BACK || state == State.DASHING)
+        if (state != State.IDLE && state != State.MOVING)
             return;
 
         // Update attackCooldown.
@@ -258,7 +263,10 @@ public class Player extends BaseActor {
         MOVING,
         LUNGING,
         DASHING,
-        KNOCKED_BACK;
+        KNOCKED_BACK,
+        SHOCKWAVE_CHARGE,
+        SHOCKWAVE_DO,
+        ;
     }
 
 }

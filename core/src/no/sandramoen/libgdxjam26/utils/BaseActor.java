@@ -38,7 +38,7 @@ public class BaseActor extends Group {
     public float shakyCamIntensity = 1f;
     public boolean isShakyCam = false;
 
-    protected Image image;
+    public Image image;
     public float animationTime = 0f;
     private boolean animationPaused = false;
     private Vector2 velocityVec = new Vector2(0f, 0f);
@@ -430,6 +430,19 @@ public class BaseActor extends Group {
         return Intersector.overlapConvexPolygons(poly1, poly2);
     }
 
+    public boolean overlaps(Polygon other) {
+        if (!isCollisionEnabled)
+            return false;
+
+        Polygon poly1 = this.getBoundaryPolygon();
+
+        // initial test to improve performance
+        if (!poly1.getBoundingRectangle().overlaps(other.getBoundingRectangle()))
+            return false;
+
+        return Intersector.overlapConvexPolygons(poly1, other);
+    }
+
     public Vector2 preventOverlap(BaseActor other) {
         if (!isCollisionEnabled || !other.isCollisionEnabled) return null;
         Polygon poly1 = this.getBoundaryPolygon();
@@ -475,5 +488,9 @@ public class BaseActor extends Group {
 
     public void setBounds(float width, float height) {
         worldBounds = new Rectangle(0, 0, width, height);
+    }
+
+    public TextureRegionDrawable getDrawable() {
+        return (TextureRegionDrawable)image.getDrawable();
     }
 }

@@ -1,20 +1,23 @@
 #ifdef GL_ES
-precision highp float;
+#define LOWP lowp
+precision mediump float;
+#else
+#define LOWP 
 #endif
-
-uniform sampler2D sceneTex; // 0
-uniform vec2 u_center; // Mouse position
-uniform float u_time; // effect elapsed time
-uniform vec3 u_shockParams; // 10.0, 0.8, 0.1
-
 varying vec2 v_texCoords;
+varying LOWP vec4 v_color;
+uniform sampler2D u_texture;
+
+uniform vec2 u_center; // Mouse position
+uniform float u_time;
+uniform vec3 u_shockParams;
 
 void main()
 {
-	// get pixel coordinates
+	// Get pixel coordinates
 	vec2 l_texCoords = v_texCoords;
 
-	//get distance from center
+	// Get distance from center
 	float distance = distance(v_texCoords, u_center);
 
 	if ( (distance <= (u_time + u_shockParams.z)) && (distance >= (u_time - u_shockParams.z)) ) {
@@ -24,5 +27,6 @@ void main()
     	vec2 diffUV = normalize(v_texCoords-u_center);
     	l_texCoords = v_texCoords + (diffUV * diffTime);
 	}
-	gl_FragColor = texture2D(sceneTex, l_texCoords);
+	
+	gl_FragColor = texture2D(u_texture, l_texCoords);
 }

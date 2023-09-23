@@ -1,13 +1,18 @@
 package no.sandramoen.libgdxjam26.actors;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
+import com.badlogic.gdx.utils.Array;
+import io.github.fourlastor.harlequin.animation.Animation;
+import io.github.fourlastor.harlequin.animation.FixedFrameAnimation;
 import no.sandramoen.libgdxjam26.utils.BaseActor;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
 import no.sandramoen.libgdxjam26.utils.GameUtils;
@@ -22,9 +27,11 @@ public class ShockwaveBackground extends BaseActor {
 
     public ShockwaveBackground(String texturePath, Stage stage) {
         super(0, 0, stage);
-
-        loadTexture(texturePath);
         setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        init();
+    }
+
+    public void init() {
         shaderProgram = GameUtils.initShaderProgram(BaseGame.defaultShader, BaseGame.shockwaveShader);
 
         addListener(

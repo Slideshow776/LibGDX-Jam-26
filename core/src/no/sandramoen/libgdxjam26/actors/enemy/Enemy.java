@@ -150,13 +150,15 @@ public class Enemy extends BaseActor {
 
         if (state == EnemyState.DETECT_DAMAGE) {
 
-            // Apply damage to the player as soon as the player is hit,
-            // then disable hit detection.
-            if (attackCollisionBox.overlaps(following.getCollisionBox())) {
-                state = EnemyState.ATTACK;
-                following.applyDamage(data.attackDamage);
-                following.applyKnockBack(this);
-                attackCollisionBox.isCollisionEnabled = false;
+            if (following.isDamageable()) {
+                // Apply damage to the player as soon as the player is hit,
+                // then disable hit detection.
+                if (attackCollisionBox.overlaps(following.getCollisionBox())) {
+                    state = EnemyState.ATTACK;
+                    following.applyDamage(data.attackDamage);
+                    following.applyKnockBack(this);
+                    attackCollisionBox.isCollisionEnabled = false;
+                }
             }
             return;
         }
