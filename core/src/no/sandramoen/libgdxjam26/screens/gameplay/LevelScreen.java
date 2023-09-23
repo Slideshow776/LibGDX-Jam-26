@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ParticleEffectActor;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.compression.lzma.Base;
 import no.sandramoen.libgdxjam26.actions.*;
 import no.sandramoen.libgdxjam26.actors.Player;
 import no.sandramoen.libgdxjam26.actors.enemy.Enemy;
@@ -138,6 +139,9 @@ public class LevelScreen extends BaseScreen {
         if (player.state != Player.State.IDLE && player.state != Player.State.MOVING && player.state != Player.State.CHARGEATTACK_CHARGE)
             return;
 
+        if (player.chargeSound.isPlaying())
+            player.chargeSound.stop();
+
         leftButtonDown = false;
 
         player.getActions().clear();
@@ -147,26 +151,44 @@ public class LevelScreen extends BaseScreen {
             chargeAttackTimer = 0f;
 
             player.state = Player.State.LUNGING;
-            target.set(source.cpy().add(0, -Player.CHARGEATTACK_DISTANCE));
+            target.set(mainStage.screenToStageCoordinates(new Vector2(screenX, screenY)));
 
             Vector2 lungeVector = target.cpy().sub(source).nor().scl(Player.CHARGEATTACK_DISTANCE);
-            MoveToAction moveAction = new LungeMoveTo(player, enemySpawnSystem.getEnemies());
-            moveAction.setAlignment(Align.center);
-            moveAction.setDuration(0.3f);
-            moveAction.setInterpolation(Interpolation.exp10);
-            Vector2 finalPosition = source.add(lungeVector);
-            moveAction.setPosition(finalPosition.x, finalPosition.y);
+            MoveToAction lungeAction = new LungeMoveTo(player, enemySpawnSystem.getEnemies());
+            lungeAction.setAlignment(Align.center);
+            lungeAction.setDuration(0.3f);
+            lungeAction.setInterpolation(Interpolation.exp10);
+            Vector2 finalPosition = source.cpy().add(lungeVector);
+            lungeAction.setPosition(finalPosition.x, finalPosition.y);
             SequenceAction sequence = Actions.sequence(
-                    moveAction,
+                    Actions.run(() -> {
+                        BaseGame.levelScreen.slowdown = 0.05f;
+                        BaseGame.levelScreen.slowdownDuration = 0.4f;
+                        GameUtils.playWithRandomPitch(BaseGame.chargeDo1Sound, 0.9f, 1.1f);
+                    }),
+                    Actions.delay(0.2f),
+                    Actions.run(() -> {
+                        player.addAction(new ColorShader(new Color(1f, 1f, 1f, 1f), 0.4f, Interpolation.elastic));
+                        GameUtils.playWithRandomPitch(BaseGame.chargeDo2Sound, 0.9f, 1.1f);
+                    }),
+                    lungeAction,
                     Actions.delay(0.1f),
                     Actions.run(() -> {
                         player.state = Player.State.IDLE;
                     })
             );
+
             player.addAction(sequence);
             player.state = Player.State.LUNGING;
             player.setAnimation(player.attackingAnimation);
             player.animationTime = .55f;
+            player.chargeSound.stop();
+
+            target.set(source.cpy().add(0, 12f));
+            Vector2 moveVector = target.cpy().sub(source);
+            finalPosition = source.cpy().add(moveVector);
+            MoveToAction moveAction = Actions.moveToAligned(finalPosition.x, finalPosition.y, Align.center, 0.1f, Interpolation.exp10Out);
+            player.addAction(moveAction);
 
             return;
         }
@@ -194,7 +216,6 @@ public class LevelScreen extends BaseScreen {
         player.setAnimation(player.attackingAnimation);
         player.animationTime = .55f;
         GameUtils.playWithRandomPitch(BaseGame.miss0Sound, .9f, 1.1f);
-
     }
 
     public void checkPlayerDash(int screenX, int screenY, int pointer, int button) {
@@ -204,6 +225,9 @@ public class LevelScreen extends BaseScreen {
 
         if (player.state != Player.State.IDLE && player.state != Player.State.MOVING && player.state != Player.State.SHOCKWAVE_CHARGE)
             return;
+
+        if (player.chargeSound.isPlaying())
+            player.chargeSound.stop();
 
         rightButtonDown = false;
 
@@ -216,11 +240,18 @@ public class LevelScreen extends BaseScreen {
             player.state = Player.State.SHOCKWAVE_DO;
             target.set(source.cpy().add(0, -Player.SHOCKWAVE_DISTANCE));
             Vector2 shockwaveVector = target.cpy().sub(source).nor().scl(Player.SHOCKWAVE_DISTANCE);
-            Vector2 finalPosition = source.cpy().add(shockwaveVector);
+            final Vector2 finalPosition = source.cpy().add(shockwaveVector);
             MoveToAction moveAction = Actions.moveToAligned(finalPosition.x, finalPosition.y, Align.center, 0.1f, Interpolation.exp10Out);
             SequenceAction sequence = Actions.sequence(
+                    Actions.run(() -> {
+                        BaseGame.levelScreen.slowdown = 0.05f;
+                        BaseGame.levelScreen.slowdownDuration = 0.4f;
+                        GameUtils.playWithRandomPitch(BaseGame.chargeDo1Sound, 0.9f, 1.1f);
+                    }),
+                    Actions.delay(0.2f),
                     moveAction,
                     Actions.run(() -> {
+                        GameUtils.playWithRandomPitch(BaseGame.shockwave1Sound, .9f, 1.2f);
 
                         Polygon boundaryPolygon = player.getBoundaryPolygon();
                         boundaryPolygon.setScale(6f, 6f);
@@ -251,7 +282,13 @@ public class LevelScreen extends BaseScreen {
                     })
             );
             player.addAction(sequence);
-            GameUtils.playWithRandomPitch(BaseGame.shockwave1Sound, .9f, 1.2f);
+
+            // Small jump beginning
+            target.set(source.cpy().add(0, 12f));
+            Vector2 moveVector = target.cpy().sub(source);
+            Vector2 finalPosition2 = source.cpy().add(moveVector);
+            moveAction = Actions.moveToAligned(finalPosition2.x, finalPosition2.y, Align.center, 0.1f, Interpolation.exp10Out);
+            player.addAction(moveAction);
 
             return;
         }
@@ -304,6 +341,11 @@ public class LevelScreen extends BaseScreen {
                 );
                 player.addAction(sequenceAction);
                 player.addAction(moveAction);
+
+                if (player.chargeSound.isPlaying())
+                    player.chargeSound.stop();
+
+                player.chargeSound.play();
             }
         }
         if (leftButtonDown) {
@@ -312,6 +354,7 @@ public class LevelScreen extends BaseScreen {
             if (player.state != Player.State.CHARGEATTACK_CHARGE && chargeAttackTimer > 1f) {
                 player.loadImage("characters/player/charge1");
                 player.state = Player.State.CHARGEATTACK_CHARGE;
+
                 SequenceAction sequenceAction = Actions.sequence(
                         Actions.delay(.8f),
                         new ColorShader(new Color(1f, 1f, 1f, 1f), 0.4f, Interpolation.elastic)

@@ -28,7 +28,7 @@ import java.util.List;
 public class Player extends BaseActor {
     public static final float MOVE_SPEED = 18;
     public static final float LUNGE_DISTANCE = 18;
-    public static final float CHARGEATTACK_DISTANCE = 24;
+    public static final float CHARGEATTACK_DISTANCE = 26;
     public static final float DASH_DISTANCE = 22;
     public static final float SHOCKWAVE_DISTANCE = 10;
     private static final HashMap<Integer, Float> EXPERIENCE_MAP = new HashMap<>(); // Experience required depending on the level
@@ -84,7 +84,7 @@ public class Player extends BaseActor {
     }
 
     public boolean isDamageable() {
-        return state == State.MOVING || state == State.IDLE || state == State.SHOCKWAVE_CHARGE || state == State.LUNGING;
+        return state == State.MOVING || state == State.IDLE || state == State.SHOCKWAVE_CHARGE || state == State.CHARGEATTACK_CHARGE|| state == State.LUNGING;
     }
 
     public int getHealth() {
@@ -188,6 +188,9 @@ public class Player extends BaseActor {
 
     private void handleMovement(float delta) {
 
+        if (state != State.MOVING)
+            BaseGame.swordDrag1Sound.stop();
+
         if (state != State.IDLE && state != State.MOVING)
             return;
 
@@ -204,6 +207,8 @@ public class Player extends BaseActor {
         if (target.dst2(source) > 5) {
             // Move player towards cursor.
             if (state != State.MOVING) {
+                long soundId = BaseGame.swordDrag1Sound.play();
+                BaseGame.swordDrag1Sound.setLooping(soundId, true);
                 setAnimation(walkingAnimation);
                 state = State.MOVING;
             }
@@ -214,6 +219,7 @@ public class Player extends BaseActor {
             checkIfFlip(angleDeg);
         } else {
             if (state == State.MOVING) {
+                BaseGame.swordDrag1Sound.stop();
                 setAnimation(idleAnimation);
                 state = State.IDLE;
             }

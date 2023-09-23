@@ -45,6 +45,9 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
     public static Sound dash1Sound;
     public static Sound charge1Sound;
     public static Sound shockwave1Sound;
+    public static Sound chargeDo1Sound;
+    public static Sound chargeDo2Sound;
+    public static Sound swordDrag1Sound;
     public static List<Sound> hitSounds = new ArrayList<>();
     public static Integer hitSoundsPreviousIndex = -1;
     public static List<Sound> swingSounds;
@@ -162,6 +165,9 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         assetManager.load("audio/sound/player/charge1.ogg", Sound.class);
         assetManager.load("audio/sound/player/dash1.ogg", Sound.class);
         assetManager.load("audio/sound/player/shockwave1.ogg", Sound.class);
+        assetManager.load("audio/sound/player/chargeDo1.ogg", Sound.class);
+        assetManager.load("audio/sound/player/chargeDo2.ogg", Sound.class);
+        assetManager.load("audio/sound/player/swordDrag1.ogg", Sound.class);
         assetManager.load("audio/sound/GUI/levelUp.wav", Sound.class);
 
         assetManager.finishLoading();
@@ -184,6 +190,9 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
         charge1Sound = assetManager.get("audio/sound/player/charge1.ogg", Sound.class);
         dash1Sound = assetManager.get("audio/sound/player/dash1.ogg", Sound.class);
         shockwave1Sound = assetManager.get("audio/sound/player/shockwave1.ogg", Sound.class);
+        chargeDo1Sound = assetManager.get("audio/sound/player/chargeDo1.ogg", Sound.class);
+        chargeDo2Sound = assetManager.get("audio/sound/player/chargeDo2.ogg", Sound.class);
+        swordDrag1Sound = assetManager.get("audio/sound/player/swordDrag1.ogg", Sound.class);
         hitSounds.add(assetManager.get("audio/sound/player/hit1.ogg", Sound.class));
         hitSounds.add(assetManager.get("audio/sound/player/hit2.ogg", Sound.class));
         hitSounds.add(assetManager.get("audio/sound/player/hit3.ogg", Sound.class));
