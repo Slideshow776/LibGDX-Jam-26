@@ -111,7 +111,7 @@ public class Enemy extends BaseActor {
     private void loadAnimation(String enemyName) {
         Array<TextureAtlas.AtlasRegion> animationImages = new Array<>();
 
-        walkingAnimation = AsepriteAnimationLoader.load("assets/images/included/characters/enemyMask/walking");
+        walkingAnimation = AsepriteAnimationLoader.load("assets/images/included/characters/" + enemyName + "/walking");
         walkingAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
         animationImages.clear();

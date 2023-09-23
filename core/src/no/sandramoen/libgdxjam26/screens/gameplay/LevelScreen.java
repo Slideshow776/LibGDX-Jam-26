@@ -251,6 +251,7 @@ public class LevelScreen extends BaseScreen {
                     })
             );
             player.addAction(sequence);
+            GameUtils.playWithRandomPitch(BaseGame.shockwave1Sound, .9f, 1.2f);
 
             return;
         }
