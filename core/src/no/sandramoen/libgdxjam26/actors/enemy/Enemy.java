@@ -101,7 +101,7 @@ public class Enemy extends BaseActor {
                 getHeight() / 2 - collisionBox.getHeight() / 2
         );
         collisionBox.setBoundaryPolygon(8);
-        collisionBox.setDebug(true);
+//        collisionBox.setDebug(true);
         collisionBox.isCollisionEnabled = false;
         stage.addActor(collisionBox);
 

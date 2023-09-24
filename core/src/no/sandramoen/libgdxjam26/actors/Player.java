@@ -79,7 +79,7 @@ public class Player extends BaseActor {
                 (getHeight() - collisionBox.getHeight()) / 4
         );
         collisionBox.setBoundaryRectangle();
-        collisionBox.setDebug(true);
+//        collisionBox.setDebug(true);
         stage.addActor(collisionBox);
 
         playerLabelGroup = new PlayerLabelGroup();
