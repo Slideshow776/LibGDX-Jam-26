@@ -1,10 +1,6 @@
 package no.sandramoen.libgdxjam26.utils;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.graphics.Camera;
@@ -23,7 +19,7 @@ public abstract class BaseScreen implements Screen, InputProcessor, ControllerLi
     public Stage uiStage;
     protected Table uiTable;
     public boolean pause;
-    public float startOffset = 1f;
+    public float startOffset = .1f;
 
     public BaseScreen() {
         mainStage = new Stage(new ExtendViewport(80, 45));

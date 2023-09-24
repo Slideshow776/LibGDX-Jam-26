@@ -208,8 +208,9 @@ public class BaseActor extends Group {
         image.setAlign(Align.center);
         image.setOrigin(Align.center);
 
-        if (boundaryPolygon == null)
+        if (boundaryPolygon == null) {
             setBoundaryRectangle();
+        }
     }
 
     public void loadImage(String name) {

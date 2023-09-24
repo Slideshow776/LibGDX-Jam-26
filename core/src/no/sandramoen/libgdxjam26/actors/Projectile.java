@@ -31,7 +31,7 @@ public class Projectile extends BaseActor {
         this.owner = owner;
         this.player = player;
         this.startPosition = new Vector2(startX, startY);
-        projectileAnimation = AsepriteAnimationLoader.load("assets/images/included/characters/enemyMask/projectile");
+        projectileAnimation = AsepriteAnimationLoader.load("images/included/characters/enemyMask/projectile");
         projectileAnimation.setPlayMode(Animation.PlayMode.LOOP);
         setAnimation(projectileAnimation);
         setOrigin(Align.center);

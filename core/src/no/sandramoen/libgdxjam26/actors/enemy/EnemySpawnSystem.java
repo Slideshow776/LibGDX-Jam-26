@@ -123,10 +123,10 @@ public class EnemySpawnSystem {
             this.enemyCount = enemyCount;
         }
 
-        @Override
-        public String toString() {
-            return String.format("Wave=%s, start=%s, enemies=%s", wave, startTime, enemyCount);
-        }
+        // Note: commented for GWT compatibility.
+//        @Override
+//        public String toString() {
+//            return String.format("Wave=%s, start=%s, enemies=%s", wave, startTime, enemyCount);
+//        }
     }
-
 }

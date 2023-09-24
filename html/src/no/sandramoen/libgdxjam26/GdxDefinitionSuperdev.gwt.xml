@@ -9,10 +9,10 @@
 	<inherits name='com.badlogic.ashley_gwt' />
 
     <inherits name='no.sandramoen.libgdxjam26.GdxDefinition' />
-    
+
     <collapse-all-properties />
-    
-	<add-linker name="xsiframe"/>	
+
+	<add-linker name="xsiframe"/>
 	<set-configuration-property name="devModeRedirectEnabled" value="true"/>
-	<set-configuration-property name='xsiframe.failIfScriptTag' value='FALSE'/>	
+	<set-configuration-property name='xsiframe.failIfScriptTag' value='FALSE'/>
 </module>

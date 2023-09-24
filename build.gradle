@@ -123,7 +123,6 @@ project(":core") {
         api "com.badlogicgames.ashley:ashley:$ashleyVersion"
         implementation "com.github.tommyettinger:textratypist:0.10.0"
         implementation("io.github.fourlastor.gdx:harlequin:1.1.2")
-        implementation "com.github.MrStahlfelge.gdx-websockets:core:1.9.10.3"
     }
 
     task packTextures {

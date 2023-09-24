@@ -180,7 +180,7 @@ public class Player extends BaseActor {
 
     private void loadAnimation() {
 
-        walkingAnimation = AsepriteAnimationLoader.load("assets/images/included/characters/player/walking");
+        walkingAnimation = AsepriteAnimationLoader.load("images/included/characters/player/walking");
         walkingAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
         attackingAnimation = AsepriteAnimationLoader.load("assets/images/included/characters/player/attack");

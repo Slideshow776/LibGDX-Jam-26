@@ -120,9 +120,6 @@ public class LevelScreen extends BaseScreen {
 
     public void updateButtonsDown(int screenX, int screenY, int pointer, int button) {
 
-        if (player.state != Player.State.IDLE && player.state != Player.State.MOVING)
-            return;
-
         if (button == Input.Buttons.LEFT) {
             leftButtonDown = true;
         }
@@ -136,14 +133,19 @@ public class LevelScreen extends BaseScreen {
         if (button != Input.Buttons.LEFT)
             return;
 
+        leftButtonDown = false;
+
         if (player.state != Player.State.IDLE && player.state != Player.State.MOVING && player.state != Player.State.SHOCKWAVE_CHARGE && player.state != Player.State.CHARGEATTACK_CHARGE)
             return;
 
         rightButtonDown = false;
         player.chargeSound.stop();
-        leftButtonDown = false;
 
         player.getActions().clear();
+
+        // Clear the shader if one is in-use (prevents white-sprite issue).
+        player.shaderProgram = null;
+
         source.set(player.getX(Align.center), player.getY(Align.center));
 
         if (chargeAttackTimer > 1.8f) {
@@ -219,14 +221,19 @@ public class LevelScreen extends BaseScreen {
         if (button != Input.Buttons.RIGHT)
             return;
 
+        rightButtonDown = false;
+
         if (player.state != Player.State.IDLE && player.state != Player.State.MOVING && player.state != Player.State.SHOCKWAVE_CHARGE && player.state != Player.State.CHARGEATTACK_CHARGE)
             return;
 
-        player.chargeSound.stop();
         leftButtonDown = false;
-        rightButtonDown = false;
+        player.chargeSound.stop();
 
         player.getActions().clear();
+
+        // Clear the shader if one is in-use (prevents white-sprite issue).
+        player.shaderProgram = null;
+
         source.set(player.getX(Align.center), player.getY(Align.center));
 
         if (shockWaveTimer > 1.8f) {
@@ -240,6 +247,16 @@ public class LevelScreen extends BaseScreen {
                         BaseGame.levelScreen.slowdown = 0.05f;
                         BaseGame.levelScreen.slowdownDuration = 0.4f;
                         GameUtils.playWithRandomPitch(BaseGame.chargeDo1Sound, 0.9f, 1.1f);
+
+                        player.addAction(Actions.sequence(
+                                Actions.run(() -> player.loadImage("characters/player/shockwave3")),
+                                Actions.delay(0.1f),
+                                Actions.run(() -> player.loadImage("characters/player/shockwave1")),
+                                Actions.delay(0.1f),
+                                Actions.run(() -> player.loadImage("characters/player/shockwave2")),
+                                Actions.delay(0.1f),
+                                Actions.run(() -> player.loadImage("characters/player/shockwave1"))
+                        ));
                     }),
                     Actions.delay(0.2f),
                     moveAction,
@@ -344,7 +361,7 @@ public class LevelScreen extends BaseScreen {
                 player.chargeSound.setLooping(soundId, true);
             }
         }
-        if (leftButtonDown) {
+        else if (leftButtonDown) {
             chargeAttackTimer += delta;
 
             if (player.state != Player.State.CHARGEATTACK_CHARGE && chargeAttackTimer > .4f) {

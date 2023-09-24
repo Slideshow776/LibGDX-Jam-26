@@ -10,27 +10,10 @@ import com.badlogic.gdx.utils.JsonWriter.OutputType;
 import io.github.fourlastor.harlequin.animation.Animation;
 import io.github.fourlastor.harlequin.animation.KeyFrame;
 import io.github.fourlastor.harlequin.animation.KeyFrameAnimation;
+
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-class AsepriteFrame {
-
-    static class Rect {
-        int x, y, w, h;
-
-        public Rect() {}
-    }
-    ;
-
-    Rect frame = new Rect();
-    boolean rotated;
-    boolean trimmed;
-    Rect spriteSourceSize = new Rect();
-    Rect sourceSize = new Rect();
-    int duration;
-
-    public AsepriteFrame() {}
-}
 
 public class AsepriteAnimationLoader {
 
@@ -45,18 +28,22 @@ public class AsepriteAnimationLoader {
             FileHandle fileHandle = Gdx.files.internal(animationName + ".json");
             JsonValue asepriteAnimation = BaseGame.jsonSerializer.parse(fileHandle);
             JsonValue frames = asepriteAnimation.get("frames");
-            animationName = animationName.split("/", 4)[3];
+            animationName = animationName.split("/", 3)[2];
 
             for (JsonValue key : frames) {
                 TextureAtlas.AtlasRegion frameTexture = BaseGame.textureAtlas.findRegion(animationName);
 
-                AsepriteFrame frame = json.fromJson(AsepriteFrame.class, key.prettyPrint(OutputType.minimal, 0));
+                int x = key.get("frame").getInt("x");
+                int y = key.get("frame").getInt("y");
+                int w = key.get("frame").getInt("w");
+                int h = key.get("frame").getInt("h");
+                int duration = key.getInt("duration");
 
                 keyFrames.add(KeyFrame.create(
                         startTime,
                         new TextureRegion(
-                                frameTexture, frame.frame.x, frame.frame.y, frame.frame.w, frame.frame.h)));
-                startTime += frame.duration;
+                                frameTexture, x, y, w, h)));
+                startTime += duration;
             }
 
         } catch (Exception e) {

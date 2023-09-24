@@ -24,7 +24,6 @@ import no.sandramoen.libgdxjam26.screens.gameplay.LevelScreen;
 import java.util.*;
 
 public abstract class BaseGame extends Game implements AssetErrorListener {
-
     private static BaseGame game;
     public static AssetManager assetManager;
 
@@ -99,7 +98,7 @@ public abstract class BaseGame extends Game implements AssetErrorListener {
 
     public static void setActiveScreen(BaseScreen screen) {
         game.setScreen(screen);
-        if (screen instanceof  LevelScreen) {
+        if (screen instanceof LevelScreen) {
             BaseGame.levelScreen = (LevelScreen)screen;
         }
     }

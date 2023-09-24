@@ -124,10 +124,10 @@ public class Enemy extends BaseActor {
 
     private void loadAnimation(String enemyName) {
         Array<TextureAtlas.AtlasRegion> animationImages = new Array<>();
-        walkingAnimation = AsepriteAnimationLoader.load("assets/images/included/characters/" + enemyName + "/walking");
+        walkingAnimation = AsepriteAnimationLoader.load("images/included/characters/" + enemyName + "/walking");
         walkingAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
-        attackingAnimation = AsepriteAnimationLoader.load("assets/images/included/characters/" + enemyName + "/attacking");
+        attackingAnimation = AsepriteAnimationLoader.load("images/included/characters/" + enemyName + "/attacking");
 
         animationImages.clear();
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/" + enemyName + "/idle1"));
@@ -407,7 +407,7 @@ public class Enemy extends BaseActor {
 
             diePosition.set(getX(), getY());
             if (data == EnemyData.ARCHER)
-                diePosition.y -= 4f;
+                diePosition.y -= 5f;
         }
 
 
