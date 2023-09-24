@@ -259,7 +259,7 @@ public class LevelScreen extends BaseScreen {
                         GameUtils.playWithRandomPitch(BaseGame.shockwave1Sound, .9f, 1.2f);
 
                         Polygon boundaryPolygon = player.getBoundaryPolygon();
-                        boundaryPolygon.setScale(6f, 6f);
+                        boundaryPolygon.setScale(2.3f, 2.3f);
 
                         for (Enemy enemy : enemySpawnSystem.getEnemies()) {
                             if (enemy == null) continue;
@@ -297,7 +297,6 @@ public class LevelScreen extends BaseScreen {
             Vector2 finalPosition2 = source.cpy().add(moveVector);
             moveAction = Actions.moveToAligned(finalPosition2.x, finalPosition2.y, Align.center, 0.1f, Interpolation.exp10Out);
             player.addAction(moveAction);
-
             return;
         }
 
