@@ -36,9 +36,7 @@ public class LungeMoveTo extends MoveToAction {
             if (enemy.isDead()) continue;
             if (alreadyHit.contains(enemy)) continue;
 
-            Rectangle enemyBounds = new Rectangle(enemy.getX(), enemy.getY(), enemy.getWidth(), enemy.getHeight());
-            Rectangle playerBounds = new Rectangle(player.getX(), player.getY(), player.getWidth(), player.getHeight());
-            if (enemyBounds.overlaps(playerBounds) || playerBounds.overlaps(enemyBounds)) {
+            if (enemy.overlaps(player.collisionBox.getBoundaryPolygon())) {
 
                 int damage = 50;
                 if (player.state == Player.State.CHARGEATTACK_DO)

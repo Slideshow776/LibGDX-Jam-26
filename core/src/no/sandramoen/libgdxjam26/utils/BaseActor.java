@@ -49,6 +49,7 @@ public class BaseActor extends Group {
     private Polygon boundaryPolygon = null;
     public ShaderProgram shaderProgram = null;
     public Image shadow;
+    public BaseActor collisionBox;
 
     public BaseActor(float x, float y, Stage stage) {
         super();
@@ -88,6 +89,9 @@ public class BaseActor extends Group {
     public void act(float delta) {
         if (getStage() == null)
             return;
+
+        if (collisionBox != null)
+            collisionBox.setPosition(getX(Align.center), getY(Align.center) - 1f, Align.center);
 
         if (!pause)
             super.act(delta);

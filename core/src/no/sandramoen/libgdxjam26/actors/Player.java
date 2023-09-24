@@ -36,7 +36,6 @@ public class Player extends BaseActor {
     public static final float DASH_DISTANCE = 22;
     public static final float SHOCKWAVE_DISTANCE = 10;
     private static final HashMap<Integer, Float> EXPERIENCE_MAP = new HashMap<>(); // Experience required depending on the level
-    private final BaseActor collisionBox;
     private final int MAX_LEVEL = 100;
     public boolean isDead;
     public int attackPower = 2;
@@ -80,7 +79,8 @@ public class Player extends BaseActor {
                 (getHeight() - collisionBox.getHeight()) / 4
         );
         collisionBox.setBoundaryRectangle();
-        addActor(collisionBox);
+        collisionBox.setDebug(true);
+        stage.addActor(collisionBox);
 
         playerLabelGroup = new PlayerLabelGroup();
         playerLabelGroup.setPosition(getWidth() / 2 - 2.5f, getHeight() - 1.5f);
@@ -101,11 +101,7 @@ public class Player extends BaseActor {
         return health;
     }
 
-    public BaseActor getCollisionBox() {
-        return collisionBox;
-    }
-
-    public void applyKnockBack(Enemy enemy) {
+    public void applyKnockBack(BaseActor other) {
 
         shakeCamera(4f);
 //        CenterCamera.MOVE_DURATION = .125f;
@@ -113,7 +109,7 @@ public class Player extends BaseActor {
 
         // Get normalized Vector between player and mouse.
         target.set(getX(Align.center), getY(Align.center));
-        source.set(enemy.getX(Align.center), enemy.getY(Align.center));
+        source.set(other.getX(Align.center), other.getY(Align.center));
         Vector2 lungeVector = target.sub(source).nor().scl(10);
         Vector2 finalPosition = source.add(lungeVector);
 

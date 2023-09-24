@@ -1,0 +1,50 @@
+{ "frames": {
+   "MaskAttack 0.aseprite": {
+    "frame": { "x": 0, "y": 0, "w": 47, "h": 47 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 47, "h": 47 },
+    "sourceSize": { "w": 47, "h": 47 },
+    "duration": 400
+   },
+   "MaskAttack 1.aseprite": {
+    "frame": { "x": 47, "y": 0, "w": 47, "h": 47 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 47, "h": 47 },
+    "sourceSize": { "w": 47, "h": 47 },
+    "duration": 200
+   },
+   "MaskAttack 2.aseprite": {
+    "frame": { "x": 94, "y": 0, "w": 47, "h": 47 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 47, "h": 47 },
+    "sourceSize": { "w": 47, "h": 47 },
+    "duration": 600
+   },
+   "MaskAttack 3.aseprite": {
+    "frame": { "x": 141, "y": 0, "w": 47, "h": 47 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 47, "h": 47 },
+    "sourceSize": { "w": 47, "h": 47 },
+    "duration": 300
+   }
+ },
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.2.40-x64",
+  "image": "MaskAttack.png",
+  "format": "RGBA8888",
+  "size": { "w": 192, "h": 47 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Layer 2", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}

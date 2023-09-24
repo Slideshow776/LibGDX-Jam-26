@@ -2,38 +2,44 @@ package no.sandramoen.libgdxjam26.actors;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import no.sandramoen.libgdxjam26.actors.enemy.Enemy;
 import no.sandramoen.libgdxjam26.utils.BaseActor;
+import no.sandramoen.libgdxjam26.utils.BaseGame;
 
 public class Projectile extends BaseActor {
 
-    private final Sprite sprite;
     private final Vector2 startPosition;
-    private final Vector2 target;
+    private final Vector2 currentPosition = new Vector2();
+    private final Vector2 target = new Vector2();
+    float previousAngle = -4000f;
     private final Player player;
+    private final Enemy owner;
+    private float duration = 2f;
 
-    public Projectile(Player player, Sprite sprite, float startX, float startY, float targetX, float targetY, Stage stage) {
+    public Projectile(Player player, Enemy owner, TextureRegion textureRegion, float startX, float startY, float targetX, float targetY, Stage stage) {
         super(startX, startY, stage);
+        this.owner = owner;
         this.player = player;
         this.startPosition = new Vector2(startX, startY);
-        this.target = new Vector2(targetX, targetY);
-        this.sprite = sprite;
-
-        sprite.setOriginCenter();
-        setSize(sprite.getWidth(), sprite.getHeight());
+        image = new Image(new TextureRegionDrawable(textureRegion));
+        addActor(image);
         setOrigin(Align.center);
-        setBoundaryRectangle();
+        setSize(image.getWidth(), image.getHeight());
+        setBoundaryPolygon(6);
+        setSpeed(15f);
     }
 
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
-
-        sprite.draw(batch);
     }
 
     private float getAngle(Vector2 start, Vector2 end) {
@@ -44,21 +50,43 @@ public class Projectile extends BaseActor {
     public void act(float delta) {
         super.act(delta);
 
-        sprite.setPosition(getX(), getY());
-        sprite.setRotation(getAngle(startPosition, target));
+        duration -= delta;
+        if (duration < 0) {
+            remove();
+            return;
+        }
 
-        float angle = target.cpy().sub(startPosition).angleDeg();
+        if (owner.isDead()){
+            remove();
+            return;
+        }
+
+//        setRotation(getAngle(startPosition, target));
+
+        currentPosition.set(getX(), getY());
+        target.set(player.collisionBox.getX(Align.center), player.collisionBox.getY(Align.center) - 2f);
+        float angle = target.cpy().sub(currentPosition).angleDeg();
+
+        // Not working.
+//        if (angle - previousAngle > 350) {
+//            previousAngle += 360;
+//        }
+//        else if (previousAngle - angle > 350) {
+//            previousAngle -= 360;
+//        }
+
+        if (previousAngle == -4000f)
+            previousAngle = angle;
+        else
+            angle = angle * 0.2f + previousAngle * 0.8f;
+
         setMotionAngle(angle);
-        setSpeed(600f);
         applyPhysics(delta);
 
-        BaseActor a = player.getCollisionBox();
-        Rectangle r2 = new Rectangle(player.getX() + a.getX(), player.getY() + a.getY(), a.getWidth(), a.getHeight());
-        Rectangle r4 = new Rectangle(getX(), getY(), getWidth(), getHeight());
-
-        if (r4.overlaps(r2)) {
+        if (player.isDamageable() && overlaps(player.collisionBox.getBoundaryPolygon())) {
             remove();
             player.applyDamage(1);
+            player.applyKnockBack(this);
         }
 
         if (startPosition.dst(getX(), getY()) > 1000) { // it has traveled off-screen or something

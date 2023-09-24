@@ -42,7 +42,6 @@ public class Enemy extends BaseActor {
     private final Group chatGroup; // Group for managing chat labels
     private final Label chatLabel; // Label for displaying chat messages
     private final Label hitLabel; // Label for displaying damage received
-    private final BaseActor attackCollisionBox;
     public boolean countDead;
     private int index; // Index for identifying the enemy instance
     private EnemyState state = EnemyState.MOVE; // Current state of the enemy
@@ -52,8 +51,8 @@ public class Enemy extends BaseActor {
     private float currentHealth; // Current health of the enemy
     private float attackCooldown = 0f;
     private Animation<TextureRegion> walkingAnimation, attackingAnimation, idleAnimation;
-    private Sprite projectile;
-    private Vector2 diePosition = new Vector2();
+    private final TextureAtlas.AtlasRegion projectile;
+    private final Vector2 diePosition = new Vector2();
 
     /**
      * Constructs an `Enemy` instance with the provided data and initial position.
@@ -89,24 +88,22 @@ public class Enemy extends BaseActor {
         this.chatGroup.addActor(hitLabel);
         this.chatGroup.setScale(.025f);
 
-        this.projectile = new Sprite(new Texture(Gdx.files.internal("images/included/GUI/arrow.png")));
-        this.projectile.flip(true, true);
-        this.projectile.setSize(64, 64);
+        this.projectile = BaseGame.textureAtlas.findRegion("characters/enemyMask/projectile");
 
         // Add the chat group to the stage for rendering
         this.addActor(chatGroup);
 
         // Set attack collision box.
-        attackCollisionBox = new BaseActor(0, 0, stage);
-        attackCollisionBox.setSize(10f, 10f);
-        attackCollisionBox.setPosition(
-                getWidth() / 2 - attackCollisionBox.getWidth() / 2,
-                getHeight() / 2 - attackCollisionBox.getHeight() / 2
+        collisionBox = new BaseActor(0, 0, stage);
+        collisionBox.setSize(4f, 4f);
+        collisionBox.setPosition(
+                getWidth() / 2 - collisionBox.getWidth() / 2,
+                getHeight() / 2 - collisionBox.getHeight() / 2
         );
-        attackCollisionBox.setBoundaryPolygon(8);
-//        attackCollisionBox.setDebug(true);
-        attackCollisionBox.isCollisionEnabled = false;
-        addActor(attackCollisionBox);
+        collisionBox.setBoundaryPolygon(8);
+        collisionBox.setDebug(true);
+        collisionBox.isCollisionEnabled = false;
+        stage.addActor(collisionBox);
 
         TextureAtlas.AtlasRegion atlasRegion = BaseGame.textureAtlas.findRegion("characters/" + data.getResource() + "/shadow");
         shadow = new Image(new TextureRegionDrawable(atlasRegion));
@@ -119,14 +116,10 @@ public class Enemy extends BaseActor {
 
     private void loadAnimation(String enemyName) {
         Array<TextureAtlas.AtlasRegion> animationImages = new Array<>();
-
         walkingAnimation = AsepriteAnimationLoader.load("assets/images/included/characters/" + enemyName + "/walking");
         walkingAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
-        animationImages.clear();
-        animationImages.add(BaseGame.textureAtlas.findRegion("characters/" + enemyName + "/attacking1"));
-        animationImages.add(BaseGame.textureAtlas.findRegion("characters/" + enemyName + "/attacking2"));
-        attackingAnimation = new FixedFrameAnimation<>(.2f, animationImages, Animation.PlayMode.NORMAL);
+        attackingAnimation = AsepriteAnimationLoader.load("assets/images/included/characters/" + enemyName + "/attacking");
 
         animationImages.clear();
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/" + enemyName + "/idle1"));
@@ -162,11 +155,11 @@ public class Enemy extends BaseActor {
             if (following.isDamageable()) {
                 // Apply damage to the player as soon as the player is hit,
                 // then disable hit detection.
-                if (attackCollisionBox.overlaps(following.getCollisionBox())) {
+                if (collisionBox.overlaps(following.collisionBox)) {
                     state = EnemyState.ATTACK;
                     following.applyDamage(data.attackDamage);
                     following.applyKnockBack(this);
-                    attackCollisionBox.isCollisionEnabled = false;
+                    collisionBox.isCollisionEnabled = false;
                 }
             }
             return;
@@ -197,16 +190,35 @@ public class Enemy extends BaseActor {
                 setSpeed(Player.MOVE_SPEED / 2f);
                 state = EnemyState.MOVE;
             } else if (following.isDamageable()){
+
                 // Player is in attack range, stop moving and enter attack state
                 state = EnemyState.ATTACK;
                 setMotionAngle(0);
                 setSpeed(0);
+
+                setAnimation(attackingAnimation);
+                animationTime = 0f;
+
                 if (data == EnemyData.ARCHER || data == EnemyData.MAGE) {
-                    float x1 = this.getX(Align.center);
-                    float y1 = this.getY(Align.center);
+                    float x1 = getX(Align.center);
+                    float y1 = getY(Align.center);
                     float x2 = following.getX(Align.center);
                     float y2 = following.getY(Align.center);
-                    chatGroup.addActor(new Projectile(following, projectile, x1, y1, x2, y2, getStage()));
+                    SequenceAction sequence = Actions.sequence(
+                        Actions.delay(1f),
+                        Actions.run(() -> {
+                            Projectile projectile = new Projectile(following, this, this.projectile, x1, y1, x2, y2, getStage());
+                            projectile.setScale(BaseGame.UNIT_SCALE);
+                            getStage().addActor(projectile);
+                        }),
+                        Actions.delay(1f),
+                        Actions.run(() -> {
+                            state = EnemyState.IDLE;
+                            attackCooldown = 1.5f;
+                            setAnimation(idleAnimation);
+                        })
+                    );
+                    addAction(sequence);
                 } else {
                     // Create damage shape in front.
                     // Set debug = true.
@@ -215,14 +227,13 @@ public class Enemy extends BaseActor {
                     Vector2 lungeVector = playerPosition.sub(enemyPosition).nor().scl(data.lungeDistance);
                     Vector2 finalPosition = enemyPosition.add(lungeVector);
 
-                    MoveToAction moveAction = Actions.moveTo(finalPosition.x, finalPosition.y, 0.5f, Interpolation.exp10);
-                    moveAction.setAlignment(Align.center);
+                    MoveToAction moveAction = Actions.moveToAligned(finalPosition.x, finalPosition.y, Align.center,0.5f, Interpolation.exp10);
                     SequenceAction sequence = Actions.sequence(
                             moveAction,
                             Actions.delay(0.1f),
                             Actions.run(() -> {
                                 state = EnemyState.IDLE;
-                                attackCollisionBox.isCollisionEnabled = false;
+                                collisionBox.isCollisionEnabled = false;
                                 attackCooldown = 1.5f;
                                 setAnimation(idleAnimation);
                             })
@@ -231,10 +242,10 @@ public class Enemy extends BaseActor {
                     ParallelAction parallelAction = Actions.parallel(
                             sequence,
                             Actions.sequence(
-                                    Actions.delay(0.05f),
+                                    Actions.delay(0.2f),
                                     Actions.run(() -> {
                                         state = EnemyState.DETECT_DAMAGE;
-                                        attackCollisionBox.isCollisionEnabled = true;
+                                        collisionBox.isCollisionEnabled = true;
                                     })
                             )
                     );

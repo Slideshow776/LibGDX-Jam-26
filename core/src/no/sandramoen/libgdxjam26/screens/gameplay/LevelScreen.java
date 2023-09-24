@@ -43,6 +43,7 @@ public class LevelScreen extends BaseScreen {
     private final Comparator<Actor> ySortComparator = Comparator.comparing((Actor actor) -> -actor.getY());
     public PlayerHearts hearts;
     public Background background;
+
     public Player player;
     public Label waveLabel;
     public Label waveFadeLabel;
@@ -59,6 +60,7 @@ public class LevelScreen extends BaseScreen {
     public float chargeAttackTimer = 0f;
     private boolean rightButtonDown;
     private boolean leftButtonDown;
+    float startOffset = 1f;
 
     public LevelScreen(int startingLevel, float percentToNextLevel) {
         BaseGame.levelScreen = this;
@@ -135,11 +137,11 @@ public class LevelScreen extends BaseScreen {
         if (button != Input.Buttons.LEFT)
             return;
 
-        if (player.state != Player.State.IDLE && player.state != Player.State.MOVING && player.state != Player.State.CHARGEATTACK_CHARGE)
+        if (player.state != Player.State.IDLE && player.state != Player.State.MOVING && player.state != Player.State.SHOCKWAVE_CHARGE && player.state != Player.State.CHARGEATTACK_CHARGE)
             return;
 
+        rightButtonDown = false;
         player.chargeSound.stop();
-
         leftButtonDown = false;
 
         player.getActions().clear();
@@ -219,11 +221,11 @@ public class LevelScreen extends BaseScreen {
         if (button != Input.Buttons.RIGHT)
             return;
 
-        if (player.state != Player.State.IDLE && player.state != Player.State.MOVING && player.state != Player.State.SHOCKWAVE_CHARGE)
+        if (player.state != Player.State.IDLE && player.state != Player.State.MOVING && player.state != Player.State.SHOCKWAVE_CHARGE && player.state != Player.State.CHARGEATTACK_CHARGE)
             return;
 
         player.chargeSound.stop();
-
+        leftButtonDown = false;
         rightButtonDown = false;
 
         player.getActions().clear();
@@ -233,9 +235,9 @@ public class LevelScreen extends BaseScreen {
             shockWaveTimer = 0f;
 
             player.state = Player.State.SHOCKWAVE_DO;
-            target.set(source.cpy().add(0, -1));
-            Vector2 shockwaveVector = target.cpy().sub(source).nor().scl(Player.SHOCKWAVE_DISTANCE);
-            final Vector2 finalPosition = source.cpy().add(shockwaveVector);
+//            target.set(source.cpy().add(0, -1));
+//            Vector2 shockwaveVector = target.cpy().sub(source).nor().scl(Player.SHOCKWAVE_DISTANCE);
+            final Vector2 finalPosition = source.cpy();
             MoveToAction moveAction = Actions.moveToAligned(finalPosition.x, finalPosition.y, Align.center, 0.1f, Interpolation.exp10Out);
             SequenceAction sequence = Actions.sequence(
                     Actions.run(() -> {
@@ -320,20 +322,20 @@ public class LevelScreen extends BaseScreen {
     @Override
     public void update(float delta) {
 
+        if (startOffset > 0) {
+            startOffset -= delta;
+            return;
+        }
+
         if (rightButtonDown) {
             shockWaveTimer += delta;
 
-            if (player.state != Player.State.SHOCKWAVE_CHARGE && shockWaveTimer > 1f) {
-                player.loadImage("characters/player/shockwave1");
+            if (player.state != Player.State.SHOCKWAVE_CHARGE && shockWaveTimer > .4f) {
                 player.state = Player.State.SHOCKWAVE_CHARGE;
-
-//                source.set(player.getX(Align.center), player.getY(Align.center));
-//                target.set(source.cpy().add(0, Player.SHOCKWAVE_DISTANCE / 6f));
-//                MoveToAction moveAction = Actions.moveToAligned(target.x, target.y, Align.center, 0.1f, Interpolation.exp10Out);
-//                player.addAction(moveAction);
+                player.loadImage("characters/player/shockwave1");
 
                 SequenceAction sequenceAction = Actions.sequence(
-                        Actions.delay(.8f),
+                        Actions.delay(1.8f - shockWaveTimer),
                         new ColorShader(new Color(1f, 1f, 1f, 1f), 0.4f, Interpolation.elastic)
                 );
                 player.addAction(sequenceAction);
@@ -346,12 +348,12 @@ public class LevelScreen extends BaseScreen {
         if (leftButtonDown) {
             chargeAttackTimer += delta;
 
-            if (player.state != Player.State.CHARGEATTACK_CHARGE && chargeAttackTimer > 1f) {
-                player.loadImage("characters/player/charge1");
+            if (player.state != Player.State.CHARGEATTACK_CHARGE && chargeAttackTimer > .4f) {
                 player.state = Player.State.CHARGEATTACK_CHARGE;
+                player.loadImage("characters/player/charge1");
 
                 SequenceAction sequenceAction = Actions.sequence(
-                        Actions.delay(.8f),
+                        Actions.delay(1.8f - chargeAttackTimer),
                         new ColorShader(new Color(1f, 1f, 1f, 1f), 0.4f, Interpolation.elastic)
                 );
                 player.addAction(sequenceAction);
@@ -384,6 +386,9 @@ public class LevelScreen extends BaseScreen {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 
+        if (startOffset > 0)
+            return false;
+
         updateButtonsDown(screenX, screenY, pointer, button);
 
         return super.touchDown(screenX, screenY, pointer, button);
@@ -391,6 +396,9 @@ public class LevelScreen extends BaseScreen {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+
+        if (startOffset > 0)
+            return false;
 
         checkPlayerLunge(screenX, screenY, pointer, button);
 
