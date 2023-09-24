@@ -208,7 +208,6 @@ public class Enemy extends BaseActor {
                         Actions.delay(1f),
                         Actions.run(() -> {
                             Projectile projectile = new Projectile(following, this, this.projectile, x1, y1, x2, y2, getStage());
-                            projectile.setScale(BaseGame.UNIT_SCALE);
                             getStage().addActor(projectile);
                         }),
                         Actions.delay(1f),

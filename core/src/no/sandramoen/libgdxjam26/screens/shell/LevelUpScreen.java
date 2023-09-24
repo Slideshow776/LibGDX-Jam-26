@@ -138,7 +138,7 @@ public class LevelUpScreen extends BaseScreen {
     }
 
     private void initializeGUI() {
-        this.quitWindow = new QuitWindow();
+        this.quitWindow = new QuitWindow(null);
 
         levelLabel = new Label("", new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-59", BitmapFont.class), null));
         Label xpLabel = new Label("xp", new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-20", BitmapFont.class), null));

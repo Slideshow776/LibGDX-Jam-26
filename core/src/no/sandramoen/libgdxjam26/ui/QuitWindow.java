@@ -2,17 +2,20 @@ package no.sandramoen.libgdxjam26.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import no.sandramoen.libgdxjam26.screens.gameplay.LevelScreen;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
+import no.sandramoen.libgdxjam26.utils.BaseScreen;
 
 public class QuitWindow extends Window {
 
     private TextButton yes, no;
 
-    public QuitWindow() {
+    public QuitWindow(BaseScreen pausedScreen) {
         super("Are you sure?", BaseGame.mySkin);
 
         yes = new TextButton("Yes", BaseGame.mySkin);
@@ -37,6 +40,8 @@ public class QuitWindow extends Window {
         no.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                if (pausedScreen != null)
+                    pausedScreen.pause = false;
                 QuitWindow.this.setVisible(false);
             }
         });

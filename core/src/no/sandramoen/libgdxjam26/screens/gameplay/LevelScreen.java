@@ -192,7 +192,6 @@ public class LevelScreen extends BaseScreen {
             return;
         }
 
-
         // Get normalized Vector between player and mouse.
         target.set(mainStage.screenToStageCoordinates(new Vector2(screenX, screenY)));
         Vector2 lungeVector = target.sub(source).nor().scl(Player.LUNGE_DISTANCE);
@@ -235,8 +234,6 @@ public class LevelScreen extends BaseScreen {
             shockWaveTimer = 0f;
 
             player.state = Player.State.SHOCKWAVE_DO;
-//            target.set(source.cpy().add(0, -1));
-//            Vector2 shockwaveVector = target.cpy().sub(source).nor().scl(Player.SHOCKWAVE_DISTANCE);
             final Vector2 finalPosition = source.cpy();
             MoveToAction moveAction = Actions.moveToAligned(finalPosition.x, finalPosition.y, Align.center, 0.1f, Interpolation.exp10Out);
             SequenceAction sequence = Actions.sequence(
@@ -376,8 +373,10 @@ public class LevelScreen extends BaseScreen {
 
     @Override
     public boolean keyDown(int keycode) {
-        if (keycode == Keys.ESCAPE || keycode == Keys.Q)
+        if (keycode == Keys.ESCAPE || keycode == Keys.Q) {
             quitWindow.setVisible(!quitWindow.isVisible());
+            pause = !pause;
+        }
         else if (keycode == Keys.R)
             BaseGame.setActiveScreen(new LevelScreen(startingLevel, percentToNextLevel));
         return super.keyDown(keycode);
@@ -422,7 +421,7 @@ public class LevelScreen extends BaseScreen {
         float horizontalPadding = Gdx.graphics.getWidth() * .02f;
         float verticalPadding = Gdx.graphics.getHeight() * .02f;
 
-        this.quitWindow = new QuitWindow();
+        this.quitWindow = new QuitWindow(this);
         this.levelLabel = new Label("Level " + player.getLevel(), new Label.LabelStyle(BaseGame.mySkin.get("MetalMania-20", BitmapFont.class), null));
         this.levelLabel.setPosition(horizontalPadding, Gdx.graphics.getHeight() - levelLabel.getHeight() - verticalPadding);
 
@@ -441,12 +440,12 @@ public class LevelScreen extends BaseScreen {
         this.waveFadeLabel.addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(1), Actions.fadeOut(1)));
         this.waveFadeLabel.setFontScale(5);
 
-        uiTable.addActor(quitWindow);
         uiTable.addActor(levelLabel);
         uiTable.addActor(waveLabel);
         uiTable.addActor(waveFadeLabel);
         uiTable.addActor(hearts);
         uiTable.addActor(abilityBar);
+        uiTable.addActor(quitWindow);
 
         uiTable.defaults()
                 .padTop(Gdx.graphics.getHeight() * .02f)

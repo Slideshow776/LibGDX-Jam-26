@@ -9,7 +9,9 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import io.github.fourlastor.harlequin.animation.Animation;
 import no.sandramoen.libgdxjam26.actors.enemy.Enemy;
+import no.sandramoen.libgdxjam26.utils.AsepriteAnimationLoader;
 import no.sandramoen.libgdxjam26.utils.BaseActor;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
 
@@ -22,16 +24,17 @@ public class Projectile extends BaseActor {
     private final Player player;
     private final Enemy owner;
     private float duration = 2f;
+    Animation<TextureRegion> projectileAnimation;
 
     public Projectile(Player player, Enemy owner, TextureRegion textureRegion, float startX, float startY, float targetX, float targetY, Stage stage) {
         super(startX, startY, stage);
         this.owner = owner;
         this.player = player;
         this.startPosition = new Vector2(startX, startY);
-        image = new Image(new TextureRegionDrawable(textureRegion));
-        addActor(image);
+        projectileAnimation = AsepriteAnimationLoader.load("assets/images/included/characters/enemyMask/projectile");
+        projectileAnimation.setPlayMode(Animation.PlayMode.LOOP);
+        setAnimation(projectileAnimation);
         setOrigin(Align.center);
-        setSize(image.getWidth(), image.getHeight());
         setBoundaryPolygon(6);
         setSpeed(15f);
     }
