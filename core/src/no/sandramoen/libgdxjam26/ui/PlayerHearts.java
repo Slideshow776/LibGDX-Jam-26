@@ -12,16 +12,15 @@ public class PlayerHearts extends Actor {
     private Texture emptyHeart;
     private boolean[] destroyed = new boolean[4];
     private float heartSpacing = 15;
-
     public PlayerHearts() {
         this.fullHeart = new Texture(Gdx.files.internal("images/included/GUI/heart.png"));
         this.emptyHeart = new Texture(Gdx.files.internal("images/included/GUI/empty_heart.png"));
         this.health = 4; // Starting health with 4 hearts
 
         // Calculate the actor's width based on heart texture width and spacing
-        setWidth(fullHeart.getWidth() * 4 + (3 * heartSpacing));
-        setHeight(fullHeart.getHeight());
-        setScale(BaseGame.UNIT_SCALE);
+        setWidth((fullHeart.getWidth() * 4 + (3 * heartSpacing)) * BaseGame.UNIT_SCALE);
+        setHeight(fullHeart.getHeight() * BaseGame.UNIT_SCALE);
+//        setScale(BaseGame.UNIT_SCALE);
     }
 
     public void decreaseHealth(int amount) {

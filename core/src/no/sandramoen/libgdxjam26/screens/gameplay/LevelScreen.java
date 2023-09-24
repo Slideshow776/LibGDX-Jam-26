@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -20,7 +19,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ParticleEffectActor;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.compression.lzma.Base;
 import no.sandramoen.libgdxjam26.actions.*;
 import no.sandramoen.libgdxjam26.actors.Player;
 import no.sandramoen.libgdxjam26.actors.enemy.Enemy;
@@ -34,7 +32,6 @@ import no.sandramoen.libgdxjam26.ui.QuitWindow;
 import no.sandramoen.libgdxjam26.utils.BaseGame;
 import no.sandramoen.libgdxjam26.utils.BaseScreen;
 import no.sandramoen.libgdxjam26.utils.GameUtils;
-import no.sandramoen.libgdxjam26.utils.LoopedSound;
 
 import java.util.Comparator;
 import java.util.Iterator;
@@ -47,8 +44,6 @@ public class LevelScreen extends BaseScreen {
     public Player player;
     public Label waveLabel;
     public Label waveFadeLabel;
-    private TiledMap currentMap;
-    private Array<ImpassableTerrain> impassables;
     private QuitWindow quitWindow;
     private EnemySpawnSystem enemySpawnSystem;
     private Label levelLabel;
@@ -426,7 +421,6 @@ public class LevelScreen extends BaseScreen {
     }
 
     private void initializeActors() {
-        this.impassables = new Array();
         this.background = new Background(-2, -2, mainStage);
         this.player = new Player(35, 20, startingLevel, percentToNextLevel, mainStage);
     }
@@ -445,7 +439,7 @@ public class LevelScreen extends BaseScreen {
         this.levelLabel.setPosition(horizontalPadding, Gdx.graphics.getHeight() - levelLabel.getHeight() - verticalPadding);
 
         this.hearts = new PlayerHearts();
-        this.hearts.setPosition(Gdx.graphics.getWidth() - hearts.getWidth() - horizontalPadding, Gdx.graphics.getHeight() - hearts.getHeight() - verticalPadding);
+        this.hearts.setPosition(Gdx.graphics.getWidth() - hearts.getWidth() - horizontalPadding - 240f, Gdx.graphics.getHeight() - hearts.getHeight() - verticalPadding - 40f);
 
         this.abilityBar = new AbilityBar(3);
         this.abilityBar.setPosition((Gdx.graphics.getWidth() - abilityBar.getWidth()) / 2f, verticalPadding);
