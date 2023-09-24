@@ -23,6 +23,7 @@ public abstract class BaseScreen implements Screen, InputProcessor, ControllerLi
     public Stage uiStage;
     protected Table uiTable;
     public boolean pause;
+    public float startOffset = 1f;
 
     public BaseScreen() {
         mainStage = new Stage(new ExtendViewport(80, 45));

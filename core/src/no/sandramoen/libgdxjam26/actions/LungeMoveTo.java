@@ -52,6 +52,9 @@ public class LungeMoveTo extends MoveToAction {
                         BaseGame.levelScreen.slowdownDuration = 0.1f;
                     }
                 }
+                else {
+                    GameUtils.playWithRandomPitch(BaseGame.enemyHitSound, .9f, 1.1f);
+                }
             }
         }
     }

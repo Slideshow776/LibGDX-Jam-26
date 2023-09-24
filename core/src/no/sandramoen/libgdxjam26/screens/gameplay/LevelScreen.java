@@ -60,7 +60,6 @@ public class LevelScreen extends BaseScreen {
     public float chargeAttackTimer = 0f;
     private boolean rightButtonDown;
     private boolean leftButtonDown;
-    float startOffset = 1f;
 
     public LevelScreen(int startingLevel, float percentToNextLevel) {
         BaseGame.levelScreen = this;
@@ -254,7 +253,7 @@ public class LevelScreen extends BaseScreen {
                             if (enemy == null) continue;
                             if (enemy.isDead()) continue;
                             if (enemy.overlaps(boundaryPolygon)) {
-                                enemy.hit(80);
+                                enemy.hit(150);
 
                                 if (enemy.getState().equals(EnemyState.DEAD)) {
                                     GameUtils.playWithRandomPitch(BaseGame.kill0Sound, .9f, 1.1f);
@@ -263,6 +262,9 @@ public class LevelScreen extends BaseScreen {
                                         BaseGame.levelScreen.slowdown = 0.05f;
                                         BaseGame.levelScreen.slowdownDuration = 0.1f;
                                     }
+                                }
+                                else {
+                                    GameUtils.playWithRandomPitch(BaseGame.enemyHitSound, .9f, 1.1f);
                                 }
                             }
                         }

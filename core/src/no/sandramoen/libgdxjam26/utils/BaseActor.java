@@ -40,6 +40,7 @@ public class BaseActor extends Group {
 
     public Image image;
     public float animationTime = 0f;
+    public float animationSpeed = 1f;
     private boolean animationPaused = false;
     private Vector2 velocityVec = new Vector2(0f, 0f);
     private Vector2 accelerationVec = new Vector2(0f, 0f);
@@ -97,13 +98,11 @@ public class BaseActor extends Group {
             super.act(delta);
 
         if (animation != null && !animationPaused)
-            animationTime += delta;
+            animationTime += delta * animationSpeed;
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-
-        super.draw(batch, parentAlpha);
 
         Color c = getColor();
         batch.setColor(c.r, c.g, c.b, c.a);
@@ -146,6 +145,8 @@ public class BaseActor extends Group {
         if (shaderProgram != null) {
             batch.setShader(null);
         }
+
+        super.draw(batch, parentAlpha);
     }
 
     private void setAnimationSize(float width, float height) {

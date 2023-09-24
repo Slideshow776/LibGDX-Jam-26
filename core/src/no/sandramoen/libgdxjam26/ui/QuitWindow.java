@@ -40,8 +40,10 @@ public class QuitWindow extends Window {
         no.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (pausedScreen != null)
+                if (pausedScreen != null) {
                     pausedScreen.pause = false;
+                    pausedScreen.startOffset = .1f;
+                }
                 QuitWindow.this.setVisible(false);
             }
         });

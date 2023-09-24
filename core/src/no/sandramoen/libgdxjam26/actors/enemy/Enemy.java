@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.compression.lzma.Base;
 import io.github.fourlastor.harlequin.animation.Animation;
 import io.github.fourlastor.harlequin.animation.FixedFrameAnimation;
 import no.sandramoen.libgdxjam26.actions.ContrastShader;
@@ -53,6 +54,9 @@ public class Enemy extends BaseActor {
     private Animation<TextureRegion> walkingAnimation, attackingAnimation, idleAnimation;
     private final TextureAtlas.AtlasRegion projectile;
     private final Vector2 diePosition = new Vector2();
+    private float skitterTimer = 0f;
+
+    public float moveSpeed = 1f;
 
     /**
      * Constructs an `Enemy` instance with the provided data and initial position.
@@ -65,6 +69,8 @@ public class Enemy extends BaseActor {
     public Enemy(EnemyData data, float x, float y, Stage stage) {
         // Call the superclass constructor to initialize basic actor properties
         super(x, y, stage);
+
+        moveSpeed = data.moveSpeed;
 
         loadAnimation(data.getResource());
         setBoundaryRectangle();
@@ -108,10 +114,12 @@ public class Enemy extends BaseActor {
         TextureAtlas.AtlasRegion atlasRegion = BaseGame.textureAtlas.findRegion("characters/" + data.getResource() + "/shadow");
         shadow = new Image(new TextureRegionDrawable(atlasRegion));
         shadow.setScale(BaseGame.UNIT_SCALE);
-        if (data == EnemyData.ARCHER)
-            shadow.setPosition(0f, -2f);
+        if (data == EnemyData.ARCHER) {
+            shadow.setPosition(0f, -5f);
+        }
+        else if (data == EnemyData.MELEE)
+            shadow.setVisible(false);
         addActor(shadow);
-
     }
 
     private void loadAnimation(String enemyName) {
@@ -176,6 +184,24 @@ public class Enemy extends BaseActor {
             return;
         }
 
+        if (data == EnemyData.MELEE) {
+            skitterTimer -= delta;
+            if (skitterTimer < 0f) {
+                state = EnemyState.ATTACK;
+                skitterTimer = BaseGame.random.nextInt(8) + 4;
+                moveSpeed = 12f;
+                animationSpeed = 2f;
+                SequenceAction sequenceAction = Actions.sequence(
+                    Actions.delay(1f),
+                    Actions.run(() -> {
+                        moveSpeed = 6f;
+                        animationSpeed = 1f;
+                    })
+                );
+                addAction(sequenceAction);
+            }
+        }
+
         // Handle enemy movement and attack behaviors when following a player
         if (following != null) {
             playerPosition.set(following.getX(Align.center), following.getY(Align.center));
@@ -187,7 +213,7 @@ public class Enemy extends BaseActor {
             // Check if the player is out of attack range, and if so, move towards the player
             if (playerPosition.dst(enemyPosition) > data.getAttackRange()) {
                 setMotionAngle(angleDegrees);
-                setSpeed(Player.MOVE_SPEED / 2f);
+                setSpeed(moveSpeed);
                 state = EnemyState.MOVE;
             } else if (following.isDamageable()){
 
@@ -205,13 +231,15 @@ public class Enemy extends BaseActor {
                     float x2 = following.getX(Align.center);
                     float y2 = following.getY(Align.center);
                     SequenceAction sequence = Actions.sequence(
-                        Actions.delay(1f),
+                        Actions.delay(1.5f),
                         Actions.run(() -> {
                             Projectile projectile = new Projectile(following, this, this.projectile, x1, y1, x2, y2, getStage());
                             getStage().addActor(projectile);
                         }),
-                        Actions.delay(1f),
+                        Actions.delay(.5f),
                         Actions.run(() -> {
+                            if (isDead())
+                                return;
                             state = EnemyState.IDLE;
                             attackCooldown = 1.5f;
                             setAnimation(idleAnimation);
@@ -358,8 +386,14 @@ public class Enemy extends BaseActor {
                     Actions.delay(10f),
                     Actions.fadeOut(.2f),
                     Actions.run(this::remove)
-
             );
+            // Set animation to final frame of attack animation.
+            setAnimation(attackingAnimation);
+            animationTime = 10f;
+
+            // Prevent messages from popping up anymore.
+            chatLabel.remove();
+
             addAction(sequenceAction);
             Shake shake = new Shake(1f);
             shake.shakeDuration = 4f / 60f;

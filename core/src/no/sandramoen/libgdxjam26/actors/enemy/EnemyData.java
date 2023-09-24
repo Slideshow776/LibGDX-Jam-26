@@ -22,7 +22,7 @@ public enum EnemyData {
      * - Base Experience: 50 units
      * - Resource: whitePixel (a placeholder resource)
      */
-    ARCHER("Archer", 5, 5, 15, 1, 50, 250, "enemyMask", 1, 1),
+    ARCHER("Archer", 5, 5, 20, 1, 9,50, 250, "enemyMask", 1, 1),
 
     /**
      * The Mage enemy type.
@@ -35,7 +35,7 @@ public enum EnemyData {
      * - Base Experience: 60 units
      * - Resource: whitePixel (a placeholder resource)
      */
-    MAGE("Mage", 5, 5, 12, 1, 50, 260, "enemyMask", 1, 1),
+    MAGE("Mage", 5, 5, 20, 1, 9,50, 260, "enemyMask", 1, 1),
 
     /**
      * The Melee enemy type.
@@ -48,7 +48,7 @@ public enum EnemyData {
      * - Base Experience: 40 units
      * - Resource: whitePixel (a placeholder resource)
      */
-    MELEE("Melee", 5, 5, 5, 1, 150, 240, "enemyBlob", 5, 1);
+    MELEE("Melee", 5, 5, 5, 1, 6, 150, 240, "enemyBlob", 5, 1);
 
     public static final String[] CHAT_MESSAGES = {"I'm going to kill you!", "Stand still!", "Die!", "Come here!"};
 
@@ -57,6 +57,7 @@ public enum EnemyData {
     private final float width, height, attackRange, attackSpeed, baseHealth, baseExperience;
     public final float lungeDistance;
     public final int attackDamage;
+    public final float moveSpeed;
 
     /**
      * Constructor for an EnemyData enum value.
@@ -66,16 +67,18 @@ public enum EnemyData {
      * @param height         The height of the enemy's hitbox (in game units).
      * @param attackRange    The attack range of the enemy (in game units).
      * @param attackSpeed    The attack speed of the enemy (in game units).
+     * @param moveSpeed      The movement speed of the enemy (in game units).
      * @param baseHealth     The base health of the enemy (in game units).
      * @param baseExperience The base experience gained for defeating the enemy (in game units).
      * @param resource       The resource name for rendering the enemy (e.g., texture).
      */
-    private EnemyData(String name, float width, float height, float attackRange, float attackSpeed, float baseHealth, float baseExperience, String resource, float lungeDistance, int attackDamage) {
+    private EnemyData(String name, float width, float height, float attackRange, float attackSpeed, float moveSpeed, float baseHealth, float baseExperience, String resource, float lungeDistance, int attackDamage) {
         this.name = name;
         this.width = width;
         this.height = height;
         this.attackRange = attackRange;
         this.attackSpeed = attackSpeed;
+        this.moveSpeed = moveSpeed;
         this.baseHealth = baseHealth;
         this.baseExperience = baseExperience;
         this.resource = resource;

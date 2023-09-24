@@ -5,7 +5,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 80, "h": 80 },
     "sourceSize": { "w": 80, "h": 80 },
-    "duration": 110
+    "duration": 180
    },
    "SlimeWalking 1.aseprite": {
     "frame": { "x": 80, "y": 0, "w": 80, "h": 80 },
@@ -13,7 +13,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 80, "h": 80 },
     "sourceSize": { "w": 80, "h": 80 },
-    "duration": 110
+    "duration": 180
    },
    "SlimeWalking 2.aseprite": {
     "frame": { "x": 160, "y": 0, "w": 80, "h": 80 },
@@ -21,7 +21,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 80, "h": 80 },
     "sourceSize": { "w": 80, "h": 80 },
-    "duration": 110
+    "duration": 180
    },
    "SlimeWalking 3.aseprite": {
     "frame": { "x": 240, "y": 0, "w": 80, "h": 80 },
@@ -29,7 +29,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 80, "h": 80 },
     "sourceSize": { "w": 80, "h": 80 },
-    "duration": 55
+    "duration": 90
    },
    "SlimeWalking 4.aseprite": {
     "frame": { "x": 320, "y": 0, "w": 80, "h": 80 },
@@ -37,7 +37,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 80, "h": 80 },
     "sourceSize": { "w": 80, "h": 80 },
-    "duration": 55
+    "duration": 90
    }
  },
  "meta": {
@@ -50,7 +50,7 @@
   "frameTags": [
   ],
   "layers": [
-   { "name": "Layer 1", "opacity": 255, "blendMode": "normal" }
+   { "name": "Layer 1", "opacity": 2110, "blendMode": "normal" }
   ],
   "slices": [
   ]
