@@ -183,7 +183,7 @@ public class Player extends BaseActor {
         walkingAnimation = AsepriteAnimationLoader.load("images/included/characters/player/walking");
         walkingAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
-        attackingAnimation = AsepriteAnimationLoader.load("assets/images/included/characters/player/attack");
+        attackingAnimation = AsepriteAnimationLoader.load("images/included/characters/player/attack");
 
         Array<TextureAtlas.AtlasRegion> animationImages = new Array<>();
         animationImages.add(BaseGame.textureAtlas.findRegion("characters/player/idle1"));
