@@ -1,7 +1,7 @@
 # LibGDX-Jam-26
 ## A Terrifying Knight!
 
-[![Thumbnaik](https://github.com/Slideshow776/LibGDX-Jam-26/assets/4059636/8baf7150-be54-4ab8-8527-d2bd19d6b7ac)]([https://youtu.be/BUj2IYbL-zI](https://sandramoen.itch.io/a-terrifying-knight))
+[![Thumbnaik](https://user-images.githubusercontent.com/4059636/270295948-706e93a4-f235-4d5f-ba2e-7a564000d8e0.png)](https://sandramoen.itch.io/a-terrifying-knight)
 
 [Play it](https://sandramoen.itch.io/a-terrifying-knight) for free on your web browser!
 
