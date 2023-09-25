@@ -1,5 +1,7 @@
 # LibGDX-Jam-26
 ## A Terrifying Knight!
+[![image](https://github.com/Slideshow776/LibGDX-Jam-26/assets/4059636/8baf7150-be54-4ab8-8527-d2bd19d6b7ac)](https://sandramoen.itch.io/a-terrifying-knight)
+
 [Play it](https://sandramoen.itch.io/a-terrifying-knight) for free on your web browser!
 
 This is the repository of our submission to [libGDX's Game Jam #26](https://itch.io/jam/libgdx-jam-26).
