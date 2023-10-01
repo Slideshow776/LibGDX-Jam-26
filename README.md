@@ -5,7 +5,7 @@
 
 [Play it](https://sandramoen.itch.io/a-terrifying-knight) for free on your web browser!
 
-The youtube review < 3
+[The youtube review](https://www.youtube.com/live/GzjYod9lmw4?si=k49q33qCN5PYbh_I&t=4937) < 3
 [![Video review](https://user-images.githubusercontent.com/4059636/271818374-86fada78-9375-42d0-9787-4670f161fdd8.png)](https://www.youtube.com/live/GzjYod9lmw4?si=k49q33qCN5PYbh_I&t=4937)
 
 This is the repository of our submission to [libGDX's Game Jam #26](https://itch.io/jam/libgdx-jam-26).
